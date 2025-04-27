@@ -1,3 +1,4 @@
+import React from 'react';
 function ServiceCard({ service, onAddToCart }) {
     return (
       <div className="border rounded-lg p-4 shadow-md">
