@@ -11,18 +11,33 @@ const VendorExtraDetails = () => {
     city: '',
     state: '',
     postalCode: '',
+    businessName: '',
     businessDescription: '',
+    licenseNumber: '',
+    insuranceDetails: '',
+    serviceCategories: [],
+    document: null,
   });
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState('');
   const [submitMessageType, setSubmitMessageType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Available service categories for home services
+  const serviceOptions = [
+    'Plumbing',
+    'Electrical',
+    'Carpentry',
+    'Cleaning',
+    'Painting',
+    'HVAC',
+    'Landscaping',
+    'Other',
+  ];
+
   // Pre-fill fullName from localStorage
   useEffect(() => {
-    const userName = localStorage.get
-
-Item('userName') || '';
+    const userName = localStorage.getItem('userName') || '';
     setFormData((prev) => ({ ...prev, fullName: userName }));
   }, []);
 
@@ -35,15 +50,47 @@ Item('userName') || '';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
     if (!formData.postalCode.match(/^\d{5,6}$/)) newErrors.postalCode = 'Enter a valid postal code (5-6 digits)';
+    if (!formData.businessName.trim()) newErrors.businessName = 'Business Name is required';
     if (!formData.businessDescription.trim()) newErrors.businessDescription = 'Business Description is required';
+    if (!formData.licenseNumber.trim()) newErrors.licenseNumber = 'License Number is required';
+    if (!formData.insuranceDetails.trim()) newErrors.insuranceDetails = 'Insurance Details are required';
+    if (formData.serviceCategories.length === 0) newErrors.serviceCategories = 'Select at least one service category';
+    if (!formData.document) newErrors.document = 'Please upload a supporting document';
     return newErrors;
   };
 
-  // Handle input changes
+  // Handle text input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  // Handle service category checkbox changes
+  const handleServiceChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prev) => {
+      const updatedCategories = checked
+        ? [...prev.serviceCategories, value]
+        : prev.serviceCategories.filter((cat) => cat !== value);
+      return { ...prev, serviceCategories: updatedCategories };
+    });
+    setErrors((prev) => ({ ...prev, serviceCategories: '' }));
+  };
+
+  // Handle file input changes
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
+      setErrors((prev) => ({ ...prev, document: 'File size must be less than 5MB' }));
+      return;
+    }
+    if (file && !['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) {
+      setErrors((prev) => ({ ...prev, document: 'Only JPEG, PNG, or PDF files are allowed' }));
+      return;
+    }
+    setFormData((prev) => ({ ...prev, document: file }));
+    setErrors((prev) => ({ ...prev, document: '' }));
   };
 
   // Handle form submission
@@ -65,14 +112,31 @@ Item('userName') || '';
         return;
       }
 
+      // Prepare form data for multipart upload
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (key === 'serviceCategories') {
+          formDataToSend.append(key, JSON.stringify(formData[key]));
+        } else if (key === 'document' && formData[key]) {
+          formDataToSend.append(key, formData[key]);
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
       const response = await axios.post(
         'http://localhost:5000/api/vendor/details',
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        formDataToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
 
       if (response.status === 200) {
-        setSubmitMessage('Profile details saved successfully!');
+        setSubmitMessage('Vendor details submitted successfully! Awaiting admin approval.');
         setSubmitMessageType('success');
         localStorage.setItem('profileCompleted', 'true');
         // Reset form data
@@ -83,12 +147,17 @@ Item('userName') || '';
           city: '',
           state: '',
           postalCode: '',
+          businessName: '',
           businessDescription: '',
+          licenseNumber: '',
+          insuranceDetails: '',
+          serviceCategories: [],
+          document: null,
         });
         setTimeout(() => {
-          setSubmitMessage(''); // Clear message before navigation
+          setSubmitMessage('');
           navigate('/approval-waiting');
-        }, 1000);
+        }, 1500);
       }
     } catch (error) {
       if (error.response?.status === 401) {
@@ -96,7 +165,7 @@ Item('userName') || '';
         setSubmitMessageType('error');
         setTimeout(() => navigate('/login'), 1500);
       } else {
-        setSubmitMessage(error.response?.data?.message || 'Error saving details');
+        setSubmitMessage(error.response?.data?.message || 'Error submitting details');
         setSubmitMessageType('error');
       }
       console.error(error);
@@ -107,17 +176,17 @@ Item('userName') || '';
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl w-full bg-white shadow-lg rounded-xl p-8">
+      <div className="max-w-4xl w-full bg-white shadow-xl rounded-2xl p-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Complete Your Vendor Profile</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900">Complete Your Vendor Profile</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Provide your business details to get started
+            Provide detailed information to verify your home services business
           </p>
         </div>
 
         {submitMessage && (
           <div
-            className={`mb-6 p-4 rounded-lg transition-opacity duration-300 ${
+            className={`mb-6 p-4 rounded-lg ${
               submitMessageType === 'error'
                 ? 'bg-red-100 text-red-700'
                 : 'bg-green-100 text-green-700'
@@ -139,18 +208,12 @@ Item('userName') || '';
                 type="text"
                 value={formData.fullName}
                 onChange={handleChange}
-                aria-invalid={errors.fullName ? 'true' : 'false'}
-                aria-describedby={errors.fullName ? 'fullName-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.fullName ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your full name"
               />
-              {errors.fullName && (
-                <p id="fullName-error" className="mt-1 text-sm text-red-600">
-                  {errors.fullName}
-                </p>
-              )}
+              {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
             </div>
 
             <div>
@@ -163,18 +226,13 @@ Item('userName') || '';
                 type="tel"
                 value={formData.mobileNumber}
                 onChange={handleChange}
-                aria-invalid={errors.mobileNumber ? 'true' : 'false'}
-                aria-describedby={errors.mobileNumber ? 'mobileNumber-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.mobileNumber ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="10-digit number"
-                pattern="\d{10}"
               />
               {errors.mobileNumber && (
-                <p id="mobileNumber-error" className="mt-1 text-sm text-red-600">
-                  {errors.mobileNumber}
-                </p>
+                <p className="mt-1 text-sm text-red-600">{errors.mobileNumber}</p>
               )}
             </div>
 
@@ -188,18 +246,12 @@ Item('userName') || '';
                 type="text"
                 value={formData.address}
                 onChange={handleChange}
-                aria-invalid={errors.address ? 'true' : 'false'}
-                aria-describedby={errors.address ? 'address-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.address ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="Enter your address"
+                placeholder="Enter your full address"
               />
-              {errors.address && (
-                <p id="address-error" className="mt-1 text-sm text-red-600">
-                  {errors.address}
-                </p>
-              )}
+              {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
             </div>
 
             <div>
@@ -212,18 +264,12 @@ Item('userName') || '';
                 type="text"
                 value={formData.city}
                 onChange={handleChange}
-                aria-invalid={errors.city ? 'true' : 'false'}
-                aria-describedby={errors.city ? 'city-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.city ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your city"
               />
-              {errors.city && (
-                <p id="city-error" className="mt-1 text-sm text-red-600">
-                  {errors.city}
-                </p>
-              )}
+              {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
             </div>
 
             <div>
@@ -236,18 +282,12 @@ Item('userName') || '';
                 type="text"
                 value={formData.state}
                 onChange={handleChange}
-                aria-invalid={errors.state ? 'true' : 'false'}
-                aria-describedby={errors.state ? 'state-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.state ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your state"
               />
-              {errors.state && (
-                <p id="state-error" className="mt-1 text-sm text-red-600">
-                  {errors.state}
-                </p>
-              )}
+              {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
             </div>
 
             <div>
@@ -260,18 +300,33 @@ Item('userName') || '';
                 type="text"
                 value={formData.postalCode}
                 onChange={handleChange}
-                aria-invalid={errors.postalCode ? 'true' : 'false'}
-                aria-describedby={errors.postalCode ? 'postalCode-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.postalCode ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="5-6 digits"
-                pattern="\d{5,6}"
               />
               {errors.postalCode && (
-                <p id="postalCode-error" className="mt-1 text-sm text-red-600">
-                  {errors.postalCode}
-                </p>
+                <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
+                Business Name
+              </label>
+              <input
+                id="businessName"
+                name="businessName"
+                type="text"
+                value={formData.businessName}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.businessName ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter your business name"
+              />
+              {errors.businessName && (
+                <p className="mt-1 text-sm text-red-600">{errors.businessName}</p>
               )}
             </div>
 
@@ -285,28 +340,107 @@ Item('userName') || '';
                 rows={4}
                 value={formData.businessDescription}
                 onChange={handleChange}
-                aria-invalid={errors.businessDescription ? 'true' : 'false'}
-                aria-describedby={errors.businessDescription ? 'businessDescription-error' : undefined}
-                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.businessDescription ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="Describe your business (services, experience, etc.)"
+                placeholder="Describe your services, experience, and specialties"
               />
               {errors.businessDescription && (
-                <p id="businessDescription-error" className="mt-1 text-sm text-red-600">
-                  {errors.businessDescription}
-                </p>
+                <p className="mt-1 text-sm text-red-600">{errors.businessDescription}</p>
               )}
+            </div>
+
+            <div>
+              <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700">
+                Professional License Number
+              </label>
+              <input
+                id="licenseNumber"
+                name="licenseNumber"
+                type="text"
+                value={formData.licenseNumber}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.licenseNumber ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter your license number"
+              />
+              {errors.licenseNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.licenseNumber}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="insuranceDetails" className="block text-sm font-medium text-gray-700">
+                Insurance Details
+              </label>
+              <input
+                id="insuranceDetails"
+                name="insuranceDetails"
+                type="text"
+                value={formData.insuranceDetails}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.insuranceDetails ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter insurance policy details"
+              />
+              {errors.insuranceDetails && (
+                <p className="mt-1 text-sm text-red-600">{errors.insuranceDetails}</p>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Service Categories
+              </label>
+              <div className="mt-2 grid grid-cols-2 gap-4">
+                {serviceOptions.map((service) => (
+                  <label key={service} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      value={service}
+                      checked={formData.serviceCategories.includes(service)}
+                      onChange={handleServiceChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">{service}</span>
+                  </label>
+                ))}
+              </div>
+              {errors.serviceCategories && (
+                <p className="mt-1 text-sm text-red-600">{errors.serviceCategories}</p>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="document" className="block text-sm font-medium text-gray-700">
+                Upload Supporting Document (JPEG, PNG, PDF)
+              </label>
+              <input
+                id="document"
+                name="document"
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={handleFileChange}
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.document ? 'border-red-300' : 'border-gray-300'
+                }`}
+              />
+              <p className="mt-1 text-sm text-gray-500">
+                Upload a license, certificate, or ID proof (max 5MB)
+              </p>
+              {errors.document && <p className="mt-1 text-sm text-red-600">{errors.document}</p>}
             </div>
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-colors ${
+            className={`w-full py-3 px-4 rounded-lg text-white font-medium ${
               isSubmitting
                 ? 'bg-blue-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
             }`}
           >
             {isSubmitting ? (
@@ -334,7 +468,7 @@ Item('userName') || '';
                 Processing...
               </div>
             ) : (
-              'Submit Details'
+              'Submit for Approval'
             )}
           </button>
         </form>
