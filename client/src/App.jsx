@@ -10,9 +10,20 @@ import CartPage from './users/user-pages/CartPage';
 import BookingsPage from './users/user-pages/BookingsPage';
 
 // Common Pages
-import Login from './pages/auth/Login';
-import ApprovalWaiting from './pages/auth/ApprovalWaiting';
-import VendorExtraDetails from './pages/auth/VendorExtraDetails';
+import Login from './pages/Login';
+import ApprovalWaiting from './pages/ApprovalWaiting';
+// Vendor Pages
+import VendorDashboard from './pages/vendor/Vendor';
+import VendorProfile from './pages/vendor/VendorProfile';
+import VendorHome from './pages/vendor/VendorHome';
+import VendorServices from './pages/vendor/VendorServices';
+import VendorBookings from './pages/vendor/VendorBookings';
+import VendorPayments from './pages/vendor/VendorPayments';
+import VendorMessages from './pages/vendor/VendorMessages';
+import VendorReviews from './pages/vendor/VendorReviews';
+import VendorAnalytics from './pages/vendor/VendorAnalytics';
+import VendorSupport from './pages/vendor/VendorSupport';
+
 // Vendor Pages
 import VendorDashboard from './pages/vendor/Vendor';
 import VendorProfile from './pages/auth/vendor/VendorProfile';
