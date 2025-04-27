@@ -44,49 +44,49 @@ const AdminApprovalPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl p-8">
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Vendor Approval Dashboard</h2>
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Vendor Approval Dashboard</h2>
         {error && (
-          <div className="mb-6 p-4 rounded-lg bg-red-100 text-red-700">{error}</div>
+          <div className="mb-6 p-4 rounded-lg bg-red-100 text-red-700 font-medium">{error}</div>
         )}
         {loading ? (
-          <div className="text-center text-gray-600">Loading vendors...</div>
+          <div className="text-center text-gray-500">Loading vendors...</div>
         ) : vendors.length === 0 ? (
-          <div className="text-center text-gray-600">No pending vendors found.</div>
+          <div className="text-center text-gray-500">No pending vendors found.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Business</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Services</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Business</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Services</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {vendors.map((vendor) => (
-                  <tr key={vendor._id}>
+                  <tr key={vendor._id} className="hover:bg-gray-50 transition duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vendor.fullName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vendor.businessName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vendor.serviceCategories.join(', ')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{vendor.businessName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{vendor.serviceCategories.join(', ')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                       <button
                         onClick={() => viewDetails(vendor)}
-                        className="text-blue-600 hover:text-blue-800 mr-4"
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
                       >
                         View Details
                       </button>
                       <button
                         onClick={() => handleAction(vendor._id, 'approved')}
-                        className="text-green-600 hover:text-green-800 mr-4"
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => handleAction(vendor._id, 'rejected')}
-                        className="text-red-600 hover:text-red-800"
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                       >
                         Reject
                       </button>
@@ -101,46 +101,46 @@ const AdminApprovalPage = () => {
 
       {/* Modal for Vendor Details */}
       {selectedVendor && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Vendor Details</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 w-full max-w-3xl max-h-[80vh] overflow-y-auto shadow-2xl">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Vendor Details</h3>
             <div className="space-y-4">
-              <p><strong>Full Name:</strong> {selectedVendor.fullName}</p>
-              <p><strong>Mobile Number:</strong> {selectedVendor.mobileNumber}</p>
-              <p><strong>Address:</strong> {selectedVendor.address}, {selectedVendor.city}, {selectedVendor.state} {selectedVendor.postalCode}</p>
-              <p><strong>Business Name:</strong> {selectedVendor.businessName}</p>
-              <p><strong>Business Description:</strong> {selectedVendor.businessDescription}</p>
-              <p><strong>License Number:</strong> {selectedVendor.licenseNumber}</p>
-              <p><strong>Insurance Details:</strong> {selectedVendor.insuranceDetails}</p>
-              <p><strong>Service Categories:</strong> {selectedVendor.serviceCategories.join(', ')}</p>
+              <p><strong className="text-gray-700">Full Name:</strong> {selectedVendor.fullName}</p>
+              <p><strong className="text-gray-700">Mobile Number:</strong> {selectedVendor.mobileNumber}</p>
+              <p><strong className="text-gray-700">Address:</strong> {selectedVendor.address}, {selectedVendor.city}, {selectedVendor.state} {selectedVendor.postalCode}</p>
+              <p><strong className="text-gray-700">Business Name:</strong> {selectedVendor.businessName}</p>
+              <p><strong className="text-gray-700">Business Description:</strong> {selectedVendor.businessDescription}</p>
+              <p><strong className="text-gray-700">License Number:</strong> {selectedVendor.licenseNumber}</p>
+              <p><strong className="text-gray-700">Insurance Details:</strong> {selectedVendor.insuranceDetails}</p>
+              <p><strong className="text-gray-700">Service Categories:</strong> {selectedVendor.serviceCategories.join(', ')}</p>
               <p>
-                <strong>Document:</strong>{' '}
+                <strong className="text-gray-700">Document:</strong>{' '}
                 <a
                   href={`http://localhost:5000/${selectedVendor.document}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  className="text-indigo-600 hover:text-indigo-800 underline"
                 >
                   View Document
                 </a>
               </p>
             </div>
-            <div className="mt-6 flex justify-end space-x-4">
+            <div className="mt-8 flex justify-end space-x-4">
               <button
                 onClick={() => handleAction(selectedVendor._id, 'approved')}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
               >
                 Approve
               </button>
               <button
                 onClick={() => handleAction(selectedVendor._id, 'rejected')}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
               >
                 Reject
               </button>
               <button
                 onClick={closeModal}
-                className="px-4 py-2 bg-gray-300 text-gray-900 rounded-lg hover:bg-gray-400"
+                className="px-4 py-3 bg-gray-300 text-gray-900 rounded-lg hover:bg-gray-400 transition duration-200"
               >
                 Close
               </button>

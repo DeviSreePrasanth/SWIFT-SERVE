@@ -3,7 +3,12 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
+
+
 // Import routes
+
+
+const approvalRoutes = require('./routes/approvalRoute');
 const authRoutes = require('./routes/auth');
 const vendorRoute = require('./routes/vendorRoute');
 const approvalRoute = require('./routes/approvalRoute'); // Added approvalRoute
@@ -22,6 +27,14 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/vendors', vendorRoute);
 app.use('/api', approvalRoute);
+
+// Routes
+app.use('/api/services', require('./routes/serviceRoutes'));
+app.use('/api/cart', require('./routes/cartRoutes'));
+app.use('/api/bookings', require('./routes/bookingRoutes'));
+
+app.use('/api', approvalRoutes);
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
