@@ -4,9 +4,17 @@ const User = require('../models/User');
 
 const authController = {
   signup: async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     try {
+      if (!name || !email || !password || !role) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+
+      if (!['customer', 'vendor'].includes(role)) {
+        return res.status(400).json({ message: 'Invalid role' });
+      }
+
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: 'Email already exists' });
@@ -19,11 +27,11 @@ const authController = {
         name,
         email,
         password: hashedPassword,
-        role: 'customer',
+        role,
       });
       await user.save();
 
-      res.status(200).json({ message: 'Signup successful' });
+      res.status(201).json({ message: 'Signup successful' });
     } catch (error) {
       next(error);
     }
@@ -35,19 +43,24 @@ const authController = {
     try {
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({ message: 'Incorrect username or password' });
+        return res.status(400).json({ message: 'Incorrect email or password' });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!user || !isMatch) {
-        return res.status(400).json({ message: 'Incorrect username or password' });
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Incorrect email or password' });
       }
 
-      const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-      });
+      const token = jwt.sign(
+        { userId: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
 
-      res.status(200).json({ token });
+      res.status(200).json({
+        token,
+        user: { name: user.name, email: user.email, role: user.role },
+      });
     } catch (error) {
       next(error);
     }
