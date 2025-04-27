@@ -2,7 +2,8 @@ const express = require('express');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 require('dotenv').config();
-
+const vendorRoutes = require('./routes/vendorRoute');
+const approvalRoutes = require('./routes/approvalRoute');
 const app = express();
 
 // Connect to MongoDB
@@ -16,6 +17,9 @@ app.use(express.json());
 app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/vendor', vendorRoutes);
+app.use('/api', approvalRoutes);
+
 
 // Global error handler
 app.use((err, req, res, next) => {
