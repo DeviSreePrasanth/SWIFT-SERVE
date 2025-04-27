@@ -20,7 +20,9 @@ const VendorExtraDetails = () => {
 
   // Pre-fill fullName from localStorage
   useEffect(() => {
-    const userName = localStorage.getItem('userName') || '';
+    const userName = localStorage.get
+
+Item('userName') || '';
     setFormData((prev) => ({ ...prev, fullName: userName }));
   }, []);
 
@@ -73,13 +75,30 @@ const VendorExtraDetails = () => {
         setSubmitMessage('Profile details saved successfully!');
         setSubmitMessageType('success');
         localStorage.setItem('profileCompleted', 'true');
+        // Reset form data
+        setFormData({
+          fullName: localStorage.getItem('userName') || '',
+          mobileNumber: '',
+          address: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          businessDescription: '',
+        });
         setTimeout(() => {
-          navigate('/approvalwaiting');
-        }, 1500);
+          setSubmitMessage(''); // Clear message before navigation
+          navigate('/approval-waiting');
+        }, 1000);
       }
     } catch (error) {
-      setSubmitMessage(error.response?.data?.message || 'Error saving details');
-      setSubmitMessageType('error');
+      if (error.response?.status === 401) {
+        setSubmitMessage('Session expired. Please log in again.');
+        setSubmitMessageType('error');
+        setTimeout(() => navigate('/login'), 1500);
+      } else {
+        setSubmitMessage(error.response?.data?.message || 'Error saving details');
+        setSubmitMessageType('error');
+      }
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -111,10 +130,7 @@ const VendorExtraDetails = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                htmlFor="fullName"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
                 Full Name
               </label>
               <input
@@ -124,49 +140,46 @@ const VendorExtraDetails = () => {
                 value={formData.fullName}
                 onChange={handleChange}
                 aria-invalid={errors.fullName ? 'true' : 'false'}
+                aria-describedby={errors.fullName ? 'fullName-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.fullName
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.fullName ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your full name"
               />
               {errors.fullName && (
-                <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                <p id="fullName-error" className="mt-1 text-sm text-red-600">
+                  {errors.fullName}
+                </p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="mobileNumber"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">
                 Mobile Number
               </label>
               <input
                 id="mobileNumber"
                 name="mobileNumber"
-                type="text"
+                type="tel"
                 value={formData.mobileNumber}
                 onChange={handleChange}
                 aria-invalid={errors.mobileNumber ? 'true' : 'false'}
+                aria-describedby={errors.mobileNumber ? 'mobileNumber-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.mobileNumber
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.mobileNumber ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="10-digit number"
+                pattern="\d{10}"
               />
               {errors.mobileNumber && (
-                <p className="mt-1 text-sm text-red-600">{errors.mobileNumber}</p>
+                <p id="mobileNumber-error" className="mt-1 text-sm text-red-600">
+                  {errors.mobileNumber}
+                </p>
               )}
             </div>
 
             <div className="md:col-span-2">
-              <label
-                htmlFor="address"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
                 Address
               </label>
               <input
@@ -176,23 +189,21 @@ const VendorExtraDetails = () => {
                 value={formData.address}
                 onChange={handleChange}
                 aria-invalid={errors.address ? 'true' : 'false'}
+                aria-describedby={errors.address ? 'address-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.address
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.address ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your address"
               />
               {errors.address && (
-                <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+                <p id="address-error" className="mt-1 text-sm text-red-600">
+                  {errors.address}
+                </p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="city"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700">
                 City
               </label>
               <input
@@ -202,23 +213,21 @@ const VendorExtraDetails = () => {
                 value={formData.city}
                 onChange={handleChange}
                 aria-invalid={errors.city ? 'true' : 'false'}
+                aria-describedby={errors.city ? 'city-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.city
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.city ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your city"
               />
               {errors.city && (
-                <p className="mt-1 text-sm text-red-600">{errors.city}</p>
+                <p id="city-error" className="mt-1 text-sm text-red-600">
+                  {errors.city}
+                </p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="state"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="state" className="block text-sm font-medium text-gray-700">
                 State
               </label>
               <input
@@ -228,23 +237,21 @@ const VendorExtraDetails = () => {
                 value={formData.state}
                 onChange={handleChange}
                 aria-invalid={errors.state ? 'true' : 'false'}
+                aria-describedby={errors.state ? 'state-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.state
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.state ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your state"
               />
               {errors.state && (
-                <p className="mt-1 text-sm text-red-600">{errors.state}</p>
+                <p id="state-error" className="mt-1 text-sm text-red-600">
+                  {errors.state}
+                </p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="postalCode"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">
                 Postal Code
               </label>
               <input
@@ -254,23 +261,22 @@ const VendorExtraDetails = () => {
                 value={formData.postalCode}
                 onChange={handleChange}
                 aria-invalid={errors.postalCode ? 'true' : 'false'}
+                aria-describedby={errors.postalCode ? 'postalCode-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.postalCode
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.postalCode ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="5-6 digits"
+                pattern="\d{5,6}"
               />
               {errors.postalCode && (
-                <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+                <p id="postalCode-error" className="mt-1 text-sm text-red-600">
+                  {errors.postalCode}
+                </p>
               )}
             </div>
 
             <div className="md:col-span-2">
-              <label
-                htmlFor="businessDescription"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="businessDescription" className="block text-sm font-medium text-gray-700">
                 Business Description
               </label>
               <textarea
@@ -280,15 +286,16 @@ const VendorExtraDetails = () => {
                 value={formData.businessDescription}
                 onChange={handleChange}
                 aria-invalid={errors.businessDescription ? 'true' : 'false'}
+                aria-describedby={errors.businessDescription ? 'businessDescription-error' : undefined}
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.businessDescription
-                    ? 'border-red-300'
-                    : 'border-gray-300'
+                  errors.businessDescription ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Describe your business (services, experience, etc.)"
               />
               {errors.businessDescription && (
-                <p className="mt-1 text-sm text-red-600">{errors.businessDescription}</p>
+                <p id="businessDescription-error" className="mt-1 text-sm text-red-600">
+                  {errors.businessDescription}
+                </p>
               )}
             </div>
           </div>
@@ -317,12 +324,12 @@ const VendorExtraDetails = () => {
                     r="10"
                     stroke="currentColor"
                     strokeWidth="4"
-                  ></circle>
+                  />
                   <path
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
                 Processing...
               </div>

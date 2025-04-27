@@ -4,7 +4,7 @@
   "description": "Backend for Home Services Booking App",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon copyserver.js",
+    "start": "nodemon server.js",
     "dev": "nodemon copyserver.js",
     "seed": "node seed.js"
   },

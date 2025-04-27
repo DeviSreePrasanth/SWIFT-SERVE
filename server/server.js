@@ -5,7 +5,7 @@ const connectDB = require('./config/db');
 
 // Import routes
 const authRoutes = require('./routes/auth');
-//const vendorRoute = require('./routes/vendorRoute');  // Ensure this is the correct file path
+const vendorRoute = require('./routes/vendorRoute'); 
 
 dotenv.config();
 const app = express();
@@ -19,7 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-//app.use('/api/vendors', vendorRoute);  // Register vendor routes here
+app.use('/api/vendor', vendorRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
