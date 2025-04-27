@@ -1,4 +1,6 @@
 const Vendor = require('../models/vendorSchema');
+const User = require('../models/User'); // Import User model
+const jwt = require('jsonwebtoken'); // For decoding JWT
 const multer = require('multer');
 const path = require('path');
 
@@ -87,18 +89,48 @@ const submitVendorDetails = async (req, res) => {
       licenseNumber,
       insuranceDetails,
       serviceCategories: parsedServiceCategories,
-      document: req.file.path, // Store file path
+      document: req.file.path,
       status: 'pending',
     });
 
+    // Save vendor details
     await vendor.save();
+
+    // Get user ID from JWT token
+    const token = req.headers.authorization?.split(' ')[1]; // Extract Bearer token
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace with your JWT secret
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    const userId = decoded.userId; // Assuming userId is stored in the token payload
+
+    // Update user's profileCompleted field
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { profileCompleted: true },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Respond with success
     res.status(200).json({ message: 'Vendor details submitted successfully, awaiting approval' });
 
     console.log('Vendor details saved:', vendor);
+    console.log('User profile updated:', user);
   } catch (error) {
     console.error('Error saving vendor details:', error);
     res.status(500).json({ message: error.message || 'Error saving vendor details' });
   }
 };
 
-module.exports =  submitVendorDetails ;
+module.exports = submitVendorDetails;

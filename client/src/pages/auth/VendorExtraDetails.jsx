@@ -125,7 +125,7 @@ const VendorExtraDetails = () => {
       });
 
       const response = await axios.post(
-        'http://localhost:5000/api/vendor/details',
+        'http://localhost:5000/api/vendors/details',
         formDataToSend,
         {
           headers: {
