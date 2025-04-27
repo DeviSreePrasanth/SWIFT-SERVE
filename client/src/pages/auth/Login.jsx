@@ -61,19 +61,20 @@ const Login = () => {
         setSignupMessageType("error");
         return;
       }
-      if (signupPassword.length < 6) {
-        setSignupMessage("Password must be at least 6 characters.");
+      if (signupPassword.length < 5) {
+        setSignupMessage("Password must be at least 5 characters.");
         setSignupMessageType("error");
         return;
       }
     }
 
+    const endpoint = isSignInActive ? "/api/auth/login" : "/api/auth/signup";
     const userData = isSignInActive
-      ? { email: loginEmail, password: loginPassword, type: "login" }
-      : { name: signupName, email: signupEmail, password: signupPassword, role: signupRole, type: "signup" };
+      ? { email: loginEmail, password: loginPassword }
+      : { name: signupName, email: signupEmail, password: signupPassword, role: signupRole };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth", userData);
+      const response = await axios.post(`http://localhost:5000${endpoint}`, userData);
 
       if (isSignInActive) {
         // Login
@@ -85,15 +86,23 @@ const Login = () => {
           // Store token and user info in localStorage
           localStorage.setItem("authToken", token);
           localStorage.setItem("userRole", user.role);
-          localStorage.setItem("isApproved", user.isApproved);
+          localStorage.setItem("isApproved", user.isApproved.toString());
           localStorage.setItem("userId", user.id);
+          localStorage.setItem("userName", user.name);
+          localStorage.setItem("profileCompleted", user.profileCompleted.toString());
 
-          // Redirect based on role and approval status
+          // Redirect based on role, profile completion, and approval status
           setTimeout(() => {
-            if (user.role === "vendor" && !user.isApproved) {
-              navigate("/approval-waiting");
+            if (user.role === "vendor" && !user.profileCompleted) {
+              navigate("/vendor-extra-details");
+            } else if (user.role === "vendor" && !user.isApproved) {
+              navigate("/approvalwaiting");
+            } else if (user.role === "vendor" && user.isApproved) {
+              navigate("/vendor-dashboard");
+            } else if (user.role === "admin") {
+              navigate("/admin-dashboard");
             } else {
-              navigate(user.role === "vendor" ? "/vendor-dashboard" : "/home");
+              navigate("/home");
             }
           }, 1500);
         } else {
