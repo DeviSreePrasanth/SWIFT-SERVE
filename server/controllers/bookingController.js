@@ -60,3 +60,23 @@ exports.createBooking = async (req, res) => {
     res.status(500).json({ error: 'Server error', details: error.message });
   }
 };
+
+exports.getBookings = async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    // Validate input
+    if (!userId) {
+      console.error('Validation failed: userId missing', { userId });
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    // Fetch bookings for the user
+    const bookings = await Booking.find({ userId })
+      .populate('services.service', 'name category price timeEstimated');
+    res.json(bookings);
+  } catch (error) {
+    console.error('Error in getBookings:', error);
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+};
