@@ -95,41 +95,41 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
-        <div className="mb-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+        <div className="mb-6">
           <input
             type="text"
             placeholder="Search vendors by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
           />
         </div>
-        {loading ? (
-          <p className="text-gray-600">Loading...</p>
-        ) : filteredVendors.length === 0 ? (
-          <p className="text-gray-600">No pending vendor requests</p>
-        ) : (
-          <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+          {loading ? (
+            <p className="p-6 text-gray-500 text-center">Loading...</p>
+          ) : filteredVendors.length === 0 ? (
+            <p className="p-6 text-gray-500 text-center">No pending vendor requests</p>
+          ) : (
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Business Description</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Business Description</th>
+                  <th className="px-6 py ebb4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredVendors.map((vendor) => (
-                  <tr key={vendor._id}>
+                  <tr key={vendor._id} className="hover:bg-gray-50 transition duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vendor.fullName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{vendor.businessDescription || 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 text-sm text-gray-600">{vendor.businessDescription || 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <button
                         onClick={() => handleViewDetails(vendor)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
                       >
                         View Details
                       </button>
@@ -138,52 +138,56 @@ const AdminDashboard = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Modal for Vendor Details */}
       {isModalOpen && selectedVendor && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl flex">
-            {/* Left Side: Actions */}
-            <div className="w-1/4 pr-4 border-r">
-              <h3 className="text-lg font-semibold mb-4">Actions</h3>
-              <button
-                onClick={() => handleApprove(selectedVendor._id)}
-                className="w-full bg-green-500 text-white px-4 py-2 rounded-md mb-2 hover:bg-green-600"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => handleReject(selectedVendor._id)}
-                className="w-full bg-red-500 text-white px-4 py-2 rounded-md mb-2 hover:bg-red-600"
-              >
-                Reject
-              </button>
-              <button
-                onClick={handleCloseModal}
-                className="w-full bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-              >
-                Close
-              </button>
-            </div>
-            {/* Right Side: Details */}
-            <div className="w-3/4 pl-4">
-              <h2 className="text-xl font-bold mb-4">Vendor Details</h2>
-              <p><strong>Full Name:</strong> {selectedVendor.fullName}</p>
-              <p><strong>Mobile Number:</strong> {selectedVendor.mobileNumber || 'N/A'}</p>
-              <p><strong>Address:</strong> {selectedVendor.address || 'N/A'}</p>
-              <p><strong>City:</strong> {selectedVendor.city || 'N/A'}</p>
-              <p><strong>State:</strong> {selectedVendor.state || 'N/A'}</p>
-              <p><strong>Postal Code:</strong> {selectedVendor.postalCode || 'N/A'}</p>
-              <p><strong>Business Description:</strong> {selectedVendor.businessDescription || 'N/A'}</p>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 w-full max-w-3xl max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Left Side: Actions */}
+              <div className="md:w-1/3 flex flex-col space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Actions</h3>
+                <button
+                  onClick={() => handleApprove(selectedVendor._id)}
+                  className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleReject(selectedVendor._id)}
+                  className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={handleCloseModal}
+                  className="w-full px-4 py-3 bg-gray-300 text-gray-900 rounded-lg hover:bg-gray-400 transition duration-200"
+                >
+                  Close
+                </button>
+              </div>
+              {/* Right Side: Details */}
+              <div className="md:w-2/3">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Vendor Details</h2>
+                <div className="space-y-3">
+                  <p><strong className="text-gray-700">Full Name:</strong> {selectedVendor.fullName}</p>
+                  <p><strong className="text-gray-700">Mobile Number:</strong> {selectedVendor.mobileNumber || 'N/A'}</p>
+                  <p><strong className="text-gray-700">Address:</strong> {selectedVendor.address || 'N/A'}</p>
+                  <p><strong className="text-gray-700">City:</strong> {selectedVendor.city || 'N/A'}</p>
+                  <p><strong className="text-gray-700">State:</strong> {selectedVendor.state || 'N/A'}</p>
+                  <p><strong className="text-gray-700">Postal Code:</strong> {selectedVendor.postalCode || 'N/A'}</p>
+                  <p><strong className="text-gray-700">Business Description:</strong> {selectedVendor.businessDescription || 'N/A'}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </div>
   );
 };
