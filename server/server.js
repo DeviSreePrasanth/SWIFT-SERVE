@@ -5,7 +5,8 @@ const connectDB = require('./config/db');
 
 // Import routes
 const authRoutes = require('./routes/auth');
-const vendorRoute = require('./routes/vendorRoute'); 
+const vendorRoute = require('./routes/vendorRoute');
+const approvalRoute = require('./routes/approvalRoute'); // Added approvalRoute
 
 dotenv.config();
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vendors', vendorRoute);
+app.use('/api', approvalRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -101,8 +101,4 @@ const submitVendorDetails = async (req, res) => {
   }
 };
 
-// Export the controller and multer middleware
-module.exports = {
-  submitVendorDetails,
-  uploadVendorDocument: upload.single('document'),
-};
+module.exports =  submitVendorDetails ;

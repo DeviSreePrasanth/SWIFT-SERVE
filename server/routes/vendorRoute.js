@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { submitVendorDetails, uploadVendorDocument } = require('../controllers/vendorController');
+const submitVendorDetails = require('../controllers/vendorController');
 
 // Route to submit vendor details
-router.post('/details', uploadVendorDocument, submitVendorDetails);
+router.post('/details', submitVendorDetails);
 
 module.exports = router;
