@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/connectDB');
 const authRoutes = require('./routes/auth');
-
+const serviceRoutes = require('./routes/serviceRoutes');
 dotenv.config();
 const app = express();
 
@@ -16,6 +16,10 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+
+
+app.use('/api/services', serviceRoutes);
+
 
 // Sample protected route for home page
 app.get('/api/home', (req, res) => {
