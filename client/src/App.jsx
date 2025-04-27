@@ -8,8 +8,8 @@ import CartPage from './users/user-pages/CartPage';
 import BookingsPage from './users/user-pages/BookingsPage';
 
 // Common Pages
-import Login from './pages/Login';
-import ApprovalWaiting from './pages/ApprovalWaiting';
+import Login from './pages/auth/Login';
+import ApprovalWaiting from './pages/auth/ApprovalWaiting';
 // Vendor Pages
 import VendorDashboard from './pages/vendor/Vendor';
 import VendorProfile from './pages/vendor/VendorProfile';
@@ -22,17 +22,17 @@ import VendorReviews from './pages/vendor/VendorReviews';
 import VendorAnalytics from './pages/vendor/VendorAnalytics';
 import VendorSupport from './pages/vendor/VendorSupport';
 
-// Vendor Pages
-import VendorDashboard from './pages/vendor/Vendor';
-import VendorProfile from './pages/auth/vendor/VendorProfile';
-import VendorHome from './pages/auth/vendor/VendorHome';
-import VendorServices from './pages/auth/vendor/VendorServices';
-import VendorBookings from './pages/auth/vendor/VendorBookings';
-import VendorPayments from './pages/auth/vendor/VendorPayments';
-import VendorMessages from './pages/auth/vendor/VendorMessages';
-import VendorReviews from './pages/auth/vendor/VendorReviews';
-import VendorAnalytics from './pages/auth/vendor/VendorAnalytics';
-import VendorSupport from './pages/auth/vendor/VendorSupport';
+// // Vendor Pages
+// import VendorDashboard from './pages/vendor/Vendor';
+// import VendorProfile from './pages/auth/vendor/VendorProfile';
+// import VendorHome from './pages/auth/vendor/VendorHome';
+// import VendorServices from './pages/auth/vendor/VendorServices';
+// import VendorBookings from './pages/auth/vendor/VendorBookings';
+// import VendorPayments from './pages/auth/vendor/VendorPayments';
+// import VendorMessages from './pages/auth/vendor/VendorMessages';
+// import VendorReviews from './pages/auth/vendor/VendorReviews';
+// import VendorAnalytics from './pages/auth/vendor/VendorAnalytics';
+// import VendorSupport from './pages/auth/vendor/VendorSupport';
 
 // Optional: Admin pages can be added later
 
