@@ -9,27 +9,30 @@ const Login = () => {
   // Login form states
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [loginMessage, setLoginMessage] = useState("");
+  const [loginMessageType, setLoginMessageType] = useState("");
 
   // Signup form states
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-
-  // State for alert messages
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
+  const [signupRole, setSignupRole] = useState("customer");
+  const [signupMessage, setSignupMessage] = useState("");
+  const [signupMessageType, setSignupMessageType] = useState("");
 
   const togglePanel = () => {
     setIsSignInActive((prev) => !prev);
-    setAlertMessage("");
-    setShowAlert(false);
+    setLoginMessage("");
+    setLoginMessageType("");
+    setSignupMessage("");
+    setSignupMessageType("");
     // Reset form fields
     setLoginEmail("");
     setLoginPassword("");
     setSignupName("");
     setSignupEmail("");
     setSignupPassword("");
+    setSignupRole("customer");
   };
 
   const handleSubmit = async (e) => {
@@ -39,9 +42,8 @@ const Login = () => {
 
     if (isSignInActive) {
       if (!loginEmail || !loginPassword) {
-        setAlertMessage("Please fill all fields.");
-        setAlertType("error");
-        setShowAlert(true);
+        setLoginMessage("Please fill all fields.");
+        setLoginMessageType("error");
         return;
       }
       userData = {
@@ -50,16 +52,16 @@ const Login = () => {
         type: "login",
       };
     } else {
-      if (!signupName || !signupEmail || !signupPassword) {
-        setAlertMessage("Please fill all fields.");
-        setAlertType("error");
-        setShowAlert(true);
+      if (!signupName || !signupEmail || !signupPassword || !signupRole) {
+        setSignupMessage("Please fill all fields, including role.");
+        setSignupMessageType("error");
         return;
       }
       userData = {
         name: signupName,
         email: signupEmail,
         password: signupPassword,
+        role: signupRole,
         type: "signup",
       };
     }
@@ -70,59 +72,45 @@ const Login = () => {
       if (isSignInActive) {
         // Login
         if (response.status === 200 && response.data.token) {
-          setAlertMessage("Login successful!");
-          setAlertType("success");
-          setShowAlert(true);
+          setLoginMessage(`Login successful! Welcome, ${response.data.user.role}.`);
+          setLoginMessageType("success");
           localStorage.setItem("authToken", response.data.token);
-          setTimeout(() => navigate("/home"), 1500);
+          localStorage.setItem("userRole", response.data.user.role);
+          setTimeout(() => {
+            navigate(response.data.user.role === "vendor" ? "/vendor-dashboard" : "/home");
+          }, 1500);
         } else {
-          setAlertMessage(response.data.message || "Incorrect username or password");
-          setAlertType("error");
-          setShowAlert(true);
+          setLoginMessage(response.data.message || "Incorrect email or password");
+          setLoginMessageType("error");
         }
       } else {
         // Signup
-        if (response.status === 200) {
-          setAlertMessage("Signup successful! Please log in.");
-          setAlertType("success");
-          setShowAlert(true);
+        if (response.status === 201) {
+          setSignupMessage("Signup successful! Please log in.");
+          setSignupMessageType("success");
           setTimeout(() => {
-            togglePanel(); // Switch to login panel
-            setShowAlert(false);
+            togglePanel();
           }, 1500);
         } else {
-          setAlertMessage(response.data.message || "Signup failed");
-          setAlertType("error");
-          setShowAlert(true);
+          setSignupMessage(response.data.message || "Signup failed");
+          setSignupMessageType("error");
         }
       }
     } catch (error) {
-      setAlertMessage("Error: Unable to connect to the server.");
-      setAlertType("error");
-      setShowAlert(true);
+      if (isSignInActive) {
+        setLoginMessage(error.response?.data?.message || "Error: Unable to connect to the server.");
+        setLoginMessageType("error");
+      } else {
+        setSignupMessage(error.response?.data?.message || "Error: Unable to connect to the server.");
+        setSignupMessageType("error");
+      }
       console.error(error);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-100 to-gray-300">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray- bank100 to-gray-300">
       <div className="relative w-[768px] h-[480px] bg-white rounded-lg shadow-lg overflow-hidden">
-        {showAlert && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-              <p className={`text-lg font-semibold ${alertType === 'error' ? 'text-red-500' : 'text-green-500'}`}>
-                {alertMessage}
-              </p>
-              <button
-                onClick={() => setShowAlert(false)}
-                className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-
         <div className="absolute top-0 w-full h-full flex">
           <div
             className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${isSignInActive ? "opacity-100 z-10 translate-x-0" : "opacity-0 z-0 translate-x-[100%]"}`}
@@ -144,6 +132,15 @@ const Login = () => {
                 onChange={(e) => setLoginPassword(e.target.value)}
               />
               <p className="text-sm text-blue-500 cursor-pointer mb-4">Forgot Your Password?</p>
+              {loginMessage && (
+                <p
+                  className={`text-sm mb-4 ${
+                    loginMessageType === "error" ? "text-red-500" : "text-green-500"
+                  }`}
+                >
+                  {loginMessage}
+                </p>
+              )}
               <button
                 type="submit"
                 className="bg-red-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-red-600"
@@ -179,6 +176,23 @@ const Login = () => {
                 value={signupPassword}
                 onChange={(e) => setSignupPassword(e.target.value)}
               />
+              <select
+                className="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+                value={signupRole}
+                onChange={(e) => setSignupRole(e.target.value)}
+              >
+                <option value="customer">Customer</option>
+                <option value="vendor">Vendor</option>
+              </select>
+              {signupMessage && (
+                <p
+                  className={`text-sm mb-4 ${
+                    signupMessageType === "error" ? "text-red-500" : "text-green-500"
+                  }`}
+                >
+                  {signupMessage}
+                </p>
+              )}
               <button
                 type="submit"
                 className="bg-red-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-red-600"

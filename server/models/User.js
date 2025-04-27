@@ -17,11 +17,6 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6,
   },
-  phone: {
-    type: String,
-    unique: true,
-    sparse: true, // Allows null/undefined values
-  },
   role: {
     type: String,
     enum: ['customer', 'vendor'],
