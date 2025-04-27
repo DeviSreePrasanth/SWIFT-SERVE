@@ -4,8 +4,18 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['customer', 'vendor'], default: 'customer' },
+  role: { type: String, enum: ['customer', 'vendor', 'admin'], default: 'customer' },
   isApproved: { type: Boolean, default: false }, // For vendors
+  isRejected: { type: Boolean, default: false }, // Tracks rejected vendors
+  profileCompleted: { type: Boolean, default: false }, // Tracks extra details submission
+  vendorProfile: {
+    mobileNumber: { type: String },
+    address: { type: String },
+    city: { type: String },
+    state: { type: String },
+    postalCode: { type: String },
+    businessDescription: { type: String },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
