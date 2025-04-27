@@ -2,7 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+
+// Import routes
 const authRoutes = require('./routes/auth');
+//const vendorRoute = require('./routes/vendorRoute');  // Ensure this is the correct file path
 
 dotenv.config();
 const app = express();
@@ -16,15 +19,12 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+//app.use('/api/vendors', vendorRoute);  // Register vendor routes here
 
-// Sample protected route for home page
-app.get('/api/home', (req, res) => {
-  res.json({ message: 'Welcome to the Home Page' });
-});
-
-// Sample protected route for vendor dashboard
-app.get('/api/vendor-dashboard', (req, res) => {
-  res.json({ message: 'Welcome to the Vendor Dashboard' });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
 });
 
 const PORT = process.env.PORT || 5000;

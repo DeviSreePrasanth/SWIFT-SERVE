@@ -11,7 +11,7 @@ const authController = {
         return res.status(400).json({ message: 'All fields are required' });
       }
 
-      if (!['customer', 'vendor'].includes(role)) {
+      if (!['customer', 'vendor', 'admin'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
       }
 
@@ -28,6 +28,7 @@ const authController = {
         email,
         password: hashedPassword,
         role,
+        isApproved: role === 'vendor' ? false : true, // Vendors need approval, others are auto-approved
       });
       await user.save();
 
@@ -51,15 +52,25 @@ const authController = {
         return res.status(400).json({ message: 'Incorrect email or password' });
       }
 
-      const token = jwt.sign(
-        { userId: user._id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
+      const payload = {
+        userId: user._id,
+        role: user.role,
+        isApproved: user.isApproved,
+      };
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
       res.status(200).json({
         token,
-        user: { name: user.name, email: user.email, role: user.role },
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          isApproved: user.isApproved,
+          profileCompleted: user.profileCompleted,
+          vendorProfile: user.vendorProfile || {},
+        },
       });
     } catch (error) {
       next(error);
@@ -72,7 +83,15 @@ const authController = {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      res.status(200).json({ name: user.name, email: user.email, role: user.role });
+      res.status(200).json({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isApproved: user.isApproved,
+        profileCompleted: user.profileCompleted,
+        vendorProfile: user.vendorProfile || {},
+      });
     } catch (error) {
       next(error);
     }
