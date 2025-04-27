@@ -1,27 +1,25 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token, authorization denied' });
-  }
-
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      console.log('No token provided in request:', req.headers);
+      return res.status(401).json({ message: 'No token provided' });
+    }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
+    req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token is not valid' });
+    console.error('Auth middleware error:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
-// Middleware to check vendor approval
-const checkVendorApproval = (req, res, next) => {
-  if (req.user.role === 'vendor' && !req.user.isApproved) {
-    return res.status(403).json({ message: 'Vendor profile not yet approved' });
-  }
-  next();
-};
-
-module.exports = { authMiddleware, checkVendorApproval };
+module.exports = authMiddleware;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const VendorExtraDetails = () => {
   const navigate = useNavigate();
@@ -19,8 +20,6 @@ const VendorExtraDetails = () => {
     document: null,
   });
   const [errors, setErrors] = useState({});
-  const [submitMessage, setSubmitMessage] = useState('');
-  const [submitMessageType, setSubmitMessageType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Available service categories for home services
@@ -45,7 +44,8 @@ const VendorExtraDetails = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-    if (!formData.mobileNumber.match(/^\d{10}$/)) newErrors.mobileNumber = 'Enter a valid 10-digit mobile number';
+    if (!formData.mobileNumber.match(/^\d{10}$/))
+      newErrors.mobileNumber = 'Enter a valid 10-digit mobile number';
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
@@ -101,7 +101,7 @@ const VendorExtraDetails = () => {
       setErrors(validationErrors);
       return;
     }
-
+  
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('authToken');
@@ -139,7 +139,6 @@ const VendorExtraDetails = () => {
         setSubmitMessage('Vendor details submitted successfully! Awaiting admin approval.');
         setSubmitMessageType('success');
         localStorage.setItem('profileCompleted', 'true');
-        // Reset form data
         setFormData({
           fullName: localStorage.getItem('userName') || '',
           mobileNumber: '',
@@ -160,19 +159,39 @@ const VendorExtraDetails = () => {
         }, 1500);
       }
     } catch (error) {
+      console.error('Submission error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
       if (error.response?.status === 401) {
-        setSubmitMessage('Session expired. Please log in again.');
-        setSubmitMessageType('error');
+        toast.update(toastId, {
+          render: 'Session expired. Please log in again.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+        });
         setTimeout(() => navigate('/login'), 1500);
+      } else if (error.response?.status === 404) {
+        toast.update(toastId, {
+          render: 'Vendor details endpoint not found. Please contact support.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+        });
       } else {
         setSubmitMessage(error.response?.data?.message || 'Error submitting details');
         setSubmitMessageType('error');
       }
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
+  useEffect(() => {
+    if (errorCount <= MAX_ERROR_COUNT) {
+      checkProfileStatus();
+    }
+  }, [errorCount]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

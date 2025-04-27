@@ -24,7 +24,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/vendor', vendorRoute);
+app.use('/api/vendors', vendorRoute);
 
 // Routes
 app.use('/api/services', require('./routes/serviceRoutes'));

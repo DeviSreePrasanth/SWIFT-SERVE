@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Vendor = require('../models/Vendor');
 
 const authController = {
   signup: async (req, res, next) => {
@@ -28,12 +29,14 @@ const authController = {
         email,
         password: hashedPassword,
         role,
-        isApproved: role === 'vendor' ? false : true, // Vendors need approval, others are auto-approved
+        isApproved: role === 'vendor' ? false : true,
+        profileCompleted: false,
       });
       await user.save();
 
       res.status(201).json({ message: 'Signup successful' });
     } catch (error) {
+      console.error('Signup error:', error);
       next(error);
     }
   },
@@ -42,6 +45,10 @@ const authController = {
     const { email, password } = req.body;
 
     try {
+      if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+      }
+
       const user = await User.findOne({ email });
       if (!user) {
         return res.status(400).json({ message: 'Incorrect email or password' });
@@ -69,16 +76,20 @@ const authController = {
           role: user.role,
           isApproved: user.isApproved,
           profileCompleted: user.profileCompleted,
-          vendorProfile: user.vendorProfile || {},
         },
       });
     } catch (error) {
+      console.error('Login error:', error);
       next(error);
     }
   },
 
   getUser: async (req, res, next) => {
+    console.log('Get user request:', { userId: req.user?.userId });
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
       const user = await User.findById(req.user.userId).select('-password');
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -90,10 +101,29 @@ const authController = {
         role: user.role,
         isApproved: user.isApproved,
         profileCompleted: user.profileCompleted,
-        vendorProfile: user.vendorProfile || {},
       });
     } catch (error) {
+      console.error('Get user error:', error);
       next(error);
+    }
+  },
+
+  getstatus: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized: No user data available' });
+      }
+      const vendor = await Vendor.findOne({ userId: req.user.userId });
+      if (!vendor) {
+        return res.status(404).json({ message: 'Vendor not found' });
+      }
+      res.status(200).json({
+        isApproved: vendor.status === 'approved',
+        isRejected: vendor.status === 'rejected',
+      });
+    } catch (error) {
+      console.error('Error checking status:', error);
+      return res.status(500).json({ message: 'Server error' });
     }
   },
 };
