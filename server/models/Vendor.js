@@ -13,4 +13,5 @@ const vendorSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Vendor', vendorSchema);
+// ✅ Check if Vendor model already exists
+module.exports = mongoose.models.Vendor || mongoose.model('Vendor', vendorSchema);
