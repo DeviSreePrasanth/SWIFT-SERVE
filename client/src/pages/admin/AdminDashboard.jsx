@@ -17,7 +17,10 @@ const AdminDashboard = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error('No auth token found');
+        if (!token) {
+          toast.error('Please log in as admin.');
+          return;
+        }
 
         const response = await axios.get('http://localhost:5000/api/vendors/pending', {
           headers: { Authorization: `Bearer ${token}` },
@@ -36,7 +39,7 @@ const AdminDashboard = () => {
   // Handle search
   useEffect(() => {
     const filtered = vendors.filter((vendor) =>
-      vendor.name.toLowerCase().includes(searchTerm.toLowerCase())
+      vendor.fullName.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredVendors(filtered);
   }, [searchTerm, vendors]);
@@ -57,9 +60,13 @@ const AdminDashboard = () => {
   const handleApprove = async (vendorId) => {
     try {
       const token = localStorage.getItem('authToken');
-      await axios.patch(`http://localhost:5000/api/vendors/${vendorId}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.patch(
+        `http://localhost:5000/api/vendors/${vendorId}/approve`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setVendors(vendors.filter((vendor) => vendor._id !== vendorId));
       setFilteredVendors(filteredVendors.filter((vendor) => vendor._id !== vendorId));
       toast.success('Vendor approved successfully');
@@ -72,9 +79,13 @@ const AdminDashboard = () => {
   const handleReject = async (vendorId) => {
     try {
       const token = localStorage.getItem('authToken');
-      await axios.patch(`http://localhost:5000/api/vendors/${vendorId}/reject`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.patch(
+        `http://localhost:5000/api/vendors/${vendorId}/reject`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setVendors(vendors.filter((vendor) => vendor._id !== vendorId));
       setFilteredVendors(filteredVendors.filter((vendor) => vendor._id !== vendorId));
       toast.success('Vendor rejected successfully');
@@ -106,38 +117,21 @@ const AdminDashboard = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profession</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Business Description</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredVendors.map((vendor) => (
                   <tr key={vendor._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vendor.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {vendor.vendorProfile?.businessDescription || 'N/A'}
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vendor.fullName}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{vendor.businessDescription || 'N/A'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => handleViewDetails(vendor)}
                         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                       >
                         View Details
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleApprove(vendor._id)}
-                        className="bg-green-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-green-600"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(vendor._id)}
-                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-                      >
-                        Reject
                       </button>
                     </td>
                   </tr>
@@ -151,23 +145,39 @@ const AdminDashboard = () => {
       {/* Modal for Vendor Details */}
       {isModalOpen && selectedVendor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Vendor Details</h2>
-            <p><strong>Name:</strong> {selectedVendor.name}</p>
-            <p><strong>Email:</strong> {selectedVendor.email}</p>
-            <p><strong>Mobile:</strong> {selectedVendor.vendorProfile?.mobileNumber || 'N/A'}</p>
-            <p><strong>Profession:</strong> {selectedVendor.vendorProfile?.businessDescription || 'N/A'}</p>
-            <p><strong>Address:</strong> {selectedVendor.vendorProfile?.address || 'N/A'}</p>
-            <p><strong>City:</strong> {selectedVendor.vendorProfile?.city || 'N/A'}</p>
-            <p><strong>State:</strong> {selectedVendor.vendorProfile?.state || 'N/A'}</p>
-            <p><strong>Postal Code:</strong> {selectedVendor.vendorProfile?.postalCode || 'N/A'}</p>
-            <div className="mt-6 flex justify-end">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl flex">
+            {/* Left Side: Actions */}
+            <div className="w-1/4 pr-4 border-r">
+              <h3 className="text-lg font-semibold mb-4">Actions</h3>
+              <button
+                onClick={() => handleApprove(selectedVendor._id)}
+                className="w-full bg-green-500 text-white px-4 py-2 rounded-md mb-2 hover:bg-green-600"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleReject(selectedVendor._id)}
+                className="w-full bg-red-500 text-white px-4 py-2 rounded-md mb-2 hover:bg-red-600"
+              >
+                Reject
+              </button>
               <button
                 onClick={handleCloseModal}
-                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                className="w-full bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
               >
                 Close
               </button>
+            </div>
+            {/* Right Side: Details */}
+            <div className="w-3/4 pl-4">
+              <h2 className="text-xl font-bold mb-4">Vendor Details</h2>
+              <p><strong>Full Name:</strong> {selectedVendor.fullName}</p>
+              <p><strong>Mobile Number:</strong> {selectedVendor.mobileNumber || 'N/A'}</p>
+              <p><strong>Address:</strong> {selectedVendor.address || 'N/A'}</p>
+              <p><strong>City:</strong> {selectedVendor.city || 'N/A'}</p>
+              <p><strong>State:</strong> {selectedVendor.state || 'N/A'}</p>
+              <p><strong>Postal Code:</strong> {selectedVendor.postalCode || 'N/A'}</p>
+              <p><strong>Business Description:</strong> {selectedVendor.businessDescription || 'N/A'}</p>
             </div>
           </div>
         </div>

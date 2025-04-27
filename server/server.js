@@ -19,7 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/vendor', vendorRoute);
+app.use('/api/vendors', vendorRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const VendorExtraDetails = () => {
   const navigate = useNavigate();
@@ -14,28 +15,85 @@ const VendorExtraDetails = () => {
     businessDescription: '',
   });
   const [errors, setErrors] = useState({});
-  const [submitMessage, setSubmitMessage] = useState('');
-  const [submitMessageType, setSubmitMessageType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
+  const MAX_ERROR_COUNT = 3;
 
-  // Pre-fill fullName from localStorage
-  useEffect(() => {
-    const userName = localStorage.get
-
-Item('userName') || '';
-    setFormData((prev) => ({ ...prev, fullName: userName }));
-  }, []);
+  // Check profileCompleted status and pre-fill fullName
+  const checkProfileStatus = async () => {
+    const token = localStorage.getItem('authToken');
+    console.log('Checking authToken in VendorExtraDetails:', token);
+    if (!token) {
+      console.error('No token found in localStorage');
+      if (errorCount < MAX_ERROR_COUNT) {
+        toast.warn('No session found. Retrying...');
+        setErrorCount((prev) => prev + 1);
+      } else {
+        toast.error('Session expired. Please log in again.');
+        // Avoid clearing localStorage to preserve token
+        setTimeout(() => navigate('/login'), 1500);
+      }
+      return;
+    }
+  
+    try {
+      const response = await axios.get('http://localhost:5000/api/auth/user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      const { role, profileCompleted, name } = response.data;
+      if (role !== 'vendor') {
+        toast.error('Access denied. Vendor role required.');
+        // Avoid clearing localStorage
+        setTimeout(() => navigate('/login'), 1500);
+        return;
+      }
+  
+      if (profileCompleted) {
+        toast.info('Profile already completed.');
+        setTimeout(() => navigate('/approval-waiting'), 1500);
+        return;
+      }
+  
+      const userName = localStorage.getItem('userName') || name || '';
+      setFormData((prev) => ({ ...prev, fullName: userName }));
+      setErrorCount(0);
+    } catch (error) {
+      console.error('Error checking profile status:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
+      if (error.response?.status === 401) {
+        if (errorCount < MAX_ERROR_COUNT) {
+          toast.warn('Session issue detected. Retrying...');
+          setErrorCount((prev) => prev + 1);
+        } else {
+          toast.error('Session expired. Please log in again.');
+          // Avoid clearing localStorage
+          setTimeout(() => navigate('/login'), 1500);
+        }
+      } else {
+        toast.error('Error verifying profile status. Please try again.');
+        setTimeout(() => navigate('/login'), 1500);
+      }
+    }
+  };
 
   // Validate form inputs
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-    if (!formData.mobileNumber.match(/^\d{10}$/)) newErrors.mobileNumber = 'Enter a valid 10-digit mobile number';
+    if (!formData.mobileNumber.match(/^\d{10}$/))
+      newErrors.mobileNumber = 'Enter a valid 10-digit mobile number';
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
-    if (!formData.postalCode.match(/^\d{5,6}$/)) newErrors.postalCode = 'Enter a valid postal code (5-6 digits)';
-    if (!formData.businessDescription.trim()) newErrors.businessDescription = 'Business Description is required';
+    if (!formData.postalCode.match(/^\d{5,6}$/))
+      newErrors.postalCode = 'Enter a valid postal code (5-6 digits)';
+    if (!formData.businessDescription.trim())
+      newErrors.businessDescription = 'Business Description is required';
     return newErrors;
   };
 
@@ -54,28 +112,38 @@ Item('userName') || '';
       setErrors(validationErrors);
       return;
     }
-
+  
     setIsSubmitting(true);
+    const toastId = toast.loading('Submitting details...');
+    const token = localStorage.getItem('authToken');
+    console.log('Submitting with authToken:', token);
+    if (!token) {
+      toast.update(toastId, {
+        render: 'No session found. Please log in again.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      });
+      setTimeout(() => navigate('/login'), 1500);
+      setIsSubmitting(false);
+      return;
+    }
+  
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setSubmitMessage('Please log in again.');
-        setSubmitMessageType('error');
-        setTimeout(() => navigate('/login'), 1500);
-        return;
-      }
-
       const response = await axios.post(
-        'http://localhost:5000/api/vendor/details',
+        'http://localhost:5000/api/vendors/details',
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      if (response.status === 200) {
-        setSubmitMessage('Profile details saved successfully!');
-        setSubmitMessageType('success');
+  
+      if (response.status === 200 && (response.data?.success || response.data?.message?.includes('saved'))) {
+        toast.update(toastId, {
+          render: 'Profile details saved successfully!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 1500,
+        });
         localStorage.setItem('profileCompleted', 'true');
-        // Reset form data
         setFormData({
           fullName: localStorage.getItem('userName') || '',
           mobileNumber: '',
@@ -86,46 +154,57 @@ Item('userName') || '';
           businessDescription: '',
         });
         setTimeout(() => {
-          setSubmitMessage(''); // Clear message before navigation
           navigate('/approval-waiting');
-        }, 1000);
+        }, 1500);
+      } else {
+        throw new Error('Unexpected response from server');
       }
     } catch (error) {
+      console.error('Submission error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
       if (error.response?.status === 401) {
-        setSubmitMessage('Session expired. Please log in again.');
-        setSubmitMessageType('error');
+        toast.update(toastId, {
+          render: 'Session expired. Please log in again.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+        });
         setTimeout(() => navigate('/login'), 1500);
+      } else if (error.response?.status === 404) {
+        toast.update(toastId, {
+          render: 'Vendor details endpoint not found. Please contact support.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+        });
       } else {
-        setSubmitMessage(error.response?.data?.message || 'Error saving details');
-        setSubmitMessageType('error');
+        toast.update(toastId, {
+          render: error.response?.data?.message || 'Error saving details. Please try again.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+        });
       }
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
+  useEffect(() => {
+    if (errorCount <= MAX_ERROR_COUNT) {
+      checkProfileStatus();
+    }
+  }, [errorCount]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl w-full bg-white shadow-lg rounded-xl p-8">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Complete Your Vendor Profile</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Provide your business details to get started
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Provide your business details to get started</p>
         </div>
-
-        {submitMessage && (
-          <div
-            className={`mb-6 p-4 rounded-lg transition-opacity duration-300 ${
-              submitMessageType === 'error'
-                ? 'bg-red-100 text-red-700'
-                : 'bg-green-100 text-green-700'
-            }`}
-          >
-            {submitMessage}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
