@@ -38,33 +38,39 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let userData = {};
-
+    // Basic input validation
     if (isSignInActive) {
       if (!loginEmail || !loginPassword) {
         setLoginMessage("Please fill all fields.");
         setLoginMessageType("error");
         return;
       }
-      userData = {
-        email: loginEmail,
-        password: loginPassword,
-        type: "login",
-      };
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail)) {
+        setLoginMessage("Please enter a valid email.");
+        setLoginMessageType("error");
+        return;
+      }
     } else {
       if (!signupName || !signupEmail || !signupPassword || !signupRole) {
         setSignupMessage("Please fill all fields, including role.");
         setSignupMessageType("error");
         return;
       }
-      userData = {
-        name: signupName,
-        email: signupEmail,
-        password: signupPassword,
-        role: signupRole,
-        type: "signup",
-      };
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupEmail)) {
+        setSignupMessage("Please enter a valid email.");
+        setSignupMessageType("error");
+        return;
+      }
+      if (signupPassword.length < 6) {
+        setSignupMessage("Password must be at least 6 characters.");
+        setSignupMessageType("error");
+        return;
+      }
     }
+
+    const userData = isSignInActive
+      ? { email: loginEmail, password: loginPassword, type: "login" }
+      : { name: signupName, email: signupEmail, password: signupPassword, role: signupRole, type: "signup" };
 
     try {
       const response = await axios.post("http://localhost:5000/api/auth", userData);
@@ -72,12 +78,23 @@ const Login = () => {
       if (isSignInActive) {
         // Login
         if (response.status === 200 && response.data.token) {
-          setLoginMessage(`Login successful! Welcome, ${response.data.user.role}.`);
+          const { user, token } = response.data;
+          setLoginMessage(`Login successful! Welcome, ${user.role}.`);
           setLoginMessageType("success");
-          localStorage.setItem("authToken", response.data.token);
-          localStorage.setItem("userRole", response.data.user.role);
+
+          // Store token and user info in localStorage
+          localStorage.setItem("authToken", token);
+          localStorage.setItem("userRole", user.role);
+          localStorage.setItem("isApproved", user.isApproved);
+          localStorage.setItem("userId", user.id);
+
+          // Redirect based on role and approval status
           setTimeout(() => {
-            navigate(response.data.user.role === "vendor" ? "/vendor-dashboard" : "/home");
+            if (user.role === "vendor" && !user.isApproved) {
+              navigate("/approval-waiting");
+            } else {
+              navigate(user.role === "vendor" ? "/vendor-dashboard" : "/home");
+            }
           }, 1500);
         } else {
           setLoginMessage(response.data.message || "Incorrect email or password");
@@ -97,11 +114,12 @@ const Login = () => {
         }
       }
     } catch (error) {
+      const message = error.response?.data?.message || "Error: Unable to connect to the server.";
       if (isSignInActive) {
-        setLoginMessage(error.response?.data?.message || "Error: Unable to connect to the server.");
+        setLoginMessage(message);
         setLoginMessageType("error");
       } else {
-        setSignupMessage(error.response?.data?.message || "Error: Unable to connect to the server.");
+        setSignupMessage(message);
         setSignupMessageType("error");
       }
       console.error(error);
@@ -109,13 +127,15 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray- bank100 to-gray-300">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-100 to-gray-300">
       <div className="relative w-[768px] h-[480px] bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="absolute top-0 w-full h-full flex">
           <div
-            className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${isSignInActive ? "opacity-100 z-10 translate-x-0" : "opacity-0 z-0 translate-x-[100%]"}`}
+            className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${
+              isSignInActive ? "opacity-100 z-10 translate-x-0" : "opacity-0 z-0 translate-x-[100%]"
+            }`}
           >
-            <h2 className="text-3xl font-bold mb-4">Log in</h2>
+            <h2 className="text-3xl font-bold mb-4">Log In</h2>
             <form onSubmit={handleSubmit}>
               <input
                 type="email"
@@ -151,7 +171,9 @@ const Login = () => {
           </div>
 
           <div
-            className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${!isSignInActive ? "opacity-100 z-10 translate-x-0" : "opacity-0 z-0 translate-x-[-100%]"}`}
+            className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${
+              !isSignInActive ? "opacity-100 z-10 translate-x-0" : "opacity-0 z-0 translate-x-[-100%]"
+            }`}
           >
             <h2 className="text-3xl font-bold mb-4">Sign Up</h2>
             <form onSubmit={handleSubmit}>
@@ -204,7 +226,9 @@ const Login = () => {
         </div>
 
         <div
-          className={`absolute top-0 w-1/2 h-full flex items-center justify-center bg-gradient-to-r from-red-400 to-orange-500 transition-transform duration-700 ${isSignInActive ? "translate-x-[100%]" : "-translate-x-0"}`}
+          className={`absolute top-0 w-1/2 h-full flex items-center justify-center bg-gradient-to-r from-red-400 to-orange-500 transition-transform duration-700 ${
+            isSignInActive ? "translate-x-[100%]" : "-translate-x-0"
+          }`}
         >
           <div className="text-center text-white p-8">
             <h2 className="text-3xl font-bold mb-4">

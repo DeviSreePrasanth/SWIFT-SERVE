@@ -1,10 +1,11 @@
 import React from 'react';
-const Home = () => {
+
+const VendorDashboard = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold">Welcome to Home Services</h1>
+      <h1 className="text-3xl font-bold">Vendor Dashboard</h1>
     </div>
   );
 };
 
-export default Home;
+export default VendorDashboard;
