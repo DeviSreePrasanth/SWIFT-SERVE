@@ -94,9 +94,9 @@ const Login = () => {
           // Redirect based on role, profile completion, and approval status
           setTimeout(() => {
             if (user.role === "vendor" && !user.profileCompleted) {
-              navigate("/vendor-extra-details");
+              navigate("/extra-details");
             } else if (user.role === "vendor" && !user.isApproved) {
-              navigate("/approvalwaiting");
+              navigate("/approval-waiting");
             } else if (user.role === "vendor" && user.isApproved) {
               navigate("/vendor-dashboard");
             } else if (user.role === "admin") {
