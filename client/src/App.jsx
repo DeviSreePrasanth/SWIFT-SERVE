@@ -12,7 +12,6 @@ import ApprovalWaiting from "./pages/auth/ApprovalWaiting";
 import VendorExtraDetails from "./pages/auth/VendorExtraDetails";
 
 // Admin Pages
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminApprovalPage from "./pages/admin/AdminApprovalPage";
 
 // Vendor Pages
@@ -63,7 +62,6 @@ function AppContent() {
           <Route path="/extra-details" element={<VendorExtraDetails />} />
 
           {/* Admin Routes */}
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin/approval" element={<AdminApprovalPage />} />
 
           {/* Vendor Routes */}

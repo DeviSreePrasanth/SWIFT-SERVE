@@ -125,7 +125,7 @@ const Login = () => {
                   !user.isApproved
                 ? "/approval-waiting" // Navigate to approval waiting page if not approved
                 : user.role === "admin"
-                ? "/admin-dashboard"
+                ? "/admin/approval"
                 : "/home",
           });
 
@@ -138,7 +138,7 @@ const Login = () => {
             } else if (user.role === "vendor" && user.profileCompleted && !user.isApproved) {
               navigate("/approval-waiting");  // Navigate to approval waiting if not approved
             } else if (user.role === "admin") {
-              navigate("/admin-dashboard");
+              navigate("/admin/approval");
             } else {
               navigate("/home");
             }
