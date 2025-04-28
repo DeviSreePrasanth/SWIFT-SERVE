@@ -11,9 +11,8 @@ const AdminApprovalPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [successMessage, setSuccessMessage] = useState('');
-  const [viewMode, setViewMode] = useState('pending'); // 'pending' or 'all'
+  const [viewMode, setViewMode] = useState('pending');
 
-  // Fetch both pending and all vendors on mount
   useEffect(() => {
     const fetchVendors = async () => {
       try {

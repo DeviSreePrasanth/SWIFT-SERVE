@@ -1,194 +1,343 @@
 import React, { useState, useEffect } from 'react';
-   import { FaStar, FaEdit, FaIdCard, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
-   import { useLocation } from 'react-router-dom';
 
-   const VendorProfile = () => {
-     const location = useLocation();
-     const queryParams = new URLSearchParams(location.search);
-     const initialEditMode = queryParams.get('edit') === 'true';
+const VendorProfile = () => {
+  const [profile, setProfile] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    mobileNumber: '',
+    address: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    businessDescription: '',
+  });
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
-     const [isEditing, setIsEditing] = useState(initialEditMode);
-     const [vendorDetails, setVendorDetails] = useState({
-       name: 'John Doe',
-       email: 'john.doe@example.com',
-       phone: '+1 234 567 8900',
-       address: '123 Vendor Street, City, Country',
-       idProof: 'DL-123456789',
-       profilePhoto: '/profile.jpg', // Public folder path
-       ratings: 4.5,
-       reviews: 120,
-     });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No authentication token found');
 
-     useEffect(() => {
-       setIsEditing(initialEditMode);
-     }, [initialEditMode]);
+        const response = await fetch('http://localhost:5000/api/merchants/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        const data = await response.json();
+        setProfile(data);
+        setFormData({
+          name: data.name || '',
+          email: data.email || '',
+          mobileNumber: data.merchantProfile?.mobileNumber || '',
+          address: data.merchantProfile?.address || '',
+          city: data.merchantProfile?.city || '',
+          state: data.merchantProfile?.state || '',
+          postalCode: data.merchantProfile?.postalCode || '',
+          businessDescription: data.merchantProfile?.businessDescription || '',
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
-     const handleEditToggle = () => {
-       setIsEditing(!isEditing);
-     };
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-     const handleInputChange = (e) => {
-       const { name, value } = e.target;
-       setVendorDetails((prev) => ({ ...prev, [name]: value }));
-     };
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (e.g., max 5MB) and type
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload a valid image file');
+        return;
+      }
+      setProfileImage(file);
+      setImagePreview(URL.createObjectURL(file));
+      setError(null);
+    }
+  };
 
-     const handleFileChange = (e) => {
-       const file = e.target.files[0];
-       if (file) {
-         const reader = new FileReader();
-         reader.onloadend = () => {
-           setVendorDetails((prev) => ({ ...prev, profilePhoto: reader.result }));
-         };
-         reader.readAsDataURL(file); // Convert image to base64 for preview
-         console.log('File selected:', file);
-         // Add backend upload logic here if needed
-       }
-     };
+  const validateForm = () => {
+    if (!formData.name || !formData.email) {
+      setError('Name and email are required');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+    return true;
+  };
 
-     const handleSave = () => {
-       setIsEditing(false);
-       // Add logic to save updated details to backend
-     };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-     return (
-       <div className="min-h-screen bg-gray-100 p-6">
-         {/* Vendor Profile Card */}
-         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-           <h1 className="text-2xl font-bold text-gray-800 mb-6">Vendor Profile</h1>
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+    if (profileImage) {
+      data.append('profileImage', profileImage);
+    }
 
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             {/* Profile Photo */}
-             <div className="flex flex-col items-center">
-               <img
-                 src={vendorDetails.profilePhoto}
-                 alt="Profile"
-                 className="w-32 h-32 rounded-full object-cover mb-4"
-                 onError={(e) => {
-                   console.error('Image failed to load:', vendorDetails.profilePhoto);
-                   e.target.src = 'https://via.placeholder.com/150'; // Fallback image
-                 }}
-               />
-               {isEditing && (
-                 <input
-                   type="file"
-                   accept="image/*"
-                   className="text-sm text-gray-600"
-                   onChange={handleFileChange}
-                 />
-               )}
-             </div>
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
 
-             {/* Vendor Details */}
-             <div className="col-span-2 space-y-4">
-               <div>
-                 <label className="block text-sm font-medium text-gray-600">Name</label>
-                 {isEditing ? (
-                   <input
-                     type="text"
-                     name="name"
-                     value={vendorDetails.name}
-                     onChange={handleInputChange}
-                     className="mt-1 w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
-                   />
-                 ) : (
-                   <p className="mt-1 text-lg text-gray-800">{vendorDetails.name}</p>
-                 )}
-               </div>
+      const response = await fetch('http://localhost:5000/api/merchants/profile', {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+        body: data,
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
+      const updatedProfile = await response.json();
+      setProfile(updatedProfile);
+      setProfileImage(null);
+      setImagePreview(null);
+      setSuccess('Profile updated successfully');
+      setError(null);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError(error.message);
+      setLoading(false);
+    }
+  };
 
-               <div>
-                 <label className="block text-sm font-medium text-gray-600">Email</label>
-                 {isEditing ? (
-                   <input
-                     type="email"
-                     name="email"
-                     value={vendorDetails.email}
-                     onChange={handleInputChange}
-                     className="mt-1 w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
-                   />
-                 ) : (
-                   <p className="mt-1 text-lg text-gray-800">{vendorDetails.email}</p>
-                 )}
-               </div>
+  if (loading) return <div className="text-center p-8">Loading...</div>;
+  if (error) {
+    return (
+      <div className="text-center p-8 text-red-600">
+        Error: {error}
+        <button
+          onClick={() => setError(null)}
+          className="ml-4 text-blue-500 underline"
+        >
+          Clear Error
+        </button>
+      </div>
+    );
+  }
 
-               <div>
-                 <label className="block text-sm font-medium text-gray-600">Phone</label>
-                 {isEditing ? (
-                   <input
-                     type="text"
-                     name="phone"
-                     value={vendorDetails.phone}
-                     onChange={handleInputChange}
-                     className="mt-1 w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
-                   />
-                 ) : (
-                   <p className="mt-1 text-lg text-gray-800 flex items-center">
-                     <FaPhone className="mr-2" /> {vendorDetails.phone}
-                   </p>
-                 )}
-               </div>
+  return (
+    <div className="bg-gray-50 p-8 rounded-xl shadow-lg">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Vendor Profile</h1>
+      {success && (
+        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
+          {success}
+          <button
+            onClick={() => setSuccess(null)}
+            className="ml-4 text-green-900 underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Profile Details</h2>
+          {profile.merchantProfile?.profileImage ? (
+            <img
+              src={`http://localhost:5000${profile.merchantProfile.profileImage}`}
+              alt="Profile"
+              className="w-32 h-32 rounded-full mb-4 object-cover"
+              onError={(e) => (e.target.src = '/default-profile.png')} // Fallback image
+            />
+          ) : (
+            <div className="w-32 h-32 rounded-full mb-4 bg-gray-200 flex items-center justify-center">
+              No Image
+            </div>
+          )}
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Name:</span> {profile.name || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Email:</span> {profile.email || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Mobile:</span> {profile.merchantProfile?.mobileNumber || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Address:</span> {profile.merchantProfile?.address || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">City:</span> {profile.merchantProfile?.city || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">State:</span> {profile.merchantProfile?.state || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Postal Code:</span> {profile.merchantProfile?.postalCode || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Business Description:</span>{' '}
+            {profile.merchantProfile?.businessDescription || 'N/A'}
+          </p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Update Profile</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
+                Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-required="true"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-required="true"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="mobileNumber" className="block text-gray-700 font-medium mb-2">
+                Mobile Number
+              </label>
+              <input
+                id="mobileNumber"
+                type="tel"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="address" className="block text-gray-700 font-medium mb-2">
+                Address
+              </label>
+              <input
+                id="address"
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="city" className="block text-gray-700 font-medium mb-2">
+                City
+              </label>
+              <input
+                id="city"
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="state" className="block text-gray-700 font-medium mb-2">
+                State
+              </label>
+              <input
+                id="state"
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="postalCode" className="block text-gray-700 font-medium mb-2">
+                Postal Code
+              </label>
+              <input
+                id="postalCode"
+                type="text"
+                name="postalCode"
+                value={formData.postalCode}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="businessDescription" className="block text-gray-700 font-medium mb-2">
+                Business Description
+              </label>
+              <textarea
+                id="businessDescription"
+                name="businessDescription"
+                value={formData.businessDescription}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+              ></textarea>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="profileImage" className="block text-gray-700 font-medium mb-2">
+                Profile Image
+              </label>
+              <input
+                id="profileImage"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full p-2 border rounded-md"
+              />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Image preview"
+                  className="mt-4 w-32 h-32 rounded-full object-cover"
+                />
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-2 px-4 rounded-md text-white ${
+                loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+              }`}
+            >
+              {loading ? 'Updating...' : 'Update Profile'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-               <div>
-                 <label className="block text-sm font-medium text-gray-600">Address</label>
-                 {isEditing ? (
-                   <input
-                     type="text"
-                     name="address"
-                     value={vendorDetails.address}
-                     onChange={handleInputChange}
-                     className="mt-1 w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
-                   />
-                 ) : (
-                   <p className="mt-1 text-lg text-gray-800 flex items-center">
-                     <FaMapMarkerAlt className="mr-2" /> {vendorDetails.address}
-                   </p>
-                 )}
-               </div>
-
-               <div>
-                 <label className="block text-sm font-medium text-gray-600">ID Proof</label>
-                 {isEditing ? (
-                   <input
-                     type="text"
-                     name="idProof"
-                     value={vendorDetails.idProof}
-                     onChange={handleInputChange}
-                     className="mt-1 w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
-                   />
-                 ) : (
-                   <p className="mt-1 text-lg text-gray-800 flex items-center">
-                     <FaIdCard className="mr-2" /> {vendorDetails.idProof}
-                   </p>
-                 )}
-               </div>
-
-               <div>
-                 <label className="block text-sm font-medium text-gray-600">Ratings</label>
-                 <p className="mt-1 text-lg text-gray-800 flex items-center">
-                   <FaStar className="mr-2 text-yellow-400" /> {vendorDetails.ratings} ({vendorDetails.reviews} reviews)
-                 </p>
-               </div>
-             </div>
-           </div>
-
-           <div className="mt-6 flex justify-end">
-             <button
-               onClick={handleEditToggle}
-               className="flex items-center space-x-2 text-blue-600 hover:text-blue-800"
-             >
-               <FaEdit /> <span>{isEditing ? 'Cancel' : 'Edit Profile'}</span>
-             </button>
-             {isEditing && (
-               <button
-                 onClick={handleSave}
-                 className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-               >
-                 Save Changes
-               </button>
-             )}
-           </div>
-         </div>
-       </div>
-     );
-   };
-
-   export default VendorProfile;
+export default VendorProfile;
