@@ -17,6 +17,8 @@ const VendorExtraDetails = () => {
     insuranceDetails: '',
     serviceCategories: [],
     document: null,
+    username: '',
+    email: '',
   });
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState('');
@@ -35,10 +37,12 @@ const VendorExtraDetails = () => {
     'Other',
   ];
 
-  // Pre-fill fullName from localStorage
+  // Pre-fill fullName, username, and email from localStorage
   useEffect(() => {
     const userName = localStorage.getItem('userName') || '';
-    setFormData((prev) => ({ ...prev, fullName: userName }));
+    const userUsername = localStorage.getItem('username') || '';
+    const userEmail = localStorage.getItem('email') || '';
+    setFormData((prev) => ({ ...prev, fullName: userName, username: userUsername, email: userEmail }));
   }, []);
 
   // Validate form inputs
@@ -56,6 +60,8 @@ const VendorExtraDetails = () => {
     if (!formData.insuranceDetails.trim()) newErrors.insuranceDetails = 'Insurance Details are required';
     if (formData.serviceCategories.length === 0) newErrors.serviceCategories = 'Select at least one service category';
     if (!formData.document) newErrors.document = 'Please upload a supporting document';
+    if (!formData.username.trim()) newErrors.username = 'Username is required';
+    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) newErrors.email = 'Enter a valid email address';
     return newErrors;
   };
 
@@ -125,7 +131,7 @@ const VendorExtraDetails = () => {
       });
 
       const response = await axios.post(
-        'http://localhost:5000/api/vendors/details',
+        'http://localhost:5000/api/vendor/details',
         formDataToSend,
         {
           headers: {
@@ -152,6 +158,8 @@ const VendorExtraDetails = () => {
           insuranceDetails: '',
           serviceCategories: [],
           document: null,
+          username: localStorage.getItem('username') || '',
+          email: localStorage.getItem('email') || '',
         });
         setTimeout(() => {
           setSubmitMessage('');
@@ -163,6 +171,9 @@ const VendorExtraDetails = () => {
         setSubmitMessage('Session expired. Please log in again.');
         setSubmitMessageType('error');
         setTimeout(() => navigate('/login'), 1500);
+      } else if (error.response?.status === 400 && error.response?.data?.message.includes('duplicate key')) {
+        setSubmitMessage('Username or email already exists. Please use a different one.');
+        setSubmitMessageType('error');
       } else {
         setSubmitMessage(error.response?.data?.message || 'Error submitting details');
         setSubmitMessageType('error');
@@ -213,6 +224,42 @@ const VendorExtraDetails = () => {
                 placeholder="Enter your full name"
               />
               {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                value={formData.username}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.username ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter your username"
+              />
+              {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.email ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter your email"
+              />
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
 
             <div>
@@ -348,7 +395,6 @@ const VendorExtraDetails = () => {
                 <p className="mt-1 text-sm text-red-600">{errors.businessDescription}</p>
               )}
             </div>
-
             <div>
               <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700">
                 Professional License Number
@@ -368,6 +414,7 @@ const VendorExtraDetails = () => {
                 <p className="mt-1 text-sm text-red-600">{errors.licenseNumber}</p>
               )}
             </div>
+
 
             <div>
               <label htmlFor="insuranceDetails" className="block text-sm font-medium text-gray-700">
@@ -425,6 +472,7 @@ const VendorExtraDetails = () => {
                 className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.document ? 'border-red-300' : 'border-gray-300'
                 }`}
+                placeholder="Upload a license, certificate, or ID proof"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Upload a license, certificate, or ID proof (max 5MB)

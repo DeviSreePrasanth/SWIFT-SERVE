@@ -119,7 +119,7 @@ const Login = () => {
                 : user.role === "vendor" &&
                   user.profileCompleted &&
                   user.isApproved
-                ? "/vendor-dashboard"  
+                ? "/vendor-dashboard" // Navigate to vendor dashboard if approved
                 : user.role === "vendor" &&
                   user.profileCompleted &&
                   !user.isApproved
