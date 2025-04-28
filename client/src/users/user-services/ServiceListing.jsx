@@ -51,9 +51,7 @@ const ServiceListing = () => {
     <div className="p-6 bg-slate-100 min-h-screen animate-fade-in">
       <h2 className="text-2xl font-bold text-slate-800 mb-6">All Services</h2>
       <div className="mb-6">
-        <SearchServices onSearch={handleSearch} />
         <ServiceCategory onCategorySelect={handleCategorySelect} />
-        <FilterVendors onFilter={handleFilter} />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (

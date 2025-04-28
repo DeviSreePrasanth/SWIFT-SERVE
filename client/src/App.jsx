@@ -41,6 +41,7 @@ import BookingHistory from './users/user-services/BookingHistory';
 import LeaveReview from './users/user-services/LeaveReview';
 import VendorRatings from './users/user-services/VendorRatings';
 import FilterVendors from './users/user-services/FilterVendors';
+import ServiceListing from "./users/user-services/ServiceListing";
 
 function AppContent() {
   const location = useLocation();
@@ -81,8 +82,8 @@ function AppContent() {
 
           {/* User Routes */}
           <Route path="/home" element={<Home />}>
-          <Route index element={<SearchServices />} />
-          <Route path="services" element={<SearchServices />} />
+          <Route index element={<ServiceListing />} />
+          <Route path="services" element={<ServiceListing />} />
           <Route path="services/category" element={<ServiceCategory />} />
           <Route path="services/details/:serviceId" element={<ServiceDetails />} /> {/* Added :serviceId */}
           <Route path="vendors" element={<VendorList />} />

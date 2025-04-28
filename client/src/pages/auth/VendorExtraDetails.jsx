@@ -139,7 +139,6 @@ const VendorExtraDetails = () => {
         setSubmitMessage('Vendor details submitted successfully! Awaiting admin approval.');
         setSubmitMessageType('success');
         localStorage.setItem('profileCompleted', 'true');
-        // Reset form data
         setFormData({
           fullName: localStorage.getItem('userName') || '',
           mobileNumber: '',

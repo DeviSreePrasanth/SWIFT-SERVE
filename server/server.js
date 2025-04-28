@@ -7,12 +7,11 @@ const connectDB = require('./config/db');
 
 // Import routes
 
-
 const approvalRoutes = require('./routes/approvalRoute');
 const authRoutes = require('./routes/auth');
 const vendorRoute = require('./routes/vendorRoute');
 const approvalRoute = require('./routes/approvalRoute'); // Added approvalRoute
-
+const userRoute=require('./routes/userRoutes');
 dotenv.config();
 const app = express();
 
@@ -27,6 +26,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/vendors', vendorRoute);
 app.use('/api', approvalRoute);
+app.use('/api',userRoute);
 
 // Routes
 app.use('/api/services', require('./routes/serviceRoutes'));
