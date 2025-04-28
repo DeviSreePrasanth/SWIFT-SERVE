@@ -124,9 +124,6 @@ const submitVendorDetails = async (req, res) => {
 
     // Respond with success
     res.status(200).json({ message: 'Vendor details submitted successfully, awaiting approval' });
-
-    console.log('Vendor details saved:', vendor);
-    console.log('User profile updated:', user);
   } catch (error) {
     console.error('Error saving vendor details:', error);
     res.status(500).json({ message: error.message || 'Error saving vendor details' });
