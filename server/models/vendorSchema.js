@@ -20,12 +20,20 @@ const vendorSchema = new mongoose.Schema({
     }
   },
   document: { type: String, required: true }, // Stores file path or URL
+  username: { type: String, required: true, trim: true, unique: true },
+  email: { 
+    type: String, 
+    required: true, 
+    trim: true, 
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email address'],
+    unique: true 
+  },
   status: { 
     type: String, 
     enum: ['pending', 'approved', 'rejected'], 
     default: 'pending' 
   },
   createdAt: { type: Date, default: Date.now },
-}, { collection: 'vendors' }); // <-- Added collection name here
+}, { collection: 'vendors' });
 
 module.exports = mongoose.model('Vendor', vendorSchema);

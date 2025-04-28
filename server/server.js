@@ -1,19 +1,11 @@
+
 const express = require('express');
+const connectDB = require('./config/connectDB');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
-
-
-
-// Import routes
-
-
+require('dotenv').config();
+const vendorRoutes = require('./routes/vendorRoute');
 const approvalRoutes = require('./routes/approvalRoute');
 const authRoutes = require('./routes/auth');
-const vendorRoute = require('./routes/vendorRoute');
-const approvalRoute = require('./routes/approvalRoute'); // Added approvalRoute
-
-dotenv.config();
 const app = express();
 
 // Connect to MongoDB
@@ -25,21 +17,17 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/vendors', vendorRoute);
-app.use('/api', approvalRoute);
-
-// Routes
 app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/vendor', vendorRoutes);
+app.use('/api/admin', approvalRoutes);
 
-app.use('/api', approvalRoutes);
 
-
-// Error handling middleware
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  console.error('Global error:', err);
+  res.status(500).json({ error: 'Server error', details: err.message });
 });
 
 const PORT = process.env.PORT || 5000;

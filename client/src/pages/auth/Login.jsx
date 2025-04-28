@@ -98,29 +98,37 @@ const Login = () => {
           });
   
           // Log navigation details
-          console.log('Navigating to:', {
+          console.log("Navigating to:", {
             role: user.role,
             profileCompleted: user.profileCompleted,
             destination:
-              user.role === 'vendor' && !user.profileCompleted
-                ? '/extra-details'
-                : user.role === 'vendor' && user.profileCompleted
-                ? '/approval-waiting'
-                : user.role === 'admin'
-                ? '/admin-dashboard'
-                : '/home',
+              user.role === "vendor" && !user.profileCompleted
+                ? "/extra-details"
+                : user.role === "vendor" &&
+                  user.profileCompleted &&
+                  user.isApproved
+                ? "/vendor-dashboard" // Navigate to vendor dashboard if approved
+                : user.role === "vendor" &&
+                  user.profileCompleted &&
+                  !user.isApproved
+                ? "/approval-waiting" // Navigate to approval waiting page if not approved
+                : user.role === "admin"
+                ? "/admin-dashboard"
+                : "/home",
           });
-  
+
           // Navigate based on role and profile completion
           setTimeout(() => {
-            if (user.role === 'vendor' && !user.profileCompleted) {
-              navigate('/extra-details');
-            } else if (user.role === 'vendor' && user.profileCompleted) {
-              navigate('/approval-waiting');
-            } else if (user.role === 'admin') {
-              navigate('/admin-dashboard');
+            if (user.role === "vendor" && !user.profileCompleted) {
+              navigate("/extra-details");
+            } else if (user.role === "vendor" && user.profileCompleted && user.isApproved) {
+              navigate("/vendor-dashboard");  // Navigate to vendor dashboard if approved
+            } else if (user.role === "vendor" && user.profileCompleted && !user.isApproved) {
+              navigate("/approval-waiting");  // Navigate to approval waiting if not approved
+            } else if (user.role === "admin") {
+              navigate("/admin-dashboard");
             } else {
-              navigate('/home');
+              navigate("/home");
             }
           }, 1500);
         } else {
