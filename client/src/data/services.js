@@ -1,55 +1,57 @@
-// services.js
 export const services = [
     {
       id: 1,
-      name: "Plumbing Solutions",
+      name: "Plumbing Fix",
       description: "Expert plumbing services for leaks, installations, and maintenance. 24/7 emergency service available.",
-      image: "/assets/plumbing.jpg",
+      category: "Plumbing",
+      imageUrl: "https://img.freepik.com/free-photo/plumber-with-tools-his-hands-3d-rendered-illustration_1057-44658.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740",
       icon: "💧",
-      category: "Emergency",
       popular: true
     },
     {
       id: 2,
       name: "Electrical Works",
       description: "Certified electricians for wiring, panel upgrades, and lighting installations. Safety guaranteed.",
-      image: "/assets/electrical.jpg",
+      category: "Electrical",
+      imageUrl: "https://img.freepik.com/free-photo/variety-people-multitasking-3d-cartoon-scene_23-2151294495.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740",
       icon: "⚡",
-      category: "Installation",
       popular: true
     },
     {
       id: 3,
       name: "Home Cleaning",
       description: "Thorough cleaning services for your home. Regular and deep cleaning options available.",
-      image: "/assets/cleaning.jpg",
+      category: "Cleaning",
+      imageUrl: "https://img.freepik.com/free-photo/vacuum-cleaner-tackling-heavily-soiled-floor_23-2151340055.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740",
       icon: "🧹",
-      category: "Maintenance"
+      popular: false
     },
     {
       id: 4,
       name: "AC Repair",
       description: "Fast and reliable air conditioning repair and maintenance services.",
-      image: "/assets/ac-repair.jpg",
+      category: "IT",
+      imageUrl: "https://img.freepik.com/premium-photo/ac-repair-technician-work-air-conditioning-maintenance-illustration_1311447-9452.jpg?w=826",
       icon: "❄️",
-      category: "Repair",
       popular: true
     },
     {
       id: 5,
       name: "Painting Services",
       description: "Professional interior and exterior painting with premium materials.",
-      image: "/assets/painting.jpg",
+      category: "Painting",
+      imageUrl: "https://img.freepik.com/free-photo/human-hands-working-it-yourself-project_23-2151509475.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740",
       icon: "🎨",
-      category: "Renovation"
+      popular: false
     },
     {
       id: 6,
       name: "Pest Control",
       description: "Effective pest elimination and prevention treatments for your home.",
-      image: "/assets/pest-control.jpg",
+      category: "Maintenance",
+      imageUrl: "https://img.freepik.com/premium-photo/health-workers-hazmat-suit-clothes-gas-mask-spraying-disinfectant-liquid-pesticide-virus_326694-259366.jpg?w=1380",
       icon: "🐜",
-      category: "Maintenance"
+      popular: false
     }
   ];
   
