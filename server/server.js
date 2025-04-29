@@ -13,7 +13,7 @@ dotenv.config();
 db();
 
 app.use('/service',serviceRoutes);
-app.use('/api/search', searchRoute);
+app.use('/search', searchRoute);
 //app.use('/vendor',vendorRoutes);
 
 app.listen(5000,()=>{

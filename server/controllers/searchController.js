@@ -1,4 +1,5 @@
 const Service = require("../models/Service");
+
 const search = async (req,res)=>{
     try{
         const {name}=req.query;
