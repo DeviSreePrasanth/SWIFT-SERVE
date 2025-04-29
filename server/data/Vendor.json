@@ -1,0 +1,73 @@
+[
+    {
+      "name": "FixIt Plumbing Co.",
+      "contactEmail": "support@fixitplumbing.com",
+      "phone": "111-222-3333",
+      "address": "12 Leak St, Waterside",
+      "services": ["Plumbing Fix", "Toilet Installation"]
+    },
+    {
+      "name": "BrightWeb Studio",
+      "contactEmail": "hello@brightweb.com",
+      "phone": "222-333-4444",
+      "address": "88 Pixel Ave, Silicon Valley",
+      "services": ["Website Design", "Graphic Design"]
+    },
+    {
+      "name": "CoolAir Solutions",
+      "contactEmail": "service@coolair.com",
+      "phone": "333-444-5555",
+      "address": "50 Frost Lane, Summerfield",
+      "services": ["AC Repair"]
+    },
+    {
+      "name": "Sparkling Homes",
+      "contactEmail": "contact@sparklinghomes.com",
+      "phone": "444-555-6666",
+      "address": "23 Shine St, Cleanville",
+      "services": ["Home Cleaning", "Carpet Cleaning"]
+    },
+    {
+      "name": "TechFix Pros",
+      "contactEmail": "tech@techfixpros.com",
+      "phone": "555-666-7777",
+      "address": "99 Circuit Rd, Technopolis",
+      "services": ["Laptop Repair", "App Development"]
+    },
+    {
+      "name": "Royal Flush Plumbers",
+      "contactEmail": "contact@royalflush.com",
+      "phone": "666-777-8888",
+      "address": "10 Drain Dr, Pipe City",
+      "services": ["Toilet Installation"]
+    },
+    {
+      "name": "Designify Creatives",
+      "contactEmail": "info@designify.com",
+      "phone": "777-888-9999",
+      "address": "17 Canvas Blvd, Art City",
+      "services": ["Graphic Design"]
+    },
+    {
+      "name": "CarpetCare Experts",
+      "contactEmail": "book@carpetcare.com",
+      "phone": "888-999-0000",
+      "address": "5 Rug Street, Cleanland",
+      "services": ["Carpet Cleaning"]
+    },
+    {
+      "name": "WiredUp Electricians",
+      "contactEmail": "wired@wurelectric.com",
+      "phone": "999-000-1111",
+      "address": "60 Volt Ave, Energyside",
+      "services": ["Electrical Wiring", "AC Repair"]
+    },
+    {
+      "name": "AppGenius Devs",
+      "contactEmail": "projects@appgenius.com",
+      "phone": "101-202-3030",
+      "address": "42 Mobile Lane, Code City",
+      "services": ["App Development", "Website Design"]
+    }
+  ]
+  
