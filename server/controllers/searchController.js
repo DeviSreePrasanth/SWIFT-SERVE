@@ -7,9 +7,6 @@ const search = async (req,res)=>{
             return res.status(400).json({error:"NAME ISNT FETCHING"});
         }
         const data=await Service.find({name});
-        //const data1=await vendors.find({name});
-        
-        
         return res.status(200).json(data);
 
     }
