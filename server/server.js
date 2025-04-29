@@ -16,7 +16,7 @@ db();
 
 app.use('/service',serviceRoutes);
 app.use('/search', searchRoute);
-//app.use('/vendor',vendorRoutes);
+app.use('/vendor',vendorRoutes);
 app.use('/review',reviewRoutes);    
 
 app.listen(5000,()=>{
