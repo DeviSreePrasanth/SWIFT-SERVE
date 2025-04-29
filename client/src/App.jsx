@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
+//import Header from './components/Header';
+//import Footer from './components/Footer';
 import Home from './pages/Home';
 import ServiceDetails from './pages/ServiceDetails';
-import BookingConfirmation from './pages/BookingConfirmation';
-import Profile from './pages/Profile';
+//import BookingConfirmation from './pages/BookingConfirmation';
+//import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -15,10 +15,8 @@ function App() {
         {/* Main Content */}
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/service/:id" element={<ServiceDetails />} />
-            <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/service/category/:id" element={<ServiceDetails />} />
+
           </Routes>
         </main>
       </div>
