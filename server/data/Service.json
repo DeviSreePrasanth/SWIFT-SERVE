@@ -1,53 +1,39 @@
 [
     {
       "name": "Plumbing Fix",
-      "description": "Fixing leaks and clogged drains",
-      "category": "Plumbing"
+      "description": "Expert plumbing services for leaks, installations, and maintenance. 24/7 emergency service available.",
+      "category": "Plumbing",
+      "imageUrl": "/images/plumber"
     },
     {
-      "name": "Website Design",
-      "description": "Modern responsive web design",
-      "category": "IT"
-    },
-    {
-      "name": "AC Repair",
-      "description": "Repair and maintenance of air conditioners",
-      "category": "Electrical"
+      "name": "Electrical Works",
+      "description": "Certified electricians for wiring, panel upgrades, and lighting installations. Safety guaranteed.",
+      "category": "Electrical",
+      "imageUrl": "/images/electric"
     },
     {
       "name": "Home Cleaning",
-      "description": "Deep cleaning services for homes",
-      "category": "Cleaning"
+      "description": "Thorough cleaning services for your home. Regular and deep cleaning options available.",
+      "category": "Cleaning",
+      "imageUrl": "/images/home"
     },
     {
-      "name": "Laptop Repair",
-      "description": "Software and hardware laptop fixes",
-      "category": "IT"
+      "name": "AC Repair",
+      "description": "Fast and reliable air conditioning repair and maintenance services.",
+      "category": "IT",
+      "imageUrl": "/images/ac"
     },
     {
-      "name": "Toilet Installation",
-      "description": "Install new toilet systems",
-      "category": "Plumbing"
+      "name": "Painting Services",
+      "description": "Professional interior and exterior painting with premium materials.",
+      "category": "Painting",
+      "imageUrl": "/mages/paint"
     },
     {
-      "name": "Graphic Design",
-      "description": "Posters, logos, and digital illustrations",
-      "category": "Design"
-    },
-    {
-      "name": "Carpet Cleaning",
-      "description": "Steam cleaning carpets and rugs",
-      "category": "Cleaning"
-    },
-    {
-      "name": "Electrical Wiring",
-      "description": "New home electrical installations",
-      "category": "Electrical"
-    },
-    {
-      "name": "App Development",
-      "description": "Building mobile applications",
-      "category": "IT"
+      "name": "Pest Control",
+      "description": "Effective pest elimination and prevention treatments for your home.",
+      "category": "Maintenance",
+      "imageUrl": "/images/pest"
     }
   ]
   
