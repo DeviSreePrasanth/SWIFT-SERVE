@@ -9,9 +9,7 @@ const search = async (req,res)=>{
         const data=await Service.find({name});
         //const data1=await vendors.find({name});
         
-        if(data.length===0){
-            return res.status(404).json({error:"NOT FOUND"});
-        }
+        
         return res.status(200).json(data);
 
     }

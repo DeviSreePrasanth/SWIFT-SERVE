@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const vendorSchema = new mongoose.Schema({
     name: String,
+    username:{
+      type: String,
+      required: true,
+      unique: true
+    },
     contactEmail: String,
     phone: String,
     address: String,
