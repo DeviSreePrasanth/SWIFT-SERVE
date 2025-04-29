@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const BookingForm = ({ onSubmit }) => {
     const [formData, setFormData] = useState({
       name: '',
