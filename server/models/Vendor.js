@@ -5,12 +5,15 @@ const vendorSchema = new mongoose.Schema({
   contactEmail: String,
   phone: String,
   address: String,
-  services: [String], // Storing service names directly
+  services: [String], 
+  categories: [{
+    type: String,
+    enum: ['Plumbing', 'Electrical', 'Cleaning', 'IT', 'Painting', 'Maintenance'],
+  }],
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
-
 
 module.exports = mongoose.model('Vendor', vendorSchema);

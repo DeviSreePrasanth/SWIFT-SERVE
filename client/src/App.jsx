@@ -11,12 +11,10 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
-
         {/* Main Content */}
         <main className="flex-1">
           <Routes>
-            <Route path="/service/category/:id" element={<ServiceDetails />} />
-
+            <Route path="/" element={<Home />} />
           </Routes>
         </main>
       </div>
