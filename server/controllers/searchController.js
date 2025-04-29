@@ -1,18 +1,17 @@
-
-
+const Service = require("../models/Service");
 const search = async (req,res)=>{
     try{
         const {name}=req.query;
         if(!name){
             return res.status(400).json({error:"NAME ISNT FETCHING"});
         }
-        const data=await Services.find({name});
-        const data1=await vendors.find({name});
-        const ans=[...data,...data1];
-        if(ans.length===0){
+        const data=await Service.find({name});
+        //const data1=await vendors.find({name});
+        
+        if(data.length===0){
             return res.status(404).json({error:"NOT FOUND"});
         }
-        return res.status(200).json({data:ans});
+        return res.status(200).json(data);
 
     }
     catch(e){
@@ -20,6 +19,4 @@ const search = async (req,res)=>{
     }
 }
 
-module.exports={
-    search
-}
+module.exports={search};

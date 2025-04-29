@@ -3,7 +3,7 @@ const mongoose=require('mongoose');
 const cors=require('cors');
 const dotenv=require('dotenv');
 const serviceRoutes=require('./routes/serviceRoute');
-const searchRoutes=require('./routes/searchRoute');
+const searchRoute=require('./routes/searchRoute');
 const vendorRoutes=require('./routes/vendorRoute');
 const db=require('./config/connectDB');
 const app=express();
@@ -13,8 +13,8 @@ dotenv.config();
 db();
 
 app.use('/service',serviceRoutes);
-app.use('/search',searchRoutes);
-app.use('/vendor',vendorRoutes);
+app.use('/api/search', searchRoute);
+//app.use('/vendor',vendorRoutes);
 
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");
