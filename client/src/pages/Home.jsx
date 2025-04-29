@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import ServiceCard from '../components/ServiceCard';
 import Footer from '../components/Footer';
-import { services as servicesData } from '../data/services';
-import { vendors as vendorsData } from '../data/vendors';
+import { services as servicesData } from '../../../server/data/Service.json';
+import { vendors as vendorsData } from '../../../server/data/Vendor.json';
 
 const useDarkMode = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
