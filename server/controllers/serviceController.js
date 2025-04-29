@@ -2,7 +2,7 @@ const Service=require('../models/Service');
 
 const getService=async (req,res)=>{
     try{
-        const Service=await Service.find();
+        const Services=await Service.find();
         res.json(Services);
     }catch(error){
         res.status(500).json({message:'Server Error'});

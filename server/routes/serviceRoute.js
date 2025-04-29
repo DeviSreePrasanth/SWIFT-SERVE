@@ -4,3 +4,5 @@ const {getService,getServicesByCategory} =require('../controllers/serviceControl
 
 router.get('/',getService);
 router.get('/category/:categoryName',getServicesByCategory);
+
+module.exports=router;
