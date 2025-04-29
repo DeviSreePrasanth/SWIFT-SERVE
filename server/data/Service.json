@@ -1,0 +1,53 @@
+[
+    {
+      "name": "Plumbing Fix",
+      "description": "Fixing leaks and clogged drains",
+      "category": "Plumbing"
+    },
+    {
+      "name": "Website Design",
+      "description": "Modern responsive web design",
+      "category": "IT"
+    },
+    {
+      "name": "AC Repair",
+      "description": "Repair and maintenance of air conditioners",
+      "category": "Electrical"
+    },
+    {
+      "name": "Home Cleaning",
+      "description": "Deep cleaning services for homes",
+      "category": "Cleaning"
+    },
+    {
+      "name": "Laptop Repair",
+      "description": "Software and hardware laptop fixes",
+      "category": "IT"
+    },
+    {
+      "name": "Toilet Installation",
+      "description": "Install new toilet systems",
+      "category": "Plumbing"
+    },
+    {
+      "name": "Graphic Design",
+      "description": "Posters, logos, and digital illustrations",
+      "category": "Design"
+    },
+    {
+      "name": "Carpet Cleaning",
+      "description": "Steam cleaning carpets and rugs",
+      "category": "Cleaning"
+    },
+    {
+      "name": "Electrical Wiring",
+      "description": "New home electrical installations",
+      "category": "Electrical"
+    },
+    {
+      "name": "App Development",
+      "description": "Building mobile applications",
+      "category": "IT"
+    }
+  ]
+  
