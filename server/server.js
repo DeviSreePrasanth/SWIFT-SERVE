@@ -5,7 +5,10 @@ const dotenv=require('dotenv');
 const serviceRoutes=require('./routes/serviceRoute');
 const searchRoute=require('./routes/searchRoute');
 const vendorRoutes=require('./routes/vendorRoute');
-const detailRoutes=require('./routes/detailRoute');
+
+const cartRoute=require('./routes/cartRoutes');
+const bookingRoute=require('./routes/bookingsRoutes');
+
 const reviewRoutes=require('./routes/reviewRoute');
 const db=require('./config/connectDB');
 const app=express();
@@ -17,8 +20,10 @@ db();
 app.use('/service',serviceRoutes);
 app.use('/search', searchRoute);
 app.use('/vendor',vendorRoutes);
-app.use('/review',reviewRoutes);    
-app.use('/detail',detailRoutes);
+app.use('/review',reviewRoutes); 
+app.use('/cart',cartRoute); 
+app.use('/bookings',bookingRoute);
+
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");
 })

@@ -8,7 +8,7 @@ const detail=async (req,res)=>{
         const arr=temp.map(i=>i.name);
         const data=await Vendor.find(
             {
-                category:name,
+                categories: { $in: [name] },
                 services: { $in: arr }
             }
         );
