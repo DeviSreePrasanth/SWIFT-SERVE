@@ -3,8 +3,8 @@ import Header from '../components/Header';
 import VendorCard from '../components/VendorCard';
 import BookingForm from '../components/BookingForm';
 import Footer from '../components/Footer';
-import services from '../data/services';
-import vendors from '../data/vendors';
+import {services} from '../data/services';
+import {vendors} from '../data/vendors';
 
 function ServiceDetails() {
   const { serviceId } = useParams();

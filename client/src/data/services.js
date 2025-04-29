@@ -1,3 +1,4 @@
+// services.js
 export const services = [
     {
       id: 1,
@@ -51,3 +52,4 @@ export const services = [
       category: "Maintenance"
     }
   ];
+  

@@ -8,13 +8,26 @@ function BookingConfirmation() {
   const location = useLocation();
   const { booking } = location.state || {};
 
+  if (!booking) {
+    // If no booking data, show a loading/error message
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4">
+        <Header />
+        <div className="text-center">
+          <p>Loading booking details...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow flex items-center justify-center py-12 px-4">
         <div className="max-w-lg w-full bg-white shadow-lg rounded-lg p-6 text-center">
           <div className="text-green-600 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
           </div>
