@@ -5,7 +5,7 @@ const dotenv=require('dotenv');
 const serviceRoutes=require('./routes/serviceRoute');
 const searchRoute=require('./routes/searchRoute');
 const vendorRoutes=require('./routes/vendorRoute');
-
+const detailRoutes=require('./routes/detailRoute');
 const cartRoute=require('./routes/cartRoutes');
 const bookingRoute=require('./routes/bookingsRoutes');
 
@@ -23,6 +23,7 @@ app.use('/vendor',vendorRoutes);
 app.use('/review',reviewRoutes); 
 app.use('/cart',cartRoute); 
 app.use('/bookings',bookingRoute);
+app.use('/detail',detailRoutes);
 
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");
