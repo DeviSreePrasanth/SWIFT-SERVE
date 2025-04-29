@@ -1,7 +1,7 @@
 const express=require('express');
 const router=express.Router();
 
-const detail=require('../controllers/detailController');
+const {detail}=require('../controllers/detailController');
 
 router.get('/',detail);
 
