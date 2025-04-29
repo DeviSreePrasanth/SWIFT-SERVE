@@ -1,29 +1,16 @@
-// src/components/Footer.jsx
 import React from 'react';
 
-const Footer = ({ isDarkMode }) => {
+const Footer = () => {
   return (
-    <footer
-      className={`pt-12 pb-6 transition-colors duration-300 ${
-        isDarkMode
-          ? 'bg-gray-800'
-          : 'bg-gradient-to-t from-blue-50 to-white'
-      }`}
-    >
+    <footer className="pt-12 pb-6 transition-colors duration-300 bg-gray-800">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div
-                className={`p-2 rounded-full ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-blue-200/70 backdrop-blur-sm'
-                }`}
-              >
+              <div className="p-2 rounded-full bg-gray-700">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-6 w-6 ${
-                    isDarkMode ? 'text-blue-400' : 'text-blue-700'
-                  }`}
+                  className="h-6 w-6 text-blue-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -36,25 +23,17 @@ const Footer = ({ isDarkMode }) => {
                   />
                 </svg>
               </div>
-              <span
-                className={`text-xl font-extrabold ${
-                  isDarkMode ? 'text-white' : 'text-blue-900'
-                }`}
-              >
+              <span className="text-xl font-extrabold text-white">
                 SwiftServe
               </span>
             </div>
-            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
+            <p className="text-gray-400">
               Professional home services at your fingertips. Quality guaranteed.
             </p>
           </div>
 
           <div>
-            <h4
-              className={`font-bold mb-4 ${
-                isDarkMode ? 'text-white' : 'text-blue-900'
-              }`}
-            >
+            <h4 className="font-bold mb-4 text-white">
               Services
             </h4>
             <ul className="space-y-2">
@@ -63,11 +42,7 @@ const Footer = ({ isDarkMode }) => {
                   <li key={service}>
                     <a
                       href={`/services/${service.toLowerCase()}`}
-                      className={`transition duration-200 ${
-                        isDarkMode
-                          ? 'text-gray-400 hover:text-white'
-                          : 'text-gray-700 hover:text-blue-700 font-medium'
-                      }`}
+                      className="transition duration-200 text-gray-400 hover:text-white"
                     >
                       {service}
                     </a>
@@ -78,11 +53,7 @@ const Footer = ({ isDarkMode }) => {
           </div>
 
           <div>
-            <h4
-              className={`font-bold mb-4 ${
-                isDarkMode ? 'text-white' : 'text-blue-900'
-              }`}
-            >
+            <h4 className="font-bold mb-4 text-white">
               Company
             </h4>
             <ul className="space-y-2">
@@ -90,11 +61,7 @@ const Footer = ({ isDarkMode }) => {
                 <li key={item}>
                   <a
                     href={`/${item.toLowerCase().replace(' ', '-')}`}
-                    className={`transition duration-200 ${
-                      isDarkMode
-                        ? 'text-gray-400 hover:text-white'
-                        : 'text-gray-700 hover:text-blue-700 font-medium'
-                    }`}
+                    className="transition duration-200 text-gray-400 hover:text-white"
                   >
                     {item}
                   </a>
@@ -104,18 +71,10 @@ const Footer = ({ isDarkMode }) => {
           </div>
 
           <div>
-            <h4
-              className={`font-bold mb-4 ${
-                isDarkMode ? 'text-white' : 'text-blue-900'
-              }`}
-            >
+            <h4 className="font-bold mb-4 text-white">
               Connect With Us
             </h4>
-            <p
-              className={`mb-4 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-700'
-              }`}
-            >
+            <p className="mb-4 text-gray-400">
               Follow us on social media for updates and offers
             </p>
             <div className="flex space-x-4">
@@ -149,11 +108,7 @@ const Footer = ({ isDarkMode }) => {
                   key={social.name}
                   href={`https://${social.name.toLowerCase()}.com`}
                   aria-label={`Follow us on ${social.name}`}
-                  className={`p-2 rounded-full transition-all duration-200 ${
-                    isDarkMode
-                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
-                      : 'bg-blue-100/70 text-blue-700 hover:bg-blue-200/70 backdrop-blur-sm hover:text-blue-800'
-                  }`}
+                  className="p-2 rounded-full transition-all duration-200 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
                 >
                   <svg
                     className="w-5 h-5"
@@ -168,12 +123,8 @@ const Footer = ({ isDarkMode }) => {
           </div>
         </div>
 
-        <div
-          className={`border-t mt-12 pt-6 text-center ${
-            isDarkMode ? 'border-gray-800' : 'border-blue-200'
-          }`}
-        >
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        <div className="border-t mt-12 pt-6 text-center border-gray-800">
+          <p className="text-gray-400">
             © {new Date().getFullYear()} SwiftServe. All rights reserved.
           </p>
         </div>
