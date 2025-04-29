@@ -1,25 +1,20 @@
-const Vendor=require('../models/Vendor');
-const Service=require('../models/Service');
+const Vendor = require('../models/Vendor');
 
-const getVendor=async (req,res)=>{
-    try{
-        const vendors=await Vendor.find().populate('services');
-        res.json(vendors);
-    }catch (error) {
-        res.status(500).json({ error: error.message });
-      }
+exports.getAllVendors = async (req, res) => {
+  try {
+    const vendors = await Vendor.find();
+    res.json(vendors);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
-const getVendorByServiceName = async (req, res) => {
-    const { serviceName } = req.params;
-  
-    try {
-      const vendors = await Vendor.find({ services: serviceName });
-      res.json(vendors);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-
-
-module.exports = { getVendor, getVendorByServiceName };
+exports.getVendorsByCategory = async (req, res) => {
+  const { category } = req.params;
+  try {
+    const vendors = await Vendor.find({ categories: category });
+    res.json(vendors);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};

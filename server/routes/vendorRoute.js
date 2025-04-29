@@ -1,8 +1,9 @@
-const express=require('express');
-const router=express.Router();
-const {getVendor,getVendorByServiceName}=require('../controllers/vendorController');
+const express = require('express');
+const router = express.Router();
 
-router.get('/',getVendor);
-router.get('/service/:serviceName',getVendorByServiceName);
+const vendorController = require('../controllers/vendorController');
 
-module.exports=router;
+router.get('/', vendorController.getAllVendors);
+router.get('/category/:category', vendorController.getVendorsByCategory);
+
+module.exports = router;

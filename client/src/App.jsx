@@ -12,7 +12,7 @@ function App() {
     <Router>
       <div className="min-h-screen flex flex-col">
         {/* Header */}
-        <Header />
+        {/* <Header /> */}
 
         {/* Main Content */}
         <main className="flex-1">
@@ -25,7 +25,7 @@ function App() {
         </main>
 
         {/* Footer */}
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </Router>
   );

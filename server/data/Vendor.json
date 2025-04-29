@@ -1,73 +1,92 @@
 [
-    {
-      "name": "FixIt Plumbing Co.",
-      "contactEmail": "support@fixitplumbing.com",
-      "phone": "111-222-3333",
-      "address": "12 Leak St, Waterside",
-      "services": ["Plumbing Fix", "Toilet Installation"]
-    },
-    {
-      "name": "BrightWeb Studio",
-      "contactEmail": "hello@brightweb.com",
-      "phone": "222-333-4444",
-      "address": "88 Pixel Ave, Silicon Valley",
-      "services": ["Website Design", "Graphic Design"]
-    },
-    {
-      "name": "CoolAir Solutions",
-      "contactEmail": "service@coolair.com",
-      "phone": "333-444-5555",
-      "address": "50 Frost Lane, Summerfield",
-      "services": ["AC Repair"]
-    },
-    {
-      "name": "Sparkling Homes",
-      "contactEmail": "contact@sparklinghomes.com",
-      "phone": "444-555-6666",
-      "address": "23 Shine St, Cleanville",
-      "services": ["Home Cleaning", "Carpet Cleaning"]
-    },
-    {
-      "name": "TechFix Pros",
-      "contactEmail": "tech@techfixpros.com",
-      "phone": "555-666-7777",
-      "address": "99 Circuit Rd, Technopolis",
-      "services": ["Laptop Repair", "App Development"]
-    },
-    {
-      "name": "Royal Flush Plumbers",
-      "contactEmail": "contact@royalflush.com",
-      "phone": "666-777-8888",
-      "address": "10 Drain Dr, Pipe City",
-      "services": ["Toilet Installation"]
-    },
-    {
-      "name": "Designify Creatives",
-      "contactEmail": "info@designify.com",
-      "phone": "777-888-9999",
-      "address": "17 Canvas Blvd, Art City",
-      "services": ["Graphic Design"]
-    },
-    {
-      "name": "CarpetCare Experts",
-      "contactEmail": "book@carpetcare.com",
-      "phone": "888-999-0000",
-      "address": "5 Rug Street, Cleanland",
-      "services": ["Carpet Cleaning"]
-    },
-    {
-      "name": "WiredUp Electricians",
-      "contactEmail": "wired@wurelectric.com",
-      "phone": "999-000-1111",
-      "address": "60 Volt Ave, Energyside",
-      "services": ["Electrical Wiring", "AC Repair"]
-    },
-    {
-      "name": "AppGenius Devs",
-      "contactEmail": "projects@appgenius.com",
-      "phone": "101-202-3030",
-      "address": "42 Mobile Lane, Code City",
-      "services": ["App Development", "Website Design"]
-    }
-  ]
-  
+  {
+    "name": "ABC Plumbing Services",
+    "contactEmail": "contact@abcplumbing.com",
+    "phone": "123-456-7890",
+    "address": "123 Main St, Cityville",
+    "services": ["Plumbing Fix"],
+    "categories": ["Plumbing", "Maintenance"],
+    "createdAt": "2025-04-30T12:00:00.000Z"
+  },
+  {
+    "name": "Electricity Masters",
+    "contactEmail": "info@electricitymasters.com",
+    "phone": "987-654-3210",
+    "address": "456 Oak Ave, Tech City",
+    "services": ["Electrical Works"],
+    "categories": ["Electrical", "Maintenance"],
+    "createdAt": "2025-04-29T14:30:00.000Z"
+  },
+  {
+    "name": "Home Spark Cleaners",
+    "contactEmail": "cleaning@homespark.com",
+    "phone": "555-666-7777",
+    "address": "789 Pine Blvd, Clean Town",
+    "services": ["Home Cleaning"],
+    "categories": ["Cleaning", "Maintenance"],
+    "createdAt": "2025-04-28T09:15:00.000Z"
+  },
+  {
+    "name": "Cool Breeze AC Services",
+    "contactEmail": "support@coolbreeze.com",
+    "phone": "123-987-6543",
+    "address": "101 Tech Park, Silicon Valley",
+    "services": ["AC Repair"],
+    "categories": ["IT", "Maintenance"],
+    "createdAt": "2025-04-27T11:45:00.000Z"
+  },
+  {
+    "name": "Fresh Coat Painters",
+    "contactEmail": "info@freshcoatpainters.com",
+    "phone": "888-222-3333",
+    "address": "202 Color St, Paintville",
+    "services": ["Painting Services"],
+    "categories": ["Painting", "Maintenance"],
+    "createdAt": "2025-04-26T13:20:00.000Z"
+  },
+  {
+    "name": "PestGuard Solutions",
+    "contactEmail": "help@pestguard.com",
+    "phone": "555-999-8888",
+    "address": "303 Safehouse Rd, Bugsville",
+    "services": ["Pest Control"],
+    "categories": ["Maintenance"],
+    "createdAt": "2025-04-25T08:50:00.000Z"
+  },
+  {
+    "name": "Plumbing Pros",
+    "contactEmail": "contact@plumbingpros.com",
+    "phone": "444-333-2222",
+    "address": "404 Elm St, Plumber City",
+    "services": ["Plumbing Fix"],
+    "categories": ["Plumbing", "Maintenance"],
+    "createdAt": "2025-04-24T07:30:00.000Z"
+  },
+  {
+    "name": "Volt Electricians",
+    "contactEmail": "support@voltelectricians.com",
+    "phone": "777-888-9999",
+    "address": "505 Circuit St, Power City",
+    "services": ["Electrical Works"],
+    "categories": ["Electrical", "IT"],
+    "createdAt": "2025-04-23T06:10:00.000Z"
+  },
+  {
+    "name": "Clean Sweep Housekeepers",
+    "contactEmail": "service@cleansweep.com",
+    "phone": "333-444-5555",
+    "address": "606 Sparkle Ave, Neat City",
+    "services": ["Home Cleaning"],
+    "categories": ["Cleaning", "Maintenance"],
+    "createdAt": "2025-04-22T15:00:00.000Z"
+  },
+  {
+    "name": "Painting Perfectionists",
+    "contactEmail": "info@paintingperfectionists.com",
+    "phone": "123-321-1234",
+    "address": "707 Brush St, Art Town",
+    "services": ["Painting Services"],
+    "categories": ["Painting", "Maintenance"],
+    "createdAt": "2025-04-21T10:35:00.000Z"
+  }
+]

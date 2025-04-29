@@ -1,37 +1,33 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const dotenv = require('dotenv');
-const path = require('path');
-
-// Load .env file from the root directory (adjust if needed)
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: '../.env' }); // Ensure this points to correct location
 
 const Vendor = require('../models/Vendor');
 
-// Read JSON data from file
-const vendors = JSON.parse(fs.readFileSync(path.resolve(__dirname, './Vendor.json'), 'utf-8'));
-
-// Connect to MongoDB
+// Connect to MongoDB using URI from .env
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
-  console.log('✅ MongoDB connected for vendor import');
+  console.log('MongoDB connected for data import');
   insertData();
 }).catch(err => {
-  console.error('❌ MongoDB connection error:', err);
+  console.error('MongoDB connection error:', err);
   process.exit(1);
 });
 
-// Insert vendors
-async function insertData() {
+// Read and insert mock service data
+const vendors = JSON.parse(fs.readFileSync('./Vendor.json', 'utf-8'));
+
+const insertData = async () => {
   try {
-    await Vendor.deleteMany(); // Optional: clear existing vendors
+    await Vendor.deleteMany(); // optional: clear existing data
     await Vendor.insertMany(vendors);
-    console.log('✅ Vendor data imported successfully!');
+    console.log('✅ Service data imported successfully!');
     process.exit();
   } catch (err) {
-    console.error('❌ Error importing vendor data:', err);
+    console.error('❌ Error importing data:', err);
     process.exit(1);
   }
-}
+};
