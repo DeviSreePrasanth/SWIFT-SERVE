@@ -5,8 +5,8 @@ const detail=async (req,res)=>{
     try{
         const {name}=req.query;
         const temp=await Service.find({category:name});
-        const arr=temp.map((i)=>i.name);
-        const data=Vendor.find(
+        const arr=temp.map(i=>i.name);
+        const data=await Vendor.find(
             {
                 category:name,
                 services: { $in: arr }
@@ -14,10 +14,10 @@ const detail=async (req,res)=>{
         );
         const ans=data.map(i=>{
             const help=temp.filter(j=>
-                data.services.includes(j.name)
+                i.services.includes(j.name)
             )
             return {
-                ...data.toObject(),
+                ...i.toObject(),
                 services: help,
             };
         });
