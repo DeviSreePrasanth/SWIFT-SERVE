@@ -21,6 +21,11 @@ const detail=async (req,res)=>{
                 services: help,
             };
         });
+        console.log(name);
+        console.log(temp);
+        console.log(arr);
+        console.log(data);
+        console.log(ans);
 
         res.status(200).json(ans);
     }

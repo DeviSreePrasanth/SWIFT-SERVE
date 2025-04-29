@@ -11,7 +11,7 @@ function ServiceDetails() {
   const [category, setCategory] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/service/category/${id}`)
+    axios.get(`http://localhost:5000/detail?name=${id}`)
       .then(response => {
         console.log(id);
         setCategory(response.data);

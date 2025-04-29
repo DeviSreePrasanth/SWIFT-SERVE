@@ -29,7 +29,7 @@ const ServiceCard = ({ service }) => {
             {service.category}
           </span>
           <Link 
-            to={`/services/${service.id}`}
+            to={`/service/${service.name}`}
             className="text-primary-600 hover:text-primary-800 font-medium flex items-center"
           >
             View Details
