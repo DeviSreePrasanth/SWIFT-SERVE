@@ -11,8 +11,6 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
-        {/* Header */}
-        <Header />
 
         {/* Main Content */}
         <main className="flex-1">
@@ -23,9 +21,6 @@ function App() {
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
-
-        {/* Footer */}
-        <Footer />
       </div>
     </Router>
   );

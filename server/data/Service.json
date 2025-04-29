@@ -3,37 +3,37 @@
       "name": "Plumbing Fix",
       "description": "Expert plumbing services for leaks, installations, and maintenance. 24/7 emergency service available.",
       "category": "Plumbing",
-      "imageUrl": "/images/plumber"
+      "imageUrl": "https://img.freepik.com/free-photo/plumber-with-tools-his-hands-3d-rendered-illustration_1057-44658.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
     },
     {
       "name": "Electrical Works",
       "description": "Certified electricians for wiring, panel upgrades, and lighting installations. Safety guaranteed.",
       "category": "Electrical",
-      "imageUrl": "/images/electric"
+      "imageUrl": "https://img.freepik.com/free-photo/variety-people-multitasking-3d-cartoon-scene_23-2151294495.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
     },
     {
       "name": "Home Cleaning",
       "description": "Thorough cleaning services for your home. Regular and deep cleaning options available.",
       "category": "Cleaning",
-      "imageUrl": "/images/home"
+      "imageUrl": "https://img.freepik.com/free-photo/vacuum-cleaner-tackling-heavily-soiled-floor_23-2151340055.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
     },
     {
       "name": "AC Repair",
       "description": "Fast and reliable air conditioning repair and maintenance services.",
       "category": "IT",
-      "imageUrl": "/images/ac"
+      "imageUrl": "https://img.freepik.com/premium-photo/ac-repair-technician-work-air-conditioning-maintenance-illustration_1311447-9452.jpg?w=826"
     },
     {
       "name": "Painting Services",
       "description": "Professional interior and exterior painting with premium materials.",
       "category": "Painting",
-      "imageUrl": "/mages/paint"
+      "imageUrl": "https://img.freepik.com/free-photo/human-hands-working-it-yourself-project_23-2151509475.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
     },
     {
       "name": "Pest Control",
       "description": "Effective pest elimination and prevention treatments for your home.",
       "category": "Maintenance",
-      "imageUrl": "/images/pest"
+      "imageUrl": "https://img.freepik.com/premium-photo/health-workers-hazmat-suit-clothes-gas-mask-spraying-disinfectant-liquid-pesticide-virus_326694-259366.jpg?w=1380"
     }
   ]
   
