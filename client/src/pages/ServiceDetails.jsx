@@ -14,7 +14,7 @@ function ServiceDetails() {
 
   useEffect(() => {
     setIsLoading(true);
-    axios.get(`http://localhost:5000/detail?name=${id}`)
+    axios.get(`http://localhost:5000/api/detail?name=${id}`)
       .then(response => {
         setCategory(response.data);
         setIsLoading(false);

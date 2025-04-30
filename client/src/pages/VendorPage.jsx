@@ -17,7 +17,7 @@ function VendorPage() {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/vendor');
+        const response = await axios.get('http://localhost:5000/api/vendor');
         setVendors(response.data);
         setLoading(false);
       } catch (err) {
