@@ -20,7 +20,7 @@ const SearchResults = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`/search?name=${encodeURIComponent(query)}`);
+        const response = await axios.get(`/api/search?name=${encodeURIComponent(query)}`);
         
         setResults({
           services: Array.isArray(response.data.services) ? response.data.services : [],

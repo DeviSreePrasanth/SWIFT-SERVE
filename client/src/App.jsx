@@ -16,7 +16,7 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />{" "}
-            <Route path="/search" element={<ErrorBoundary><SearchResults /></ErrorBoundary>}/>
+            <Route path="/searchQuery" element={<ErrorBoundary><SearchResults /></ErrorBoundary>}/>
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<ServiceDetails />} />
             <Route path="/vendor" element={<VendorPage />} />

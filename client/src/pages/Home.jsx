@@ -13,7 +13,7 @@ function Home() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/service');
+        const response = await axios.get('http://localhost:5000/api/service');
         setServices(response.data);
         setLoadingServices(false);
       } catch (error) {
