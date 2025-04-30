@@ -10,6 +10,7 @@ import VendorPage from './pages/VendorPage';
 import CartPage from './pages/CartPage';
 
 function App() {
+  const defaultUserId = "noah123";
   return (
     <Router>
       <div className="min-h-screen flex flex-col">

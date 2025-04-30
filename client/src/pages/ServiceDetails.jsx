@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import VendorCard from '../components/VendorCard';
 import Footer from '../components/Footer';
@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 function ServiceDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [category, setCategory] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
@@ -33,6 +34,11 @@ function ServiceDetails() {
   const closePopup = () => {
     setShowPopup(false);
     setSelectedVendor(null);
+  };
+
+  const handleAddToCart = (serviceId) => {
+    // Navigate to the cart page with the service ID as a parameter
+    navigate(`/cart/add/${serviceId}`);
   };
 
   return (
@@ -146,6 +152,16 @@ function ServiceDetails() {
                         View Full Details
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </button>
+                      
+                      <button
+                        onClick={() => handleAddToCart(service.services[0]?._id)}
+                        className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30"
+                      >
+                        Add to Cart
+                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                       </button>
                       
