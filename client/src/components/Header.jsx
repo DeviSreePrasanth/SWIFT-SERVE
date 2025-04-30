@@ -1,6 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const Header = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/searchQuery/${encodeURIComponent(searchQuery)}`);
+      setSearchQuery(''); // Clear input after search
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-800">
       <div className="container mx-auto px-4 py-3">
@@ -35,6 +47,9 @@ const Header = () => {
                 type="text"
                 placeholder="Search services..."
                 className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none text-white placeholder-gray-400 transition-colors"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
               />
               <svg
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
@@ -54,7 +69,7 @@ const Header = () => {
 
           {/* Navigation and User Actions */}
           <div className="flex items-center space-x-4">
-            {/* Mobile menu button (optional) */}
+            {/* Mobile menu button */}
             <button className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -63,6 +78,9 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
+              <Link to="/" className="text-gray-300 hover:text-white font-medium transition-colors">
+                Home
+              </Link>
               <Link to="/services" className="text-gray-300 hover:text-white font-medium transition-colors">
                 Services
               </Link>
@@ -84,7 +102,7 @@ const Header = () => {
                   />
                 </svg>
                 <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    3
+                  3
                 </span>
               </Link>
 
@@ -110,6 +128,9 @@ const Header = () => {
               type="text"
               placeholder="Search services..."
               className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none text-white placeholder-gray-400 transition-colors"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
             />
             <svg
               className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
