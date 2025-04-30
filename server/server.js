@@ -18,13 +18,13 @@ app.use(express.json());
 dotenv.config();
 db();
 
-app.use('/service',serviceRoutes);
-app.use('/search', searchRoute);
-app.use('/vendor',vendorRoutes);
-app.use('/review',reviewRoutes); 
-app.use('/cart',cartRoute); 
-app.use('/bookings',bookingRoute);
-app.use('/detail',detailRoute);
+app.use('/api/service',serviceRoutes);
+app.use('/api/search', searchRoute);
+app.use('/api/vendor',vendorRoutes);
+app.use('/api/review',reviewRoutes); 
+app.use('/api/cart',cartRoute); 
+app.use('/api/bookings',bookingRoute);
+app.use('/api/detail',detailRoute);
 
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");
