@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import ServicesPage from './pages/ServicePage';
@@ -7,8 +8,10 @@ import BookingConfirmation from './pages/BookingConfirmation';
 import Profile from './pages/Profile';
 import VendorPage from './pages/VendorPage';
 import Vendor from './pages/Vendor';
+import CartPage from './pages/CartPage';
 
 function App() {
+  const defaultUserId = "noah123";
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
@@ -21,6 +24,7 @@ function App() {
             <Route path="/booking-confirmation" element={<BookingConfirmation />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/category/:category" element={<Vendor/>}/>
+            <Route path="/cart/:userId" element={<CartPage/>}/>
           </Routes>
         </main>
 
