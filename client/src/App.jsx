@@ -9,7 +9,7 @@ import Profile from './pages/Profile';
 import VendorPage from './pages/VendorPage';
 import SearchResults from './pages/SearchResultsPage';
 import CartPage from './pages/CartPage';
-
+import ServiceFullPage from './pages/Servicefullpge';
 function App() {
   return (
     <Router>
@@ -24,6 +24,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/searchQuery/:name" element={<SearchResults />}/>
             <Route path="/cart/:userId" element={<CartPage/>}/>
+            <Route path="/service/detail/:id" element={<ServiceFullPage />} />
           </Routes>
         </main>
 

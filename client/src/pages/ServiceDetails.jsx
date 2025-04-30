@@ -37,8 +37,11 @@ function ServiceDetails() {
   };
 
   const handleAddToCart = (serviceId) => {
-    // Navigate to the cart page with the service ID as a parameter
     navigate(`/cart/add/${serviceId}`);
+  };
+
+  const viewFullDetails = (service) => {
+    navigate(`/service/detail/${service._id}`, { state: { service } });
   };
 
   return (
@@ -134,7 +137,7 @@ function ServiceDetails() {
                       <div className="flex items-center">
                         <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
                           <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z" />
                           </svg>
                         </div>
                         <div>
@@ -146,7 +149,7 @@ function ServiceDetails() {
                     
                     <div className="flex flex-wrap gap-4">
                       <button
-                        onClick={() => openPopup(service)}
+                        onClick={() => viewFullDetails(service)}
                         className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30"
                       >
                         View Full Details
@@ -167,7 +170,7 @@ function ServiceDetails() {
                       
                       <a 
                         href={`tel:${service.phone}`} 
-                        className="px-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700"
+                        className="—x-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700"
                       >
                         Call Now
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
