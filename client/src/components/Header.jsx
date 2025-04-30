@@ -8,7 +8,7 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/searchQuery?name=${encodeURIComponent(searchQuery)}`);
+      navigate(`/searchQuery/${encodeURIComponent(searchQuery)}`);
       setSearchQuery(''); // Clear input after search
     }
   };
