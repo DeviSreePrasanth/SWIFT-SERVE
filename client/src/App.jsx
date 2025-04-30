@@ -7,7 +7,7 @@ import ServiceDetails from './pages/ServiceDetails';
 import BookingConfirmation from './pages/BookingConfirmation';
 import Profile from './pages/Profile';
 import VendorPage from './pages/VendorPage';
-
+import SearchResults from './pages/SearchResultsPage';
 import CartPage from './pages/CartPage';
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
             <Route path="/vendor" element={<VendorPage />} />
             <Route path="/booking-confirmation" element={<BookingConfirmation />} />
             <Route path="/profile" element={<Profile />} />
-            
+            <Route path="/searchQuery/:name" element={<SearchResults />}/>
             <Route path="/cart/:userId" element={<CartPage/>}/>
           </Routes>
         </main>
