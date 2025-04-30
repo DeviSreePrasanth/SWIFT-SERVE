@@ -1,39 +1,38 @@
 [
-    {
-      "name": "Plumbing Fix",
-      "description": "Expert plumbing services for leaks, installations, and maintenance. 24/7 emergency service available.",
-      "category": "Plumbing",
-      "imageUrl": "https://img.freepik.com/free-photo/plumber-with-tools-his-hands-3d-rendered-illustration_1057-44658.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
-    },
-    {
-      "name": "Electrical Works",
-      "description": "Certified electricians for wiring, panel upgrades, and lighting installations. Safety guaranteed.",
-      "category": "Electrical",
-      "imageUrl": "https://img.freepik.com/free-photo/variety-people-multitasking-3d-cartoon-scene_23-2151294495.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
-    },
-    {
-      "name": "Home Cleaning",
-      "description": "Thorough cleaning services for your home. Regular and deep cleaning options available.",
-      "category": "Cleaning",
-      "imageUrl": "https://img.freepik.com/free-photo/vacuum-cleaner-tackling-heavily-soiled-floor_23-2151340055.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
-    },
-    {
-      "name": "AC Repair",
-      "description": "Fast and reliable air conditioning repair and maintenance services.",
-      "category": "IT",
-      "imageUrl": "https://img.freepik.com/premium-photo/ac-repair-technician-work-air-conditioning-maintenance-illustration_1311447-9452.jpg?w=826"
-    },
-    {
-      "name": "Painting Services",
-      "description": "Professional interior and exterior painting with premium materials.",
-      "category": "Painting",
-      "imageUrl": "https://img.freepik.com/free-photo/human-hands-working-it-yourself-project_23-2151509475.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740"
-    },
-    {
-      "name": "Pest Control",
-      "description": "Effective pest elimination and prevention treatments for your home.",
-      "category": "Maintenance",
-      "imageUrl": "https://img.freepik.com/premium-photo/health-workers-hazmat-suit-clothes-gas-mask-spraying-disinfectant-liquid-pesticide-virus_326694-259366.jpg?w=1380"
-    }
-  ]
-  
+  {
+    "name": "Residential Plumbing",
+    "description": "Comprehensive plumbing services including leak repairs, pipe installations, and fixture upgrades for homes.",
+    "category": "Plumbing",
+    "imageUrl": "https://example.com/images/plumbing.jpg"
+  },
+  {
+    "name": "Electrical Wiring",
+    "description": "Full electrical wiring and rewiring services for residential and commercial properties.",
+    "category": "Electrical",
+    "imageUrl": "https://example.com/images/electrical.jpg"
+  },
+  {
+    "name": "Deep Cleaning",
+    "description": "Thorough cleaning services for offices, homes, and commercial spaces, including carpet and upholstery cleaning.",
+    "category": "Cleaning",
+    "imageUrl": "https://example.com/images/cleaning.jpg"
+  },
+  {
+    "name": "Network Setup",
+    "description": "Professional IT services for setting up secure and efficient network infrastructure.",
+    "category": "IT",
+    "imageUrl": "https://example.com/images/network.jpg"
+  },
+  {
+    "name": "Interior Painting",
+    "description": "High-quality interior painting services with a focus on precision and durability.",
+    "category": "Painting",
+    "imageUrl": "https://example.com/images/painting.jpg"
+  },
+  {
+    "name": "HVAC Maintenance",
+    "description": "Routine maintenance and repair for heating, ventilation, and air conditioning systems.",
+    "category": "Maintenance",
+    "imageUrl": "https://example.com/images/hvac.jpg"
+  }
+]
