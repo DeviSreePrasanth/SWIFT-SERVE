@@ -69,9 +69,6 @@ const Header = () => {
               <Link to="/professionals" className="text-gray-300 hover:text-white font-medium transition-colors">
                 Professionals
               </Link>
-              <Link to="/about" className="text-gray-300 hover:text-white font-medium transition-colors">
-                About
-              </Link>
             </nav>
 
             {/* Icons */}
@@ -87,7 +84,7 @@ const Header = () => {
                   />
                 </svg>
                 <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  3
+                    3
                 </span>
               </Link>
 
@@ -101,11 +98,6 @@ const Header = () => {
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-              </button>
-
-              {/* Sign In Button - Hidden on small screens */}
-              <button className="hidden md:block px-4 py-2 rounded-lg font-medium bg-gradient-to-br from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white transition-colors">
-                Sign In
               </button>
             </div>
           </div>
