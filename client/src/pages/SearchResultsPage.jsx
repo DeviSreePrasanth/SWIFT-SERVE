@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const SearchResults = () => {
   const [results, setResults] = useState({ services: [], vendors: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const location = useLocation();
-  const query = new URLSearchParams(location.search).get('name');
+  const { name } = useParams(); // Extract 'name' from URL path
+
+  console.log('Param name:', name); // Debug the name parameter
 
   useEffect(() => {
     const fetchResults = async () => {
-      if (!query || query.trim().length < 2) {
+      if (!name || name.trim().length < 2) {
         setError('Please provide a search term with at least 2 characters');
         setLoading(false);
         return;
@@ -20,18 +21,21 @@ const SearchResults = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`/api/search?name=${encodeURIComponent(query)}`);
-        
+        console.log('Fetching from:', `/api/search?name=${encodeURIComponent(name)}`);
+        const response = await axios.get(`http://localhost:5000/api/search?name=${encodeURIComponent(name)}`);
+        console.log('Response data:', response.data);
+
         setResults({
           services: Array.isArray(response.data.services) ? response.data.services : [],
           vendors: Array.isArray(response.data.vendors) ? response.data.vendors : [],
         });
+        console.log('Results set:', results);
         setLoading(false);
       } catch (err) {
         console.error('Fetch Error:', err);
         setError(
-          err.response?.data?.error || 
-          err.message || 
+          err.response?.data?.error ||
+          err.message ||
           'Failed to fetch results. Please check your network or try again later.'
         );
         setLoading(false);
@@ -39,9 +43,9 @@ const SearchResults = () => {
     };
 
     fetchResults();
-  }, [query]);
+  }, [name]);
 
-  if (!query) {
+  if (!name) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 px-4 py-12">
         <p className="text-center text-gray-300 text-lg">Please enter a search term.</p>
@@ -57,7 +61,7 @@ const SearchResults = () => {
             Search Results
           </h1>
           <p className="text-lg text-gray-300 mt-2">
-            Showing results for "<span className="font-semibold text-cyan-300">"{query}"</span>"
+            Showing results for "<span className="font-semibold text-cyan-300">{name}</span>"
           </p>
         </div>
 
@@ -96,7 +100,7 @@ const SearchResults = () => {
             </div>
             {results.services?.length > 0 && (
               <Link 
-                to="#" 
+                to="/services" 
                 className="text-cyan-400 hover:text-cyan-300 text-sm font-medium flex items-center transition-colors"
               >
                 View all services
@@ -161,7 +165,7 @@ const SearchResults = () => {
                         </div>
                         <div className="ml-4">
                           <p className="text-sm font-semibold text-gray-200">
-                            {service.vendor?.name || 'Unknown professional'}
+                            {service.vendor?.name || 'No vendor specified'}
                           </p>
                         </div>
                       </div>
@@ -189,7 +193,7 @@ const SearchResults = () => {
             </div>
             {results.vendors?.length > 0 && (
               <Link 
-                to="#" 
+                to="/vendors" 
                 className="text-cyan-400 hover:text-cyan-300 text-sm font-medium flex items-center transition-colors"
               >
                 View all professionals
