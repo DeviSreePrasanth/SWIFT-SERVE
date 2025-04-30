@@ -78,14 +78,14 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link to="/" className="text-gray-300 hover:text-white font-medium transition-colors">
-                Home
-              </Link>
               <Link to="/services" className="text-gray-300 hover:text-white font-medium transition-colors">
                 Services
               </Link>
               <Link to="/vendor" className="text-gray-300 hover:text-white font-medium transition-colors">
                 Professionals
+              </Link>
+              <Link to="/booking-history" className="text-gray-300 hover:text-white font-medium transition-colors">
+                Bookings History
               </Link>
             </nav>
 
