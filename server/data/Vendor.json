@@ -1,92 +1,182 @@
 [
   {
-    "name": "ABC Plumbing Services",
-    "contactEmail": "contact@abcplumbing.com",
-    "phone": "123-456-7890",
-    "address": "123 Main St, Cityville",
-    "services": ["Plumbing Fix"],
-    "categories": ["Plumbing", "Maintenance"],
-    "createdAt": "2025-04-30T12:00:00.000Z"
+    "name": "BlueWave Solutions",
+    "contactEmail": "contact@bluewave.com",
+    "phone": "555-123-4567",
+    "address": "123 Main St, Springfield",
+    "services": ["Residential Plumbing", "Deep Cleaning"],
+    "categories": ["Plumbing", "Cleaning"],
+    "createdAt": "2025-01-15T10:00:00Z"
   },
   {
-    "name": "Electricity Masters",
-    "contactEmail": "info@electricitymasters.com",
-    "phone": "987-654-3210",
-    "address": "456 Oak Ave, Tech City",
-    "services": ["Electrical Works"],
-    "categories": ["Electrical", "Maintenance"],
-    "createdAt": "2025-04-29T14:30:00.000Z"
-  },
-  {
-    "name": "Home Spark Cleaners",
-    "contactEmail": "cleaning@homespark.com",
-    "phone": "555-666-7777",
-    "address": "789 Pine Blvd, Clean Town",
-    "services": ["Home Cleaning"],
-    "categories": ["Cleaning", "Maintenance"],
-    "createdAt": "2025-04-28T09:15:00.000Z"
-  },
-  {
-    "name": "Cool Breeze AC Services",
-    "contactEmail": "support@coolbreeze.com",
-    "phone": "123-987-6543",
-    "address": "101 Tech Park, Silicon Valley",
-    "services": ["AC Repair"],
+    "name": "TechTrend Innovations",
+    "contactEmail": "support@techtrend.com",
+    "phone": "555-987-6543",
+    "address": "456 Tech Park, Rivertown",
+    "services": ["Network Setup", "HVAC Maintenance"],
     "categories": ["IT", "Maintenance"],
-    "createdAt": "2025-04-27T11:45:00.000Z"
+    "createdAt": "2025-02-01T14:30:00Z"
   },
   {
-    "name": "Fresh Coat Painters",
-    "contactEmail": "info@freshcoatpainters.com",
-    "phone": "888-222-3333",
-    "address": "202 Color St, Paintville",
-    "services": ["Painting Services"],
-    "categories": ["Painting", "Maintenance"],
-    "createdAt": "2025-04-26T13:20:00.000Z"
+    "name": "BrightSpark Electric",
+    "contactEmail": "info@brightspark.com",
+    "phone": "555-234-5678",
+    "address": "789 Oak Ave, Hillcity",
+    "services": ["Electrical Wiring"],
+    "categories": ["Electrical"],
+    "createdAt": "2025-03-10T09:15:00Z"
   },
   {
-    "name": "PestGuard Solutions",
-    "contactEmail": "help@pestguard.com",
-    "phone": "555-999-8888",
-    "address": "303 Safehouse Rd, Bugsville",
-    "services": ["Pest Control"],
-    "categories": ["Maintenance"],
-    "createdAt": "2025-04-25T08:50:00.000Z"
+    "name": "ColorCraft Painters",
+    "contactEmail": "sales@colorcraft.com",
+    "phone": "555-345-6789",
+    "address": "101 Maple Rd, Lakeside",
+    "services": ["Interior Painting"],
+    "categories": ["Painting"],
+    "createdAt": "2025-04-05T16:45:00Z"
   },
   {
-    "name": "Plumbing Pros",
-    "contactEmail": "contact@plumbingpros.com",
-    "phone": "444-333-2222",
-    "address": "404 Elm St, Plumber City",
-    "services": ["Plumbing Fix"],
-    "categories": ["Plumbing", "Maintenance"],
-    "createdAt": "2025-04-24T07:30:00.000Z"
-  },
-  {
-    "name": "Volt Electricians",
-    "contactEmail": "support@voltelectricians.com",
-    "phone": "777-888-9999",
-    "address": "505 Circuit St, Power City",
-    "services": ["Electrical Works"],
-    "categories": ["Electrical", "IT"],
-    "createdAt": "2025-04-23T06:10:00.000Z"
-  },
-  {
-    "name": "Clean Sweep Housekeepers",
-    "contactEmail": "service@cleansweep.com",
-    "phone": "333-444-5555",
-    "address": "606 Sparkle Ave, Neat City",
-    "services": ["Home Cleaning"],
+    "name": "CleanTech Services",
+    "contactEmail": "info@cleantech.com",
+    "phone": "555-456-7890",
+    "address": "202 Pine St, Greentown",
+    "services": ["Deep Cleaning", "HVAC Maintenance"],
     "categories": ["Cleaning", "Maintenance"],
-    "createdAt": "2025-04-22T15:00:00.000Z"
+    "createdAt": "2025-01-20T11:00:00Z"
   },
   {
-    "name": "Painting Perfectionists",
-    "contactEmail": "info@paintingperfectionists.com",
-    "phone": "123-321-1234",
-    "address": "707 Brush St, Art Town",
-    "services": ["Painting Services"],
-    "categories": ["Painting", "Maintenance"],
-    "createdAt": "2025-04-21T10:35:00.000Z"
+    "name": "ElectroFix",
+    "contactEmail": "support@electrofix.com",
+    "phone": "555-567-8901",
+    "address": "303 Elm St, Sunnyvale",
+    "services": ["Electrical Wiring", "Network Setup"],
+    "categories": ["Electrical", "IT"],
+    "createdAt": "2025-02-15T13:20:00Z"
+  },
+  {
+    "name": "PipePro Plumbing",
+    "contactEmail": "contact@pipepro.com",
+    "phone": "555-678-9012",
+    "address": "404 Cedar Ave, Brookfield",
+    "services": ["Residential Plumbing"],
+    "categories": ["Plumbing"],
+    "createdAt": "2025-03-01T08:30:00Z"
+  },
+  {
+    "name": "Artisan Painters",
+    "contactEmail": "info@artisanpainters.com",
+    "phone": "555-789-0123",
+    "address": "505 Birch Rd, Crestview",
+    "services": ["Interior Painting", "Deep Cleaning"],
+    "categories": ["Painting", "Cleaning"],
+    "createdAt": "2025-03-25T15:10:00Z"
+  },
+  {
+    "name": "NetSecure IT",
+    "contactEmail": "support@netsecure.com",
+    "phone": "555-890-1234",
+    "address": "606 Willow Ln, Northwood",
+    "services": ["Network Setup"],
+    "categories": ["IT"],
+    "createdAt": "2025-04-10T12:00:00Z"
+  },
+  {
+    "name": "CoolBreeze Maintenance",
+    "contactEmail": "info@coolbreeze.com",
+    "phone": "555-901-2345",
+    "address": "707 Spruce St, Fairview",
+    "services": ["HVAC Maintenance", "Residential Plumbing"],
+    "categories": ["Maintenance", "Plumbing"],
+    "createdAt": "2025-01-30T09:45:00Z"
+  },
+  {
+    "name": "SparkVibe Electric",
+    "contactEmail": "contact@sparkvibe.com",
+    "phone": "555-012-3456",
+    "address": "808 Laurel Dr, Westfield",
+    "services": ["Electrical Wiring", "Interior Painting"],
+    "categories": ["Electrical", "Painting"],
+    "createdAt": "2025-02-20T10:15:00Z"
+  },
+  {
+    "name": "FreshStart Cleaning",
+    "contactEmail": "sales@freshstart.com",
+    "phone": "555-123-4568",
+    "address": "909 Magnolia Ct, Eastview",
+    "services": ["Deep Cleaning"],
+    "categories": ["Cleaning"],
+    "createdAt": "2025-03-05T14:50:00Z"
+  },
+  {
+    "name": "TechFlow Solutions",
+    "contactEmail": "info@techflow.com",
+    "phone": "555-234-5679",
+    "address": "1010 Oakwood Rd, Southtown",
+    "services": ["Network Setup", "Electrical Wiring"],
+    "categories": ["IT", "Electrical"],
+    "createdAt": "2025-04-01T11:30:00Z"
+  },
+  {
+    "name": "PlumbPerfect",
+    "contactEmail": "support@plumbperfect.com",
+    "phone": "555-345-6780",
+    "address": "1111 River Rd, Clearwater",
+    "services": ["Residential Plumbing", "HVAC Maintenance"],
+    "categories": ["Plumbing", "Maintenance"],
+    "createdAt": "2025-01-25T16:00:00Z"
+  },
+  {
+    "name": "VividCoat Painters",
+    "contactEmail": "contact@vividcoat.com",
+    "phone": "555-456-7891",
+    "address": "1212 Hill St, Baytown",
+    "services": ["Interior Painting"],
+    "categories": ["Painting"],
+    "createdAt": "2025-02-10T08:00:00Z"
+  },
+  {
+    "name": "CleanEdge Services",
+    "contactEmail": "info@cleanedge.com",
+    "phone": "555-567-8902",
+    "address": "1313 Park Ave, Midtown",
+    "services": ["Deep Cleaning", "Network Setup"],
+    "categories": ["Cleaning", "IT"],
+    "createdAt": "2025-03-15T13:40:00Z"
+  },
+  {
+    "name": "WiredRight Electric",
+    "contactEmail": "sales@wiredright.com",
+    "phone": "555-678-9013",
+    "address": "1414 Lake Dr, Hometown",
+    "services": ["Electrical Wiring"],
+    "categories": ["Electrical"],
+    "createdAt": "2025-04-15T10:20:00Z"
+  },
+  {
+    "name": "FlowMaster Plumbing",
+    "contactEmail": "contact@flowmaster.com",
+    "phone": "555-789-0124",
+    "address": "1515 Grove St, Uptown",
+    "services": ["Residential Plumbing", "Interior Painting"],
+    "categories": ["Plumbing", "Painting"],
+    "createdAt": "2025-01-10T12:15:00Z"
+  },
+  {
+    "name": "TechShield IT",
+    "contactEmail": "support@techshield.com",
+    "phone": "555-890-1235",
+    "address": "1616 Forest Rd, Downtown",
+    "services": ["Network Setup", "HVAC Maintenance"],
+    "categories": ["IT", "Maintenance"],
+    "createdAt": "2025-02-25T15:30:00Z"
+  },
+  {
+    "name": "BrightClean Solutions",
+    "contactEmail": "info@brightclean.com",
+    "phone": "555-901-2346",
+    "address": "1717 Valley Ln, Westtown",
+    "services": ["Deep Cleaning", "Electrical Wiring"],
+    "categories": ["Cleaning", "Electrical"],
+    "createdAt": "2025-03-20T09:50:00Z"
   }
 ]

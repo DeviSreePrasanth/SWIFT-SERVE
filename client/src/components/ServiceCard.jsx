@@ -40,7 +40,7 @@ const ServiceCard = ({ service }) => {
           </div>
           
           <Link 
-            to={`/services/${service.category}/${service.id}`}
+            to={`/service/${service.category}`}
             className="flex items-center text-blue-400 hover:text-blue-300 font-medium transition-colors"
           >
             View Details
