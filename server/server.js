@@ -11,7 +11,9 @@ const detailRoute=require('./routes/detailRoute');
 const reviewRoutes=require('./routes/reviewRoute');
 const db=require('./config/connectDB');
 const app=express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+  }));
 app.use(express.json());
 dotenv.config();
 db();
