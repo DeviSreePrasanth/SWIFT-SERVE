@@ -13,7 +13,9 @@ function ServiceDetails() {
 
   useEffect(() => {
     axios.get(`http://localhost:5000/detail?name=${id}`)
-      .then(response => setCategory(response.data))
+      .then(response => {setCategory(response.data),
+        console.log(id);
+      })
       .catch(error => console.error('Error fetching category:', error));
   }, [id]);
 
@@ -33,7 +35,6 @@ function ServiceDetails() {
       <Header />
       <div className="max-w-5xl mx-auto px-4 py-8">
         <h2 className="text-3xl font-bold mb-6 text-center">Service Details</h2>
-
         {category.length === 0 ? (
           <p className="text-center">Loading...</p>
         ) : (

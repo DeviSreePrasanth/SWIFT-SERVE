@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import ServiceCard from '../components/ServiceCard';
 import Footer from '../components/Footer';
@@ -24,6 +25,9 @@ function Home() {
 
     fetchServices();
   }, []);
+
+  // Get first 6 services only
+  const displayedServices = services.slice(0, 6);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-950">
@@ -99,12 +103,24 @@ function Home() {
                 Retry
               </button>
             </div>
-          ) : services.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service) => (
-                <ServiceCard key={service._id} service={service} />
-              ))}
-            </div>
+          ) : displayedServices.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {displayedServices.map((service) => (
+                  <ServiceCard key={service._id} service={service} />
+                ))}
+              </div>
+              {services.length > 6 && (
+                <div className="text-center mt-12">
+                  <Link 
+                    to="/services" 
+                    className="inline-block px-8 py-3 rounded-lg font-semibold bg-transparent border-2 border-blue-500 hover:bg-blue-500/10 text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    View All Services
+                  </Link>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-16">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">
