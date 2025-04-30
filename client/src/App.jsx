@@ -6,7 +6,6 @@ import ServiceDetails from "./pages/ServiceDetails";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import Profile from "./pages/Profile";
 import VendorPage from "./pages/VendorPage";
-import Vendor from "./pages/Vendor";
 import SearchResults from "./pages/SearchResultsPage";
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -26,7 +25,6 @@ function App() {
               element={<BookingConfirmation />}
             />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/category/:category" element={<Vendor />} />
           </Routes>
         </main>
 
