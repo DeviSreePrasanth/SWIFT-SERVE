@@ -14,6 +14,7 @@ function ServiceDetails() {
     axios.get(`http://localhost:5000/detail?name=${id}`)
       .then(response => {
         console.log(id);
+        console.log(response.data)
         setCategory(response.data);
       })
       .catch(error => {
