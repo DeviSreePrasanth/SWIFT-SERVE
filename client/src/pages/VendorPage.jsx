@@ -83,59 +83,7 @@ function VendorPage() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {vendors.map((vendor) => (
-                  <Link
-                    to={`/vendor/${vendor._id}`}
-                    key={vendor._id}
-                    className="group bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-1 border border-gray-800 hover:border-emerald-400/30"
-                  >
-                    <div className="p-6">
-                      <div className="flex flex-col items-center text-center">
-                        <div className="relative mb-5">
-                          <div className="h-24 w-24 rounded-full bg-gray-700 flex items-center justify-center text-4xl font-bold text-emerald-400 group-hover:ring-2 group-hover:ring-emerald-500 transition-all">
-                            {vendor.name?.charAt(0) || '?'}
-                          </div>
-                          <div className="absolute -bottom-2 -right-2 bg-emerald-500 rounded-full p-1.5 border-2 border-gray-900">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        </div>
-                        <h3 className="text-xl font-semibold text-white group-hover:text-emerald-400 transition-colors">
-                          {vendor.name || 'Unnamed Professional'}
-                        </h3>
-                        <p className="text-gray-400 text-sm mt-1">{vendor.contactEmail}</p>
-                        
-                        {vendor.categories?.length > 0 && (
-                          <div className="mt-4 flex flex-wrap justify-center gap-2">
-                            {vendor.categories.slice(0, 3).map((category, index) => (
-                              <span 
-                                key={index} 
-                                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-emerald-400 border border-gray-700"
-                              >
-                                {category}
-                              </span>
-                            ))}
-                            {vendor.categories.length > 3 && (
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-gray-400 border border-gray-700">
-                                +{vendor.categories.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="px-6 py-4 bg-gray-800/50 border-t border-gray-700">
-                      <div className="flex items-center justify-center space-x-4">
-                        <div className="flex items-center text-sm text-gray-400">
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          <span>{vendor.address || 'Location not specified'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                  <VendorCard key={vendor._id} vendor={vendor} />
                 ))}
               </div>
               <div className="text-center mt-12">
