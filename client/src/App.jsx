@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import ServiceDetails from './pages/ServiceDetails';
 import BookingConfirmation from './pages/BookingConfirmation';
 import Profile from './pages/Profile';
+import Vendor from './pages/Vendor';
 
 function App() {
   return (
@@ -12,9 +13,10 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/service/:id" element={<ServiceDetails />} />
+            <Route path="/services/:category/:id" element={<ServiceDetails />} />
             <Route path="/booking-confirmation" element={<BookingConfirmation />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/category/:category" element={<Vendor/>}/>
           </Routes>
         </main>
 
