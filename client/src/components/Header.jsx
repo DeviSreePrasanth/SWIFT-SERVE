@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
   const profileRef = useRef(null);
   const navigate = useNavigate();
 
@@ -13,8 +15,24 @@ const Header = () => {
     name: localStorage.getItem('userName') || 'Guest',
     email: localStorage.getItem('userEmail') || 'No email',
     avatar: localStorage.getItem('userAvatar') || '',
-    id: localStorage.getItem('userId') || '', // Add userId
+    id: localStorage.getItem('userId') || '',
   };
+
+  // Fetch cart items
+  const fetchCart = async () => {
+    if (!user.id) return; // Skip if no user ID
+    try {
+      const response = await axios.get(`http://localhost:5000/api/cart/${user.id}`);
+      setCartItems(response.data[0]?.items || []);
+    } catch (err) {
+      console.error('Failed to fetch cart items:', err);
+    }
+  };
+
+  // Fetch cart items on mount and when user ID changes
+  useEffect(() => {
+    fetchCart();
+  }, [user.id]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -64,12 +82,16 @@ const Header = () => {
   };
 
   return (
-    <header className={`sticky top-0 z-50 bg-gray-900/90 backdrop-blur-md border-b transition-all duration-300 ${isScrolled ? 'border-gray-700' : 'border-transparent'}`}>
+    <header
+      className={`sticky top-0 z-50 bg-gray-900/90 backdrop-blur-md border-b transition-all duration-300 ${
+        isScrolled ? 'border-gray-700' : 'border-transparent'
+      }`}
+    >
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link 
-            to="/home" 
+          <Link
+            to="/home"
             className="flex items-center space-x-3 group transition-transform hover:scale-[1.02]"
           >
             <div className="p-2 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 group-hover:from-blue-500 group-hover:to-blue-700 transition-all shadow-lg">
@@ -141,26 +163,25 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link 
-                to="/services" 
+              <Link
+                to="/services"
                 className="text-gray-300 hover:text-white font-medium transition-colors hover:bg-gray-800/50 px-3 py-1.5 rounded-lg"
               >
                 Services
               </Link>
-              <Link 
-                to="/vendor" 
+              <Link
+                to="/vendor"
                 className="text-gray-300 hover:text-white font-medium transition-colors hover:bg-gray-800/50 px-3 py-1.5 rounded-lg"
               >
                 Professionals
               </Link>
-              
             </nav>
 
             {/* Icons */}
             <div className="flex items-center space-x-3">
               {/* Cart Icon with badge */}
-              <Link 
-                to={`/cart/${user.id}`} // Updated to include userId
+              <Link
+                to={`/cart/${user.id}`}
                 className="p-2 relative text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all hover:scale-110"
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,9 +192,11 @@ const Header = () => {
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  3
-                </span>
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {cartItems.length}
+                  </span>
+                )}
               </Link>
 
               {/* Profile Icon with Popup */}
@@ -183,9 +206,9 @@ const Header = () => {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                 >
                   {user.avatar ? (
-                    <img 
-                      src={user.avatar} 
-                      alt="Profile" 
+                    <img
+                      src={user.avatar}
+                      alt="Profile"
                       className="h-8 w-8 rounded-full object-cover border-2 border-gray-700"
                     />
                   ) : (
@@ -208,9 +231,9 @@ const Header = () => {
                     <div className="p-4 bg-gradient-to-r from-blue-900/50 to-gray-800 border-b border-gray-700">
                       <div className="flex items-center space-x-3">
                         {user.avatar ? (
-                          <img 
-                            src={user.avatar} 
-                            alt="Profile" 
+                          <img
+                            src={user.avatar}
+                            alt="Profile"
                             className="h-10 w-10 rounded-full object-cover border-2 border-white/20"
                           />
                         ) : (
@@ -232,13 +255,13 @@ const Header = () => {
                       </div>
                     </div>
                     <div className="p-2">
-                      <Link 
-                to={`/bookings/${user.name}`}
-                className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
-                onClick={() => setIsProfileOpen(false)}
-              >
-                My Bookings
-              </Link>
+                      <Link
+                        to={`/bookings/${user.name}`}
+                        className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        My Bookings
+                      </Link>
                     </div>
                     <div className="p-2 border-t border-gray-700">
                       <button
@@ -246,7 +269,12 @@ const Header = () => {
                         onClick={handleLogout}
                       >
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                          />
                         </svg>
                         <span>Logout</span>
                       </button>
@@ -269,7 +297,7 @@ const Header = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+              className="absolute left-3 quetop-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
