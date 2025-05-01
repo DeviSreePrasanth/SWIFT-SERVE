@@ -14,6 +14,13 @@ function ServiceFullPage() {
   const [averageRating, setAverageRating] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [activeTab, setActiveTab] = useState('details');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newReview, setNewReview] = useState({
+    user: '',
+    rating: 0,
+    feedback: '',
+  });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!service) {
@@ -40,39 +47,52 @@ function ServiceFullPage() {
     navigate(`/cart/add/${service.services[0]?._id}`);
   };
 
-  const renderStars = (rating) => {
-    return Array(5).fill(0).map((_, i) => {
-      const starValue = i + 1;
-      let fillPercentage = '0%';
-      
-      if (rating >= starValue) {
-        fillPercentage = '100%';
-      } else if (rating >= starValue - 0.5) {
-        fillPercentage = '50%';
-      }
+  const handleReviewSubmit = async () => {
+    if (!newReview.user || !newReview.feedback || newReview.rating < 1 || newReview.rating > 5) {
+      setError('Please provide your name, feedback, and a rating between 1 and 5.');
+      return;
+    }
 
-      return (
-        <div key={i} className="relative inline-block w-6 h-6">
-          <svg
-            className="absolute w-6 h-6 text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
-            />
-          </svg>
-          <div 
-            className="absolute overflow-hidden"
-            style={{ width: fillPercentage, height: '100%' }}
-          >
+    try {
+      const response = await axios.post('http://localhost:5000/api/review', {
+        name: service.name,
+        user: newReview.user,
+        rating: newReview.rating,
+        feedback: newReview.feedback,
+      });
+
+      setReviews([...reviews, response.data]);
+      setAverageRating(
+        (reviews.reduce((sum, review) => sum + review.rating, 0) + response.data.rating) /
+          (reviews.length + 1)
+      );
+      setNewReview({ user: '', rating: 0, feedback: '' });
+      setIsModalOpen(false);
+      setError('');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      setError('Failed to submit review. Please try again.');
+    }
+  };
+
+  const renderStars = (rating) => {
+    return Array(5)
+      .fill(0)
+      .map((_, i) => {
+        const starValue = i + 1;
+        let fillPercentage = '0%';
+
+        if (rating >= starValue) {
+          fillPercentage = '100%';
+        } else if (rating >= starValue - 0.5) {
+          fillPercentage = '50%';
+        }
+
+        return (
+          <div key={i} className="relative inline-block w-6 h-6">
             <svg
-              className="w-6 h-6 text-yellow-400"
-              fill="currentColor"
+              className="absolute w-6 h-6 text-gray-600"
+              fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
@@ -83,10 +103,26 @@ function ServiceFullPage() {
                 d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
               />
             </svg>
+            <div className="absolute overflow-hidden" style={{ width: fillPercentage, height: '100%' }}>
+              <svg
+                className="w-6 h-6 text-yellow-400"
+                fill="currentColor"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688
+
+-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-      );
-    });
+        );
+      });
   };
 
   if (!service) return null;
@@ -336,6 +372,7 @@ function ServiceFullPage() {
                   
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
+                      <span className="text-gray-300"> Common Carrier</span>
                       <span className="text-gray-300">Standard Rate</span>
                       <span className="text-2xl font-bold text-white">${service.services[0]?.price || '99'}</span>
                     </div>
@@ -471,9 +508,14 @@ function ServiceFullPage() {
                   <span className="bg-blue-500/20 p-2 rounded-lg mr-3">💬</span>
                   Customer Reviews
                 </h3>
-                <button className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg border border-blue-500/30 text-sm hover:bg-blue-500/30 transition-all">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg border border-blue-500/30 text-sm hover:bg-blue-500/30 transition-all"
+                >
                   Write a Review
-                </button>
+                </motion.button>
               </div>
               
               {reviews.length === 0 ? (
@@ -493,7 +535,7 @@ function ServiceFullPage() {
                       className="bg-gray-800/50 p-5 sm:p-6 rounded-xl border border-gray-700/30 backdrop-blur-sm hover:bg-gray-700/50 transition-all shadow-sm"
                     >
                       <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text Zem-white font-bold text-lg">
                           {review.user.charAt(0)}
                         </div>
                         <div className="ml-3">
@@ -520,6 +562,105 @@ function ServiceFullPage() {
                   </button>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Review Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-gray-800/80 border-2 border-gray-700/30 rounded-2xl p-6 sm:p-8 max-w-md w-full backdrop-blur-lg shadow-2xl"
+            >
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                <span className="bg-blue-500/20 p-2 rounded-lg mr-3">✍️</span>
+                Write a Review
+              </h3>
+              
+              {error && (
+                <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-3 mb-4">
+                  <p className="text-red-400 text-sm">{error}</p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Your Name</label>
+                  <input
+                    type="text"
+                    value={newReview.user}
+                    onChange={(e) =>
+                      setNewReview({ ...newReview, user: e.target.value })
+                    }
+                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50"
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Rating (1-5)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={newReview.rating || ''}
+                    onChange={(e) =>
+                      setNewReview({
+                        ...newReview,
+                        rating: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50"
+                    placeholder="Enter rating (1-5)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Feedback</label>
+                  <textarea
+                    value={newReview.feedback}
+                    onChange={(e) =>
+                      setNewReview({ ...newReview, feedback: e.target.value })
+                    }
+                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50 resize-none"
+                    rows="4"
+                    placeholder="Share your experience..."
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setError('');
+                      setNewReview({ user: '', rating: 0, feedback: '' });
+                    }}
+                    className="px-4 py-2 bg-gray-800/70 text-gray-300 border border-gray-700/50 rounded-lg hover:bg-gray-700/50 transition-all"
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleReviewSubmit}
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
+                  >
+                    Submit Review
+                  </motion.button>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
