@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import CheckoutModal from '../components/CheckoutModel';
 
 const CartPage = () => {
   const { userId } = useParams();
@@ -11,6 +14,7 @@ const CartPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchCart = async () => {
@@ -43,20 +47,15 @@ const CartPage = () => {
   const totalAmount = cartItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
   const handleProceedToBook = () => {
-    const bookingsPayload = cartItems.map((item) => ({
-      serviceName: item.serviceName,
-      vendorId: item.vendorId,
-      category: item.category,
-      dateTime: new Date().toISOString(),
-      cost: item.price,
-    }));
+    setIsCheckoutOpen(true);
+  };
 
-    navigate('/booking-confirmation', {
-      state: {
-        bookings: bookingsPayload,
-        userId,
-      },
-    });
+  const handleCheckoutComplete = (success) => {
+    setIsCheckoutOpen(false);
+    if (success) {
+      // Clear cart on successful payment
+      setCartItems([]);
+    }
   };
 
   useEffect(() => {
@@ -413,6 +412,19 @@ const CartPage = () => {
           )}
         </motion.section>
       </main>
+
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={handleCheckoutComplete}
+        bookings={cartItems.map((item) => ({
+          serviceName: item.serviceName,
+          vendorId: item.vendorId,
+          category: item.category,
+          dateTime: new Date().toISOString(),
+          cost: item.price,
+        }))}
+        userId={userId}
+      />
 
       <Footer />
     </div>
