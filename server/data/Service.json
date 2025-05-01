@@ -1,38 +1,122 @@
 [
   {
-    "name": "Residential Plumbing",
-    "description": "Comprehensive plumbing services including leak repairs, pipe installations, and fixture upgrades for homes.",
+    "name": "Pipe Repair",
+    "description": "Professional repair of leaking or damaged pipes with minimum disruption to your property",
     "category": "Plumbing",
-    "imageUrl": "https://images.unsplash.com/photo-1605087880595-8cc6db61f3c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    "imageUrl": "https://images.unsplash.com/photo-1605087880595-8cc6db61f12c"
   },
   {
-    "name": "Electrical Wiring",
-    "description": "Full electrical wiring and rewiring services for residential and commercial properties.",
+    "name": "Leak Detection",
+    "description": "Advanced technology to detect hidden water leaks in your plumbing system",
+    "category": "Plumbing",
+    "imageUrl": "https://images.unsplash.com/photo-1551218808-94e220e084d2"
+  },
+  {
+    "name": "Wiring Installation",
+    "description": "Safe and code-compliant electrical wiring installation for homes and businesses",
     "category": "Electrical",
-    "imageUrl": "https://images.unsplash.com/photo-1581093450021-3a0c24156c06?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    "imageUrl": "https://images.unsplash.com/photo-1581093450021-4a7360e9a9d3"
+  },
+  {
+    "name": "Light Fixture Repair",
+    "description": "Repair and replacement of faulty light fixtures and electrical connections",
+    "category": "Electrical",
+    "imageUrl": "https://images.unsplash.com/photo-1517649763962-0c623066013b"
+  },
+  {
+    "name": "Office Cleaning",
+    "description": "Thorough cleaning of office spaces including desks, floors, and common areas",
+    "category": "Cleaning",
+    "imageUrl": "https://images.unsplash.com/photo-1581578731548-c64695cc6952"
   },
   {
     "name": "Deep Cleaning",
-    "description": "Thorough cleaning services for offices, homes, and commercial spaces, including carpet and upholstery cleaning.",
+    "description": "Intensive cleaning service targeting hard-to-reach areas and built-up grime",
     "category": "Cleaning",
-    "imageUrl": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    "imageUrl": "https://images.unsplash.com/photo-1480796927426-f609979314bd"
   },
   {
     "name": "Network Setup",
-    "description": "Professional IT services for setting up secure and efficient network infrastructure.",
+    "description": "Professional installation and configuration of office or home networks",
     "category": "IT",
-    "imageUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    "imageUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31"
+  },
+  {
+    "name": "Computer Repair",
+    "description": "Diagnosis and repair of hardware and software issues for all computer systems",
+    "category": "IT",
+    "imageUrl": "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d"
   },
   {
     "name": "Interior Painting",
-    "description": "High-quality interior painting services with a focus on precision and durability.",
+    "description": "High-quality interior painting with premium paints and careful surface preparation",
     "category": "Painting",
-    "imageUrl": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    "imageUrl": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7"
   },
   {
-    "name": "HVAC Maintenance",
-    "description": "Routine maintenance and repair for heating, ventilation, and air conditioning systems.",
+    "name": "Exterior Painting",
+    "description": "Durable exterior painting with weather-resistant coatings for long-lasting protection",
+    "category": "Painting",
+    "imageUrl": "https://images.unsplash.com/photo-1560713781-d9c8de0b1d15"
+  },
+  {
+    "name": "Lawn Maintenance",
+    "description": "Regular mowing, edging and care to keep your lawn healthy and attractive",
     "category": "Maintenance",
-    "imageUrl": "https://images.unsplash.com/photo-1600566752229-250d0a7e0b2c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    "imageUrl": "https://images.unsplash.com/photo-1600566752355-35792bedcfea"
+  },
+  {
+    "name": "Garden Design",
+    "description": "Custom garden planning and planting to create your ideal outdoor space",
+    "category": "Maintenance",
+    "imageUrl": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae"
+  },
+  {
+    "name": "AC Installation",
+    "description": "Professional installation of new air conditioning units with proper sizing",
+    "category": "Maintenance",
+    "imageUrl": "https://images.unsplash.com/photo-1600566752227-09d0f9e7d6e0"
+  },
+  {
+    "name": "AC Repair",
+    "description": "Expert diagnosis and repair of air conditioning system issues",
+    "category": "Maintenance",
+    "imageUrl": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3"
+  },
+  {
+    "name": "Security System Installation",
+    "description": "Complete installation of home or business security systems with monitoring",
+    "category": "IT",
+    "imageUrl": "https://images.unsplash.com/photo-1558002038-1055907df827"
+  },
+  {
+    "name": "Camera Setup",
+    "description": "Installation and configuration of surveillance camera systems",
+    "category": "Electrical",
+    "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3"
+  },
+  {
+    "name": "Wall Painting",
+    "description": "Professional interior wall painting with smooth, even finishes",
+    "category": "Painting",
+    "imageUrl": "https://images.unsplash.com/photo-1560448204-603b3fc33ddc"
+  },
+  {
+    "name": "Cabinet Refinishing",
+    "description": "Restoration and refinishing of kitchen and bathroom cabinets",
+    "category": "Painting",
+    "imageUrl": "https://images.unsplash.com/photo-1560448204-e02e62d78064"
+  },
+  {
+    "name": "Electrical Panel Upgrade",
+    "description": "Upgrading outdated electrical panels to meet modern power demands",
+    "category": "Electrical",
+    "imageUrl": "https://images.unsplash.com/photo-1603302576837-37561b2e2302"
+  },
+  {
+    "name": "Outlet Installation",
+    "description": "Safe installation of new electrical outlets where you need them",
+    "category": "Electrical",
+    "imageUrl": "https://images.unsplash.com/photo-1603302576837-37561b2e2303"
   }
 ]

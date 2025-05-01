@@ -5,7 +5,10 @@ const vendorSchema = new mongoose.Schema({
   contactEmail: String,
   phone: String,
   address: String,
-  services: [String], 
+  services: [{
+    name: String,
+    photo: String // URL or path to the service photo
+  }],
   categories: [{
     type: String,
     enum: ['Plumbing', 'Electrical', 'Cleaning', 'IT', 'Painting', 'Maintenance'],
