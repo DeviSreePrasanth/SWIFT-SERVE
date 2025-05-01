@@ -153,12 +153,7 @@ const Header = () => {
               >
                 Professionals
               </Link>
-              <Link 
-                to="/bookings" 
-                className="text-gray-300 hover:text-white font-medium transition-colors hover:bg-gray-800/50 px-3 py-1.5 rounded-lg"
-              >
-                Bookings
-              </Link>
+              
             </nav>
 
             {/* Icons */}
@@ -238,26 +233,12 @@ const Header = () => {
                     </div>
                     <div className="p-2">
                       <Link 
-                        to="/profile" 
-                        className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        My Profile
-                      </Link>
-                      <Link 
-                        to="/settings" 
-                        className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        Settings
-                      </Link>
-                      <Link 
-                        to="/help" 
-                        className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        Help Center
-                      </Link>
+                to={`/bookings/${user.name}`}
+                className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
+                onClick={() => setIsProfileOpen(false)}
+              >
+                My Bookings
+              </Link>
                     </div>
                     <div className="p-2 border-t border-gray-700">
                       <button

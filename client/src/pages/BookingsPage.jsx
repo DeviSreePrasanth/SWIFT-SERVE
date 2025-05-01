@@ -33,27 +33,14 @@ const BookingsPage = () => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'confirmed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-900 text-green-200';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-900 text-yellow-200';
       case 'cancelled':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-900 text-red-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-700 text-gray-200';
     }
-  };
-
-  const getCategoryImage = (category) => {
-    const categories = {
-      photography: 'https://images.unsplash.com/photo-1520390138845-fd2d229dd553',
-      catering: 'https://images.unsplash.com/photo-1555244162-803834f70033',
-      videography: 'https://images.unsplash.com/photo-1579762715118-a6f1d4b934f1',
-      decoration: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf',
-      default: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab'
-    };
-    
-    const key = category?.toLowerCase();
-    return categories[key] || categories.default;
   };
 
   const formatDateTime = (dateTimeString) => {
@@ -69,14 +56,25 @@ const BookingsPage = () => {
     return new Date(dateTimeString).toLocaleDateString(undefined, options);
   };
 
+  const getCategoryImage = (category) => {
+    // Replace with your actual image paths or API
+    const images = {
+      'cleaning': '/images/cleaning.jpg',
+      'repair': '/images/repair.jpg',
+      'beauty': '/images/beauty.jpg',
+      'default': '/images/default-service.jpg'
+    };
+    return images[category?.toLowerCase()] || images.default;
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-900">
       <Header />
       <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Your Bookings</h1>
-            <p className="mt-3 text-lg text-gray-500">
+            <h1 className="text-3xl font-bold text-white sm:text-4xl">Your Bookings</h1>
+            <p className="mt-3 text-lg text-gray-400">
               View all your booked services
             </p>
           </div>
@@ -86,22 +84,22 @@ const BookingsPage = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-8">
+            <div className="bg-red-900/30 border-l-4 border-red-500 p-4 mb-8">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
+                  <p className="text-sm text-red-200">{error}</p>
                 </div>
               </div>
             </div>
           ) : bookings.length === 0 ? (
             <div className="text-center py-20">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-12 w-12 text-gray-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -114,8 +112,8 @@ const BookingsPage = () => {
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                 />
               </svg>
-              <h3 className="mt-2 text-lg font-medium text-gray-900">No bookings found</h3>
-              <p className="mt-1 text-gray-500">You haven't made any bookings yet.</p>
+              <h3 className="mt-2 text-lg font-medium text-white">No bookings found</h3>
+              <p className="mt-1 text-gray-400">You haven't made any bookings yet.</p>
               <div className="mt-6">
                 <a
                   href="/services"
@@ -129,30 +127,30 @@ const BookingsPage = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
+            <div className="bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+              <div className="px-4 py-5 sm:px-6 border-b border-gray-700">
+                <h3 className="text-lg leading-6 font-medium text-white">
                   Booking History
                 </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                <p className="mt-1 max-w-2xl text-sm text-gray-400">
                   Details of all your booked services
                 </p>
               </div>
-              <ul className="divide-y divide-gray-200">
+              <ul className="divide-y divide-gray-700">
                 {bookings.map((booking, index) => (
                   <li key={`${booking.vendorId}-${booking.serviceName}-${booking.slot}-${index}`}>
-                    <div className="px-4 py-5 sm:px-6">
+                    <div className="px-4 py-5 sm:px-6 hover:bg-gray-700/50 transition-colors">
                       <div className="flex flex-col sm:flex-row sm:items-center">
                         <div className="flex-shrink-0 mb-4 sm:mb-0 sm:mr-6">
                           <img
-                            className="h-24 w-24 rounded-md object-cover"
-                            src={`${getCategoryImage(booking.category)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80`}
+                            className="h-24 w-24 rounded-md object-cover border border-gray-600"
+                            src={getCategoryImage(booking.category)}
                             alt={booking.serviceName}
                           />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <h4 className="text-lg font-medium text-blue-600">
+                            <h4 className="text-lg font-medium text-blue-400">
                               {booking.serviceName}
                             </h4>
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(booking.status)}`}>
@@ -160,14 +158,14 @@ const BookingsPage = () => {
                             </span>
                           </div>
                           <div className="mt-2 space-y-2">
-                            <p className="text-sm text-gray-500">
-                              <span className="font-medium text-gray-900">Vendor:</span> {booking.vendorId?.name || booking.vendorId}
+                            <p className="text-sm text-gray-300">
+                              <span className="font-medium text-gray-100">Vendor:</span> {booking.vendorId?.name || booking.vendorId}
                             </p>
-                            <p className="text-sm text-gray-500">
-                              <span className="font-medium text-gray-900">Category:</span> {booking.category || 'N/A'}
+                            <p className="text-sm text-gray-300">
+                              <span className="font-medium text-gray-100">Category:</span> {booking.category || 'N/A'}
                             </p>
-                            <p className="text-sm text-gray-500">
-                              <span className="font-medium text-gray-900">Date & Time:</span> {formatDateTime(booking.slot)}
+                            <p className="text-sm text-gray-300">
+                              <span className="font-medium text-gray-100">Date & Time:</span> {formatDateTime(booking.slot)}
                             </p>
                           </div>
                         </div>
