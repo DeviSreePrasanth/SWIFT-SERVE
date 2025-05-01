@@ -17,16 +17,20 @@ const getReview=async (req,res)=>{
 
 const addReview=async (req,res)=>{
     try{
-        const {name,rating,feedback}=req.body;
-        if(!name || !rating || !feedback){
+        const {name,user,rating,feedback}=req.body;
+        if(!name || !rating || !feedback || !user){
             return res.status(400).json({error:"NAME OR RATING ISNT FETCHING"});
         }
-        const data=await review.create({name,rating,feedback});
+        console.log(req.body);
+        const data=await review.create({name,user,rating,feedback});
         return res.status(200).json(data);
     }
-    catch(e){
-        return res.status(500).json({error:"SERVER ERROR"});
-    }   
+    catch (e) {
+        if (e.code === 11000) {
+          return res.status(409).json({ error: "User has already submitted a review." });
+        }
+        return res.status(500).json({ error: "SERVER ERROR" });
+    } 
 }
 
 module.exports={getReview,addReview};

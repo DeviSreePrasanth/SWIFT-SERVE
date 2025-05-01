@@ -12,7 +12,7 @@ function ServiceDetails() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [ratings, setRatings] = useState({}); // Store average ratings for each service
+  const [ratings, setRatings] = useState({});
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -23,24 +23,26 @@ function ServiceDetails() {
     axios
       .get(`http://localhost:5000/api/detail?name=${id}`)
       .then((response) => {
+        console.log('Category data:', response.data);
         setCategory(response.data);
-        // Fetch ratings for each service
-        response.data.forEach((service) => {
-          axios
-            .get(`http://localhost:5000/api/review?name=${service.name}`)
-            .then((res) => {
-              const reviews = res.data;
-              if (reviews.length > 0) {
-                const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
-                setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
-              } else {
+        response.data.forEach((vendor) => {
+          vendor.services.forEach((service) => {
+            axios
+              .get(`http://localhost:5000/api/review?name=${service.name}`)
+              .then((res) => {
+                const reviews = res.data;
+                if (reviews.length > 0) {
+                  const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+                  setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
+                } else {
+                  setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+                }
+              })
+              .catch((error) => {
+                console.error(`Error fetching reviews for ${service.name}:`, error);
                 setRatings((prev) => ({ ...prev, [service._id]: 0 }));
-              }
-            })
-            .catch((error) => {
-              console.error(`Error fetching reviews for ${service.name}:`, error);
-              setRatings((prev) => ({ ...prev, [service._id]: 0 }));
-            });
+              });
+          });
         });
         setIsLoading(false);
       })
@@ -50,7 +52,6 @@ function ServiceDetails() {
       });
   }, [id]);
 
-  // Function to render star rating
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -104,12 +105,69 @@ function ServiceDetails() {
     setSelectedVendor(null);
   };
 
-  const handleAddToCart = (serviceId) => {
-    navigate(`/cart/add/${serviceId}`);
+  const handleAddToCart = async (serviceId) => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('Please log in to add items to your cart.');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
+      const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
+
+      if (!service || !vendor) {
+        console.error('Service or vendor not found:', { serviceId, service, vendor });
+        alert('Service or vendor not found.');
+        return;
+      }
+
+      const payload = {
+        userId,
+        vendorId: vendor._id,
+        vendorName: vendor.name,
+        serviceName: service.name,
+        category: service.category,
+        price: Number(service.price || service.cost || 0),
+        imageUrl: service.imageUrl || '',
+      };
+
+      console.log('Adding to cart with payload:', payload);
+
+      const response = await axios.post('http://localhost:5000/api/cart/add', payload);
+
+      console.log('Cart add response:', response.data);
+      alert('Item added to cart successfully!');
+    } catch (error) {
+      console.error('Error adding to cart:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      alert('Failed to add item to cart: ' + (error.response?.data?.message || error.message));
+    }
   };
 
-  const viewFullDetails = (service) => {
-    navigate(`/service/detail/${service._id}`, { state: { service } });
+  // Updated viewFullDetails to pass the entire category data and service ID
+  const viewFullDetails = (serviceId) => {
+    // Find the specific service and vendor for additional context (optional)
+    const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
+    const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
+
+    if (!service || !vendor) {
+      console.error('Service or vendor not found for navigation:', { serviceId, service, vendor });
+      return;
+    }
+
+    // Navigate to the next page, passing the entire category data and service ID
+    navigate(`/service/detail/${serviceId}`, {
+      state: {
+        category, // Entire category data from /api/detail
+        service,  // Specific service details
+        vendor,   // Specific vendor details
+      },
+    });
   };
 
   return (
@@ -121,7 +179,7 @@ function ServiceDetails() {
             Service Providers
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Discover exceptional service providers in the dark
+            Discover exceptional service providers
           </p>
         </div>
 
@@ -153,74 +211,156 @@ function ServiceDetails() {
           </div>
         ) : (
           <div className="flex flex-col space-y-8">
-            {category.map((service, index) => (
-              <div
-                key={service._id}
-                className={`relative overflow-hidden rounded-3xl shadow-xl ${
-                  index % 2 === 0 ? 'bg-gradient-to-r from-gray-800 to-gray-900' : 'bg-gradient-to-r from-gray-900 to-gray-800'
-                } border border-gray-800 hover:border-gray-700 transition-all duration-300`}
-              >
-                <div className={`flex flex-col lg:flex-row ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
-                  {/* Image Section */}
-                  <div className="lg:w-2/5 relative h-80 lg:h-auto">
-                    {service.services.map((i) => (
+            {category.map((vendor, vendorIndex) =>
+              vendor.services.map((service, serviceIndex) => (
+                <div
+                  key={service._id}
+                  className={`relative overflow-hidden rounded-3xl shadow-xl ${
+                    (vendorIndex + serviceIndex) % 2 === 0
+                      ? 'bg-gradient-to-r from-gray-800 to-gray-900'
+                      : 'bg-gradient-to-r from-gray-900 to-gray-800'
+                  } border border-gray-800 hover:border-gray-700 transition-all duration-300`}
+                >
+                  <div
+                    className={`flex flex-col lg:flex-row ${
+                      (vendorIndex + serviceIndex) % 2 === 0 ? '' : 'lg:flex-row-reverse'
+                    }`}
+                  >
+                    <div className="lg:w-2/5 relative h-80 lg:h-auto">
                       <img
-                        key={i._id}
-                        src={i.imageUrl}
-                        alt={i.name}
+                        src={service.imageUrl || 'https://via.placeholder.com/400'}
+                        alt={service.name}
                         className="absolute inset-0 w-full h-full object-cover opacity-90"
                       />
-                    ))}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex items-end p-6">
-                      <div>
-                        <span className="inline-block px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-sm font-medium text-blue-300 mb-2 border border-gray-700">
-                          {service.services[0]?.category || 'Service'}
-                        </span>
-                        <h3 className="text-2xl font-bold text-white">
-                          {service.services[0]?.name || 'Professional Service'}
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Content Section */}
-                  <div className="lg:w-3/5 p-8 lg:p-12">
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <h2 className="text-3xl font-bold text-white">{service.name}</h2>
-                        {/* Display Rating */}
-                        <div className="flex items-center mt-2">
-                          {renderStars(ratings[service._id] || 0)}
-                          <span className="ml-2 text-gray-400 text-sm">
-                            ({(ratings[service._id] || 0).toFixed(1)} / 5)
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex items-end p-6">
+                        <div>
+                          <span className="inline-block px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-sm font-medium text-blue-300 mb-2 border border-gray-700">
+                            {service.category || 'Service'}
                           </span>
+                          <h3 className="text-2xl font-bold text-white">{service.name || 'Professional Service'}</h3>
                         </div>
                       </div>
-                      <div className="flex space-x-2">
-                        {service.categories.map((cat, i) => (
-                          <span
-                            key={i}
-                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-blue-300 border border-gray-700"
-                          >
-                            {cat}
-                          </span>
-                        ))}
-                      </div>
                     </div>
 
-                    <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-                      {service.services[0]?.description || 'Professional service with attention to detail and customer satisfaction.'}
-                    </p>
+                    <div className="lg:w-3/5 p-8 lg:p-12">
+                      <div className="flex justify-between items-start mb-6">
+                        <div>
+                          <h2 className="text-3xl font-bold text-white">{vendor.name}</h2>
+                          <div className="flex items-center mt-2">
+                            {renderStars(ratings[service._id] || 0)}
+                            <span className="ml-2 text-gray-400 text-sm">
+                              ({(ratings[service._id] || 0).toFixed(1)} / 5)
+                            </span>
+                          </div>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Price: ${service.price || service.cost ? Number(service.price || service.cost).toFixed(2) : 'N/A'}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          {vendor.categories && vendor.categories.length > 0 ? (
+                            vendor.categories.map((cat, i) => (
+                              <span
+                                key={i}
+                                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-blue-300 border border-gray-700"
+                              >
+                                {cat}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-blue-300 border border-gray-700">
+                              No Categories
+                            </span>
+                          )}
+                        </div>
+                      </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      <div className="flex items-center">
-                        <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
-                          <svg
-                            className="w-6 h-6 text-blue-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
+                      <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+                        {service.description || 'Professional service with attention to detail and customer satisfaction.'}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="flex items-center">
+                          <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
+                            <svg
+                              className="w-6 h-6 text-blue-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500">Contact</p>
+                            <p className="font-medium text-gray-200">{vendor.phone}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center">
+                          <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
+                            <svg
+                              className="w-6 h-6 text-blue-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500">Email</p>
+                            <p className="font-medium text-gray-200">{vendor.contactEmail}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-4">
+                        <button
+                          onClick={() => viewFullDetails(service._id)} // Pass service._id
+                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
+                        >
+                          View Full Details
+                          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                            />
+                          </svg>
+                        </button>
+
+                        <button
+                          onClick={() => handleAddToCart(service._id)}
+                          className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30 cursor-pointer"
+                        >
+                          Add to Cart
+                          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                            />
+                          </svg>
+                        </button>
+
+                        <a
+                          href={`tel:${vendor.phone}`}
+                          className="px-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700 cursor-pointer"
+                        >
+                          Call Now
+                          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -228,91 +368,17 @@ function ServiceDetails() {
                               d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                             />
                           </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Contact</p>
-                          <p className="font-medium text-gray-200">{service.phone}</p>
-                        </div>
+                        </a>
                       </div>
-
-                      <div className="flex items-center">
-                        <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
-                          <svg
-                            className="w-6 h-6 text-blue-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Email</p>
-                          <p className="font-medium text-gray-200">{service.contactEmail}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4">
-                      <button
-                        onClick={() => viewFullDetails(service)}
-                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
-                      >
-                        View Full Details
-                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          />
-                        </svg>
-                      </button>
-
-                      <button
-                        onClick={() => handleAddToCart(service.services[0]?._id)}
-                        className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30 cursor-pointer"
-                      >
-                        Add to Cart
-                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                          />
-                        </svg>
-                      </button>
-
-                      <a
-                        href={`tel:${service.phone}`}
-                        className="px-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700 cursor-pointer"
-                      >
-                        Call Now
-                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                          />
-                        </svg>
-                      </a>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
       </div>
 
-      {/* Dark Theme Modal Popup */}
       {showPopup && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="relative bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-800">

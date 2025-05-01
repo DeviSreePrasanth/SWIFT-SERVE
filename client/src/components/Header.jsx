@@ -13,6 +13,7 @@ const Header = () => {
     name: localStorage.getItem('userName') || 'Guest',
     email: localStorage.getItem('userEmail') || 'No email',
     avatar: localStorage.getItem('userAvatar') || '',
+    id: localStorage.getItem('userId') || '', // Add userId
   };
 
   // Close profile dropdown when clicking outside
@@ -159,7 +160,7 @@ const Header = () => {
             <div className="flex items-center space-x-3">
               {/* Cart Icon with badge */}
               <Link 
-                to="/cart" 
+                to={`/cart/${user.id}`} // Updated to include userId
                 className="p-2 relative text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all hover:scale-110"
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
