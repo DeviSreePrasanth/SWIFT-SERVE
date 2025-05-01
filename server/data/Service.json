@@ -3,36 +3,36 @@
     "name": "Residential Plumbing",
     "description": "Comprehensive plumbing services including leak repairs, pipe installations, and fixture upgrades for homes.",
     "category": "Plumbing",
-    "imageUrl": "https://example.com/images/plumbing.jpg"
+    "imageUrl": "https://images.unsplash.com/photo-1605087880595-8cc6db61f3c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
   },
   {
     "name": "Electrical Wiring",
     "description": "Full electrical wiring and rewiring services for residential and commercial properties.",
     "category": "Electrical",
-    "imageUrl": "https://example.com/images/electrical.jpg"
+    "imageUrl": "https://images.unsplash.com/photo-1581093450021-3a0c24156c06?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
   },
   {
     "name": "Deep Cleaning",
     "description": "Thorough cleaning services for offices, homes, and commercial spaces, including carpet and upholstery cleaning.",
     "category": "Cleaning",
-    "imageUrl": "https://example.com/images/cleaning.jpg"
+    "imageUrl": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
   },
   {
     "name": "Network Setup",
     "description": "Professional IT services for setting up secure and efficient network infrastructure.",
     "category": "IT",
-    "imageUrl": "https://example.com/images/network.jpg"
+    "imageUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
   },
   {
     "name": "Interior Painting",
     "description": "High-quality interior painting services with a focus on precision and durability.",
     "category": "Painting",
-    "imageUrl": "https://example.com/images/painting.jpg"
+    "imageUrl": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
   },
   {
     "name": "HVAC Maintenance",
     "description": "Routine maintenance and repair for heating, ventilation, and air conditioning systems.",
     "category": "Maintenance",
-    "imageUrl": "https://example.com/images/hvac.jpg"
+    "imageUrl": "https://images.unsplash.com/photo-1600566752229-250d0a7e0b2c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
   }
 ]
