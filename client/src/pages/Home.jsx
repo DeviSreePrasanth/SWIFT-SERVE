@@ -4,12 +4,14 @@ import Header from '../components/Header';
 import ServiceCard from '../components/ServiceCard';
 import Footer from '../components/Footer';
 import axios from 'axios';
-
+import SpotlightCard from '../components/SpotlightCard';
 function Home() {
   const [services, setServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
   const [error, setError] = useState(null);
-
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -61,8 +63,9 @@ function Home() {
           </div>
         </section>
           {/* Why Choose Us Section */}
-<section className="py-20 bg-gray-900">
+          <section className="py-20 bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {/* Heading */}
     <div className="text-center mb-16">
       <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
         Why <span className="text-blue-500">Choose Us</span>
@@ -73,78 +76,63 @@ function Home() {
       </p>
     </div>
 
+    {/* Features */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {/* Feature 1 */}
-      <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-blue-500/30 transition-all duration-300">
-        <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-          </svg>
+      {/* Repeatable Feature Cards */}
+      {[
+        {
+          title: "Verified Professionals",
+          description: "Every service provider is thoroughly vetted and background checked for your peace of mind.",
+          iconPath: "M5 13l4 4L19 7",
+        },
+        {
+          title: "On-Time Service",
+          description: "Our professionals arrive when promised or your service is free. We value your time.",
+          iconPath: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+        },
+        {
+          title: "Transparent Pricing",
+          description: "No hidden fees. Know exactly what you'll pay before booking any service.",
+          iconPath: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+        },
+        {
+          title: "Satisfaction Guarantee",
+          description: "If you're not happy with the service, we'll make it right or refund your money.",
+          iconPath: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+        },
+      ].map(({ title, description, iconPath }, index) => (
+        <div
+          key={index}
+          className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-blue-500/30 transition-all duration-300"
+        >
+          <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mb-6">
+            <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={iconPath}></path>
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
+          <p className="text-gray-400">{description}</p>
         </div>
-        <h3 className="text-xl font-bold text-white mb-3">Verified Professionals</h3>
-        <p className="text-gray-400">
-          Every service provider is thoroughly vetted and background checked for your peace of mind.
-        </p>
-      </div>
-
-      {/* Feature 2 */}
-      <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-blue-500/30 transition-all duration-300">
-        <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3">On-Time Service</h3>
-        <p className="text-gray-400">
-          Our professionals arrive when promised or your service is free. We value your time.
-        </p>
-      </div>
-
-      {/* Feature 3 */}
-      <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-blue-500/30 transition-all duration-300">
-        <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-          </svg>
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3">Transparent Pricing</h3>
-        <p className="text-gray-400">
-          No hidden fees. Know exactly what you'll pay before booking any service.
-        </p>
-      </div>
-
-      {/* Feature 4 */}
-      <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-blue-500/30 transition-all duration-300">
-        <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-          </svg>
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3">Satisfaction Guarantee</h3>
-        <p className="text-gray-400">
-          If you're not happy with the service, we'll make it right or refund your money.
-        </p>
-      </div>
+      ))}
     </div>
 
-    {/* Stats */}
+    {/* Stats with SpotlightCard */}
     <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-      <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700">
-        <div className="text-4xl font-bold text-blue-400 mb-2">10,000+</div>
-        <div className="text-gray-400">Happy Customers</div>
-      </div>
-      <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700">
-        <div className="text-4xl font-bold text-blue-400 mb-2">500+</div>
-        <div className="text-gray-400">Verified Professionals</div>
-      </div>
-      <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700">
-        <div className="text-4xl font-bold text-blue-400 mb-2">24/7</div>
-        <div className="text-gray-400">Customer Support</div>
-      </div>
-      <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700">
-        <div className="text-4xl font-bold text-blue-400 mb-2">98%</div>
-        <div className="text-gray-400">Satisfaction Rate</div>
-      </div>
+      {[
+        { value: "10,000+", label: "Happy Customers" },
+        { value: "500+", label: "Verified Professionals" },
+        { value: "24/7", label: "Customer Support" },
+        { value: "98%", label: "Satisfaction Rate" },
+      ].map(({ value, label }, idx) => (
+        <SpotlightCard
+          key={idx}
+          className="bg-blue-900/30 p-6 rounded-xl border border-gray-700 custom-spotlight-card"
+          spotlightColor="rgba(0, 229, 255, 0.2)"
+        >
+          <div className="text-4xl font-bold text-blue-400 mb-2">{value}</div>
+          <div className="text-gray-400">{label}</div>
+        </SpotlightCard>
+      ))}
     </div>
   </div>
 </section>

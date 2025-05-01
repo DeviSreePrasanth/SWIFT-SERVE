@@ -12,7 +12,9 @@ function ServiceDetails() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
   useEffect(() => {
     setIsLoading(true);
     axios.get(`http://localhost:5000/api/detail?name=${id}`)
