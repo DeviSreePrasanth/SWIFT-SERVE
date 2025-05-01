@@ -8,6 +8,7 @@ function VendorPage() {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ratings, setRatings] = useState({}); // Store average ratings for each vendor
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -18,6 +19,24 @@ function VendorPage() {
       try {
         const response = await axios.get('http://localhost:5000/api/vendor');
         setVendors(response.data);
+        // Fetch ratings for each vendor
+        response.data.forEach((vendor) => {
+          axios
+            .get(`http://localhost:5000/api/review?name=${vendor.name}`)
+            .then((res) => {
+              const reviews = res.data;
+              if (reviews.length > 0) {
+                const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+                setRatings((prev) => ({ ...prev, [vendor._id]: avgRating }));
+              } else {
+                setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
+              }
+            })
+            .catch((error) => {
+              console.error(`Error fetching reviews for ${vendor.name}:`, error);
+              setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
+            });
+        });
         setLoading(false);
       } catch (err) {
         console.error('Error fetching vendors:', err);
@@ -28,6 +47,50 @@ function VendorPage() {
 
     fetchVendors();
   }, []);
+
+  // Function to render star rating
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      let starType = 'empty';
+      if (rating >= i) {
+        starType = 'filled';
+      } else if (rating >= i - 0.5) {
+        starType = 'half';
+      }
+      stars.push(
+        <svg
+          key={i}
+          className={`w-5 h-5 inline-block ${
+            starType === 'filled'
+              ? 'text-yellow-400'
+              : starType === 'half'
+              ? 'text-yellow-400'
+              : 'text-gray-600'
+          }`}
+          fill={starType === 'filled' ? 'currentColor' : starType === 'half' ? 'url(#half)' : 'none'}
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          {starType === 'half' && (
+            <defs>
+              <linearGradient id="half">
+                <stop offset="50%" stopColor="currentColor" />
+                <stop offset="50%" stopColor="transparent" />
+              </linearGradient>
+            </defs>
+          )}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+          />
+        </svg>
+      );
+    }
+    return stars;
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900">
@@ -82,7 +145,7 @@ function VendorPage() {
               <p className="text-gray-300 max-w-md mx-auto">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-6 px-6 py-3 rounded-xl font-medium bg-gray-800 hover:bg-gray-700 text-white transition-colors border border-gray-700 hover:border-cyan-500/50"
+                className="mt-6 px-6 py-3 rounded-xl font-medium bg-gray-800 hover:bg-gray-700 text-white transition-colors border border-gray-700 hover:border-cyan-500/50 cursor-pointer"
               >
                 Retry
               </button>
@@ -112,6 +175,13 @@ function VendorPage() {
                           {vendor.name || 'Unnamed Professional'}
                         </h3>
                         <p className="text-gray-300 text-sm mt-1">{vendor.contactEmail}</p>
+                        {/* Display Rating */}
+                        <div className="flex items-center mt-2">
+                          {renderStars(ratings[vendor._id] || 0)}
+                          <span className="ml-2 text-gray-400 text-sm">
+                            ({(ratings[vendor._id] || 0).toFixed(1)} / 5)
+                          </span>
+                        </div>
                         {vendor.categories?.length > 0 && (
                           <div className="mt-4 flex flex-wrap justify-center gap-2">
                             {vendor.categories.slice(0, 3).map((category, index) => (
@@ -148,7 +218,7 @@ function VendorPage() {
               <div className="text-center mt-12">
                 <Link
                   to="/"
-                  className="inline-block px-6 py-3 rounded-xl font-medium bg-gray-800 hover:bg-gray-700 text-white transition-colors border border-gray-700 hover:border-cyan-500/50"
+                  className="inline-block px-6 py-3 rounded-xl font-medium bg-gray-800 hover:bg-gray-700 text-white transition-colors border border-gray-700 hover:border-cyan-500/50 cursor-pointer"
                 >
                   Back to Home
                 </Link>

@@ -27,6 +27,7 @@ function App() {
             <Route path="/searchQuery/:name" element={<SearchResults />}/>
             <Route path="/cart/:userId" element={<CartPage/>}/>
             <Route path="/service/detail/:id" element={<ServiceFullPage />} />
+            
           </Routes>
         </main>
 

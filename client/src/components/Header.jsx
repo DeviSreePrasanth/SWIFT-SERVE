@@ -84,7 +84,7 @@ const Header = () => {
               <Link to="/vendor" className="text-gray-300 hover:text-white font-medium transition-colors">
                 Professionals
               </Link>
-              <Link to="/booking-history" className="text-gray-300 hover:text-white font-medium transition-colors">
+              <Link to="/bookings" className="text-gray-300 hover:text-white font-medium transition-colors">
                 Bookings History
               </Link>
             </nav>
