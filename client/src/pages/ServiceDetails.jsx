@@ -171,6 +171,10 @@ function ServiceDetails() {
     const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
     const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
 
+    // Debug: Log the found service and vendor
+    console.log('Found service:', service);
+    console.log('Found vendor:', vendor);
+
     if (!service || !vendor) {
       console.error('Service or vendor not found for navigation:', { serviceId, service, vendor });
       showNotification('Service or vendor not found for details', true);
