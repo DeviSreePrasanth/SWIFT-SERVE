@@ -1,0 +1,254 @@
+[
+    {
+      "name": "BlueWave Solutions",
+      "user": "John Doe",
+      "rating": 4,
+      "feedback": "Great plumbing service, fixed the leak quickly. Cleaning was decent but missed some spots."
+    },
+    {
+      "name": "BlueWave Solutions",
+      "user": "Sarah Connor",
+      "rating": 5,
+      "feedback": "Excellent deep cleaning! My house sparkles."
+    },
+    {
+      "name": "BlueWave Solutions",
+      "user": "Mike Smith",
+      "rating": 3,
+      "feedback": "Plumbing was okay, but the response time was slow."
+    },
+    {
+      "name": "TechTrend Innovations",
+      "user": "Emma Watson",
+      "rating": 5,
+      "feedback": "Network setup was seamless, and HVAC maintenance was thorough."
+    },
+    {
+      "name": "TechTrend Innovations",
+      "user": "David Brown",
+      "rating": 4,
+      "feedback": "Good service, but the technician arrived late."
+    },
+    {
+      "name": "TechTrend Innovations",
+      "user": "Lisa Jones",
+      "rating": 2,
+      "feedback": "Network kept dropping after setup. Disappointed."
+    },
+    {
+      "name": "BrightSpark Electric",
+      "user": "Chris Evans",
+      "rating": 5,
+      "feedback": "Fantastic electrical work. Very professional."
+    },
+    {
+      "name": "BrightSpark Electric",
+      "user": "Amy White",
+      "rating": 4,
+      "feedback": "Wiring was done well, but a bit pricey."
+    },
+    {
+      "name": "ColorCraft Painters",
+      "user": "Steve Rogers",
+      "rating": 5,
+      "feedback": "Beautiful interior painting. Transformed my living room!"
+    },
+    {
+      "name": "ColorCraft Painters",
+      "user": "Natasha Romanoff",
+      "rating": 3,
+      "feedback": "Painting was okay, but they left some paint splatters."
+    },
+    {
+      "name": "CleanTech Services",
+      "user": "Peter Parker",
+      "rating": 4,
+      "feedback": "Deep cleaning was great, HVAC maintenance was quick."
+    },
+    {
+      "name": "CleanTech Services",
+      "user": "Tony Stark",
+      "rating": 5,
+      "feedback": "Spotless cleaning service! Highly recommend."
+    },
+    {
+      "name": "ElectroFix",
+      "user": "Bruce Banner",
+      "rating": 4,
+      "feedback": "Electrical wiring was top-notch, network setup was good."
+    },
+    {
+      "name": "ElectroFix",
+      "user": "Wanda Maximoff",
+      "rating": 3,
+      "feedback": "Service was okay, but communication could be better."
+    },
+    {
+      "name": "PipePro Plumbing",
+      "user": "Clint Barton",
+      "rating": 5,
+      "feedback": "Fast and reliable plumbing service."
+    },
+    {
+      "name": "PipePro Plumbing",
+      "user": "Pepper Potts",
+      "rating": 4,
+      "feedback": "Good work, but scheduling was a hassle."
+    },
+    {
+      "name": "Artisan Painters",
+      "user": "Thor Odinson",
+      "rating": 5,
+      "feedback": "Amazing painting and cleaning services!"
+    },
+    {
+      "name": "Artisan Painters",
+      "user": "Loki Laufeyson",
+      "rating": 4,
+      "feedback": "Great painting, cleaning was satisfactory."
+    },
+    {
+      "name": "NetSecure IT",
+      "user": "Carol Danvers",
+      "rating": 5,
+      "feedback": "Network setup was perfect. No issues."
+    },
+    {
+      "name": "NetSecure IT",
+      "user": "Nick Fury",
+      "rating": 3,
+      "feedback": "Setup worked, but took longer than expected."
+    },
+    {
+      "name": "CoolBreeze Maintenance",
+      "user": "Scott Lang",
+      "rating": 4,
+      "feedback": "HVAC maintenance was excellent, plumbing was good."
+    },
+    {
+      "name": "CoolBreeze Maintenance",
+      "user": "Hope Van Dyne",
+      "rating": 5,
+      "feedback": "Both services were outstanding!"
+    },
+    {
+      "name": "SparkVibe Electric",
+      "user": "Bucky Barnes",
+      "rating": 4,
+      "feedback": "Electrical wiring was great, painting was decent."
+    },
+    {
+      "name": "SparkVibe Electric",
+      "user": "Sam Wilson",
+      "rating": 5,
+      "feedback": "Really impressed with their work!"
+    },
+    {
+      "name": "FreshStart Cleaning",
+      "user": "Rhodey Rhodes",
+      "rating": 5,
+      "feedback": "House looks brand new after their cleaning."
+    },
+    {
+      "name": "FreshStart Cleaning",
+      "user": "Vision Synthezoid",
+      "rating": 4,
+      "feedback": "Great service, but a bit expensive."
+    },
+    {
+      "name": "TechFlow Solutions",
+      "user": "TChalla Wakanda",
+      "rating": 5,
+      "feedback": "Network and electrical work were flawless."
+    },
+    {
+      "name": "TechFlow Solutions",
+      "user": "Okoye Wakanda",
+      "rating": 3,
+      "feedback": "Service was okay, expected faster completion."
+    },
+    {
+      "name": "PlumbPerfect",
+      "user": "Shuri Wakanda",
+      "rating": 4,
+      "feedback": "Plumbing was great, HVAC maintenance was good."
+    },
+    {
+      "name": "PlumbPerfect",
+      "user": "Nakia Wakanda",
+      "rating": 5,
+      "feedback": "Excellent service all around!"
+    },
+    {
+      "name": "VividCoat Painters",
+      "user": "Peter Quill",
+      "rating": 5,
+      "feedback": "Interior painting was stunning!"
+    },
+    {
+      "name": "VividCoat Painters",
+      "user": "Gamora Zen",
+      "rating": 4,
+      "feedback": "Good work, but cleanup could be better."
+    },
+    {
+      "name": "CleanEdge Services",
+      "user": "Rocket Raccoon",
+      "rating": 5,
+      "feedback": "Cleaning and network setup were perfect."
+    },
+    {
+      "name": "CleanEdge Services",
+      "user": "Groot Tree",
+      "rating": 4,
+      "feedback": "Great service, slightly delayed."
+    },
+    {
+      "name": "WiredRight Electric",
+      "user": "Drax Destroyer",
+      "rating": 5,
+      "feedback": "Electrical wiring was expertly done."
+    },
+    {
+      "name": "WiredRight Electric",
+      "user": "Mantis Empath",
+      "rating": 3,
+      "feedback": "Work was fine, but customer service was lacking."
+    },
+    {
+      "name": "FlowMaster Plumbing",
+      "user": "Nebula Cyborg",
+      "rating": 4,
+      "feedback": "Plumbing was great, painting was okay."
+    },
+    {
+      "name": "FlowMaster Plumbing",
+      "user": "Yondu Udonta",
+      "rating": 5,
+      "feedback": "Both services were excellent!"
+    },
+    {
+      "name": "TechShield IT",
+      "user": "Kraglin Obfonteri",
+      "rating": 5,
+      "feedback": "Network setup and HVAC maintenance were top-notch."
+    },
+    {
+      "name": "TechShield IT",
+      "user": "Howard Stark",
+      "rating": 4,
+      "feedback": "Good service, but a bit slow."
+    },
+    {
+      "name": "BrightClean Solutions",
+      "user": "Maria Hill",
+      "rating": 5,
+      "feedback": "Cleaning and electrical work were fantastic."
+    },
+    {
+      "name": "BrightClean Solutions",
+      "user": "Phil Coulson",
+      "rating": 4,
+      "feedback": "Great cleaning, wiring was satisfactory."
+    }
+  ]
