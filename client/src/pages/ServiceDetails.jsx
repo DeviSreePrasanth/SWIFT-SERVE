@@ -123,16 +123,13 @@ function ServiceDetails() {
         return;
       }
 
-      console.log('Selected service:', service); // Debug price and imageUrl
-      console.log('Selected vendor:', vendor); // Debug vendorName
-
       const payload = {
         userId,
         vendorId: vendor._id,
-        vendorName: vendor.name, // Ensure vendorName is sent
+        vendorName: vendor.name,
         serviceName: service.name,
         category: service.category,
-        price: Number(service.price || service.cost || 0), // Try price or cost
+        price: Number(service.price || service.cost || 0),
         imageUrl: service.imageUrl || '',
       };
 
@@ -152,8 +149,25 @@ function ServiceDetails() {
     }
   };
 
-  const viewFullDetails = (service) => {
-    navigate(`/service/detail/${service._id}`, { state: { service } });
+  // Updated viewFullDetails to pass the entire category data and service ID
+  const viewFullDetails = (serviceId) => {
+    // Find the specific service and vendor for additional context (optional)
+    const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
+    const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
+
+    if (!service || !vendor) {
+      console.error('Service or vendor not found for navigation:', { serviceId, service, vendor });
+      return;
+    }
+
+    // Navigate to the next page, passing the entire category data and service ID
+    navigate(`/service/detail/${serviceId}`, {
+      state: {
+        category, // Entire category data from /api/detail
+        service,  // Specific service details
+        vendor,   // Specific vendor details
+      },
+    });
   };
 
   return (
@@ -299,7 +313,7 @@ function ServiceDetails() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0ateness.L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z"
                               />
                             </svg>
                           </div>
@@ -312,7 +326,7 @@ function ServiceDetails() {
 
                       <div className="flex flex-wrap gap-4">
                         <button
-                          onClick={() => viewFullDetails(service)}
+                          onClick={() => viewFullDetails(service._id)} // Pass service._id
                           className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
                         >
                           View Full Details
