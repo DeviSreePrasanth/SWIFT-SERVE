@@ -13,6 +13,7 @@ const CartPage = () => {
     setLoading(true);
     try {
       const response = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+      console.log('Cart fetch response:', response.data);
       setCartItems(response.data[0]?.items || []);
       setError(null);
     } catch (err) {
@@ -38,10 +39,9 @@ const CartPage = () => {
   const totalAmount = cartItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
   const handleProceedToBook = () => {
-    const bookingsPayload = cartItems.map(item => ({
+    const bookingsPayload = cartItems.map((item) => ({
       serviceName: item.serviceName,
       vendorId: item.vendorId,
-      vendorName: item.vendorName,
       category: item.category,
       dateTime: new Date().toISOString(),
       cost: item.price,
@@ -53,19 +53,6 @@ const CartPage = () => {
         userId,
       },
     });
-  };
-
-  const getServiceImage = (category) => {
-    const categories = {
-      photography: 'https://images.unsplash.com/photo-1520390138845-fd2d229dd553',
-      catering: 'https://images.unsplash.com/photo-1555244162-803834f70033',
-      videography: 'https://images.unsplash.com/photo-1579762715118-a6f1d4b934f1',
-      decoration: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf',
-      default: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab'
-    };
-    
-    const key = category?.toLowerCase();
-    return categories[key] || categories.default;
   };
 
   useEffect(() => {
@@ -86,12 +73,21 @@ const CartPage = () => {
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
           <p>{error}</p>
         </div>
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
           </svg>
           Go Back
         </button>
@@ -103,8 +99,19 @@ const CartPage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center gap-4 mb-8">
         <div className="relative">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-10 w-10 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
           </svg>
           {cartItems.length > 0 && (
             <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
@@ -118,8 +125,19 @@ const CartPage = () => {
       {cartItems.length === 0 ? (
         <div className="text-center py-12">
           <div className="mx-auto h-24 w-24 text-gray-300 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-full w-full"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
             </svg>
           </div>
           <h2 className="text-2xl font-medium text-gray-700 mb-2">Your cart is empty</h2>
@@ -135,10 +153,13 @@ const CartPage = () => {
         <div className="lg:flex gap-8">
           <div className="lg:w-2/3">
             {cartItems.map((item, index) => (
-              <div key={index} className="flex flex-col sm:flex-row gap-6 p-6 mb-6 bg-white rounded-lg shadow-sm border border-gray-100">
+              <div
+                key={index}
+                className="flex flex-col sm:flex-row gap-6 p-6 mb-6 bg-white rounded-lg shadow-sm border border-gray-100"
+              >
                 <div className="sm:w-40 h-40 flex-shrink-0">
                   <img
-                    src={`${getServiceImage(item.category)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80`}
+                    src={item.imageUrl || 'https://via.placeholder.com/400'}
                     alt={item.serviceName}
                     className="w-full h-full object-cover rounded-md"
                   />
@@ -147,7 +168,6 @@ const CartPage = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">{item.serviceName}</h3>
-                      <p className="text-gray-500">by {item.vendorName}</p>
                       <p className="text-sm text-gray-500 mt-1">Category: {item.category}</p>
                     </div>
                     <button
@@ -155,13 +175,26 @@ const CartPage = () => {
                       disabled={loading}
                       className="text-red-500 hover:text-red-700 disabled:opacity-50"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
                   <div className="mt-4 flex justify-between items-end">
-                    <span className="text-xl font-bold text-blue-600">${Number(item.price).toFixed(2)}</span>
+                    <span className="text-xl font-bold text-blue-600">
+                      ${Number(item.price || 0).toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
