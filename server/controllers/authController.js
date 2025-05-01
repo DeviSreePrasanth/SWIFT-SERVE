@@ -46,13 +46,10 @@ const authController = {
 
   login: async (req, res, next) => {
     try {
-      console.log("Login request received:", req.body); // Log incoming request
-      
       const { email, password } = req.body;
   
       // Basic validation
       if (!email || !password) {
-        console.log("Missing fields - email:", email, "password:", !!password);
         return res.status(400).json({ 
           success: false,
           message: 'Email and password are required',
@@ -62,7 +59,6 @@ const authController = {
   
       const user = await User.findOne({ email });
       if (!user) {
-        console.log("User not found for email:", email);
         return res.status(400).json({ 
           success: false,
           message: 'Invalid credentials' 
@@ -71,7 +67,6 @@ const authController = {
   
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        console.log("Password mismatch for user:", email);
         return res.status(400).json({ 
           success: false,
           message: 'Invalid credentials' 
@@ -83,8 +78,6 @@ const authController = {
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
-  
-      console.log("Login successful for user:", email);
       res.status(200).json({
         success: true,
         token,

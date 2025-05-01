@@ -49,7 +49,7 @@ const Login = () => {
         localStorage.setItem("userId", user.id);
         localStorage.setItem("userName", user.name);
         localStorage.setItem("userEmail", user.email);
-        return { success: true, message: `Welcome back, ${user.name}!` };
+        return { success: true, message: `Login Successful` };
       } else {
         return { success: false, message: response.data.message || "Login failed" };
       }
