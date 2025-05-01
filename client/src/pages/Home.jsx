@@ -4,8 +4,10 @@ import Header from '../components/Header';
 import ServiceCard from '../components/ServiceCard';
 import Footer from '../components/Footer';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import SpotlightCard from '../components/SpotlightCard';
 function Home() {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +39,7 @@ function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section
+        <secton
           className="relative bg-cover bg-center h-screen max-h-[800px] flex items-center justify-center overflow-hidden"
           style={{
             backgroundImage: 'url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80)',
@@ -53,7 +55,8 @@ function Home() {
               Connect with certified professionals for all your home maintenance and repair needs
             </p>
             <div className="flex gap-4 justify-center animate-fade-in delay-200">
-              <button className="px-8 py-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl">
+              <button className="px-8 py-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl"
+              onClick={() => navigate('/services')}>
                 Book a Service
               </button>
               <button className="px-8 py-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-transparent border-2 border-gray-300 hover:border-white text-white">
@@ -61,7 +64,7 @@ function Home() {
               </button>
             </div>
           </div>
-        </section>
+        </secton>
           {/* Why Choose Us Section */}
           <section className="py-20 bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
