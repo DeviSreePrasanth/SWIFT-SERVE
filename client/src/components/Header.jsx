@@ -232,18 +232,11 @@ const Header = () => {
                     </div>
                     <div className="p-2">
                       <Link 
-                        to="/profile" 
-                        className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        My Profile
-                      </Link>
-                      <Link 
                 to={`/bookings/${user.name}`}
                 className="block px-3 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-colors"
                 onClick={() => setIsProfileOpen(false)}
               >
-                Bookings
+                My Bookings
               </Link>
                     </div>
                     <div className="p-2 border-t border-gray-700">
