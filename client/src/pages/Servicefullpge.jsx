@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { motion } from 'framer-motion';
+import axios from 'axios';
 
 function ServiceFullPage() {
   const { state } = useLocation();
@@ -10,11 +10,25 @@ function ServiceFullPage() {
   const service = state?.service;
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
-    if (!service) navigate('/services');
-    else {
-      setTimeout(() => setIsLoaded(true), 300); // Smooth intro animation
+    if (!service) {
+      navigate('/services');
+    } else {
+      setTimeout(() => setIsLoaded(true), 300);
+      axios
+        .get(`http://localhost:5000/api/review?name=${service.name}`)
+        .then((response) => {
+          const reviews = response.data;
+          if (reviews.length > 0) {
+            const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+            setAverageRating(avgRating);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching reviews:', error);
+        });
     }
   }, [service, navigate]);
 
@@ -22,75 +36,86 @@ function ServiceFullPage() {
     navigate(`/cart/add/${service.services[0]?._id}`);
   };
 
+  // Function to render star rating
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      let starType = 'empty';
+      if (rating >= i) {
+        starType = 'filled';
+      } else if (rating >= i - 0.5) {
+        starType = 'half';
+      }
+      stars.push(
+        <svg
+          key={i}
+          className={`w-5 h-5 inline-block ${starType === 'filled' ? 'text-yellow-400' : starType === 'half' ? 'text-yellow-400' : 'text-gray-600'}`}
+          fill={starType === 'filled' ? 'currentColor' : starType === 'half' ? 'url(#half)' : 'none'}
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          {starType === 'half' && (
+            <defs>
+              <linearGradient id="half">
+                <stop offset="50%" stopColor="currentColor" />
+                <stop offset="50%" stopColor="transparent" />
+              </linearGradient>
+            </defs>
+          )}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+          />
+        </svg>
+      );
+    }
+    return stars;
+  };
+
   if (!service) return null;
 
   return (
     <div className="dark bg-gray-900 min-h-screen overflow-hidden">
       <Header />
-      
-      {/* **Floating Particle Background (Dynamic & Interactive) ** */}
+
+      {/* **Floating Particle Background (Static) ** */}
       <div className="fixed inset-0 overflow-hidden z-0 opacity-20">
         {[...Array(20)].map((_, i) => (
-          <motion.div
+          <div
             key={i}
             className="absolute rounded-full bg-blue-500/30"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+            style={{
+              left: Math.random() * window.innerWidth,
+              top: Math.random() * window.innerHeight,
               width: Math.random() * 10 + 5,
               height: Math.random() * 10 + 5,
-            }}
-            animate={{
-              x: [null, Math.random() * window.innerWidth],
-              y: [null, Math.random() * window.innerHeight],
-              transition: {
-                duration: Math.random() * 30 + 20,
-                repeat: Infinity,
-                repeatType: "reverse",
-              },
             }}
           />
         ))}
       </div>
 
-      {/* **Main Content (Cinematic Layout) ** */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 50 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 max-w-7xl mx-auto px-4 py-16"
-      >
-        {/* **Hero Section (Glowing Gradient + Parallax Effect) ** */}
+      {/* **Main Content ** */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">
+        {/* **Hero Section (Static Gradient) ** */}
         <div className="relative mb-20">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl -z-10"
-            animate={{
-              backgroundPosition: isHovered ? "100% 50%" : "0% 50%",
-            }}
-            transition={{ duration: 3, repeat: Infinity, repeatType: "mirror" }}
-          />
-          
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl -z-10" />
+
           <div className="text-center">
-            <motion.h1 
-              className="text-6xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500"
-              whileHover={{ scale: 1.02 }}
-            >
+            <h1 className="text-6xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
               {service.services[0]?.name || 'Service'}
-            </motion.h1>
+            </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Powered by <span className="font-bold text-blue-400">{service.name}</span> — Professional Excellence
             </p>
           </div>
         </div>
 
-        {/* **Immersive Content Grid (Asymmetrical Layout) ** */}
+        {/* **Content Grid (Asymmetrical Layout) ** */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* **Left Panel (Service Visual + Floating Elements) ** */}
-          <motion.div 
-            className="relative lg:col-span-2"
-            whileHover={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          {/* **Left Panel (Service Visual) ** */}
+          <div className="relative lg:col-span-2">
             <div className="relative h-[500px] rounded-3xl overflow-hidden border-2 border-gray-700/50 backdrop-blur-lg bg-gradient-to-br from-gray-800/50 to-gray-900/70">
               <img
                 src={service.services[0]?.imageUrl}
@@ -101,54 +126,34 @@ function ServiceFullPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-8">
                 <div>
-                  <motion.span 
-                    className="inline-block px-4 py-2 bg-black/50 backdrop-blur-md rounded-full text-sm font-bold text-blue-300 border border-blue-500/30 mb-3"
-                    whileHover={{ scale: 1.05 }}
-                  >
+                  <span className="inline-block px-4 py-2 bg-black/50 backdrop-blur-md rounded-full text-sm font-bold text-blue-300 border border-blue-500/30 mb-3">
                     {service.services[0]?.category || 'Premium Service'}
-                  </motion.span>
+                  </span>
                   <h2 className="text-3xl font-bold text-white">{service.name}</h2>
                 </div>
               </div>
             </div>
 
-            {/* **Floating 3D Tag (Dynamic) ** */}
-            <motion.div
-              className="absolute -top-6 -right-6 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl shadow-2xl z-20"
-              initial={{ rotate: -5, y: 20 }}
-              animate={{ rotate: [0, -5, 0], y: [20, 0, 20] }}
-              transition={{ duration: 4, repeat: Infinity }}
-            >
+            {/* **Floating Tag (Static) ** */}
+            <div className="absolute -top-6 -right-6 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl shadow-2xl z-20">
               <span className="font-bold">⭐ Top Rated</span>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          {/* **Right Panel (Neon Glass Panel + Interactive Details) ** */}
-          <motion.div 
-            className="bg-gray-800/30 border-2 border-gray-700/30 rounded-3xl p-8 backdrop-blur-lg shadow-2xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
+          {/* **Right Panel (Glass Panel) ** */}
+          <div className="bg-gray-800/30 border-2 border-gray-700/30 rounded-3xl p-8 backdrop-blur-lg shadow-2xl">
             <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <span className="bg-blue-500/20 p-2 rounded-lg mr-3">
-                🔍
-              </span>
+              <span className="bg-blue-500/20 p-2 rounded-lg mr-3">🔍</span>
               Service Breakdown
             </h3>
 
             <div className="space-y-6">
-              {/* **Dynamic Description (Typewriter Effect) ** */}
-              <motion.p 
-                className="text-gray-300 leading-relaxed border-l-4 border-blue-500/50 pl-4 py-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-              >
+              {/* **Description ** */}
+              <p className="text-gray-300 leading-relaxed border-l-4 border-blue-500/50 pl-4 py-2">
                 {service.services[0]?.description || 'Expert service with precision and care.'}
-              </motion.p>
+              </p>
 
-              {/* **Interactive Feature List (Hover Effects) ** */}
+              {/* **Feature List ** */}
               <div className="grid grid-cols-1 gap-4">
                 {[
                   "✅ 24/7 Emergency Support",
@@ -156,47 +161,38 @@ function ServiceFullPage() {
                   "✅ 1-Year Warranty",
                   "✅ Free Consultation",
                 ].map((item, i) => (
-                  <motion.div
+                  <div
                     key={i}
                     className="flex items-center bg-gray-800/50 hover:bg-gray-700/50 p-3 rounded-xl cursor-pointer transition-all border border-gray-700/30"
-                    whileHover={{ x: 5 }}
                   >
                     <span className="text-blue-400 mr-3">→</span>
                     <span className="text-gray-200">{item}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
-              {/* **Action Buttons (Glow on Hover) ** */}
+              {/* **Action Buttons ** */}
               <div className="flex flex-col space-y-4 mt-8">
-                <motion.button
+                <button
                   onClick={handleAddToCart}
                   className="px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all flex items-center justify-center"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
                 >
                   🛒 Add to Cart
-                </motion.button>
+                </button>
 
-                <motion.button
+                <button
                   onClick={() => navigate(-1)}
                   className="px-6 py-4 bg-gray-800/70 text-gray-300 border border-gray-700/50 rounded-xl hover:bg-gray-700/50 transition-all flex items-center justify-center"
-                  whileHover={{ x: 3 }}
                 >
                   ↩ Back to Services
-                </motion.button>
+                </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* **Vendor Details (Holographic Panel) ** */}
-        <motion.div 
-          className="mt-20 bg-gradient-to-br from-gray-800/40 to-gray-900/60 border-2 border-gray-700/20 rounded-3xl p-8 backdrop-blur-lg shadow-xl overflow-hidden"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
+        {/* **Vendor Details (Static Panel with Star Rating) ** */}
+        <div className="mt-20 bg-gradient-to-br from-gray-800/40 to-gray-900/60 border-2 border-gray-700/20 rounded-3xl p-8 backdrop-blur-lg shadow-xl overflow-hidden">
           <div className="flex flex-col md:flex-row gap-8 items-center">
             <div className="relative">
               <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl">
@@ -211,11 +207,20 @@ function ServiceFullPage() {
 
             <div className="flex-1">
               <h3 className="text-2xl font-bold text-white mb-2">{service.name}</h3>
+              <div className="flex items-center mb-2">
+                {renderStars(averageRating)}
+                <span className="ml-2 text-gray-400 text-sm">
+                  ({averageRating.toFixed(1)} / 5)
+                </span>
+              </div>
               <p className="text-gray-400 mb-4">Professional since {new Date(service.createdAt).getFullYear()}</p>
-              
+
               <div className="flex flex-wrap gap-3 mb-6">
                 {service.categories.map((cat, i) => (
-                  <span key={i} className="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full text-sm border border-blue-500/30">
+                  <span
+                    key={i}
+                    className="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full text-sm border border-blue-500/30"
+                  >
                     {cat}
                   </span>
                 ))}
@@ -237,8 +242,8 @@ function ServiceFullPage() {
               </div>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       <Footer />
     </div>
