@@ -12,21 +12,87 @@ function ServiceDetails() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [ratings, setRatings] = useState({}); // Store average ratings for each service
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
   useEffect(() => {
     setIsLoading(true);
-    axios.get(`http://localhost:5000/api/detail?name=${id}`)
-      .then(response => {
+    axios
+      .get(`http://localhost:5000/api/detail?name=${id}`)
+      .then((response) => {
         setCategory(response.data);
+        // Fetch ratings for each service
+        response.data.forEach((service) => {
+          axios
+            .get(`http://localhost:5000/api/review?name=${service.name}`)
+            .then((res) => {
+              const reviews = res.data;
+              if (reviews.length > 0) {
+                const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+                setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
+              } else {
+                setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+              }
+            })
+            .catch((error) => {
+              console.error(`Error fetching reviews for ${service.name}:`, error);
+              setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+            });
+        });
         setIsLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching category:', error);
         setIsLoading(false);
       });
   }, [id]);
+
+  // Function to render star rating
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      let starType = 'empty';
+      if (rating >= i) {
+        starType = 'filled';
+      } else if (rating >= i - 0.5) {
+        starType = 'half';
+      }
+      stars.push(
+        <svg
+          key={i}
+          className={`w-5 h-5 inline-block ${
+            starType === 'filled'
+              ? 'text-yellow-400'
+              : starType === 'half'
+              ? 'text-yellow-400'
+              : 'text-gray-600'
+          }`}
+          fill={starType === 'filled' ? 'currentColor' : starType === 'half' ? 'url(#half)' : 'none'}
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          {starType === 'half' && (
+            <defs>
+              <linearGradient id="half">
+                <stop offset="50%" stopColor="currentColor" />
+                <stop offset="50%" stopColor="transparent" />
+              </linearGradient>
+            </defs>
+          )}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+          />
+        </svg>
+      );
+    }
+    return stars;
+  };
 
   const openPopup = (vendor) => {
     setSelectedVendor(vendor);
@@ -58,7 +124,7 @@ function ServiceDetails() {
             Discover exceptional service providers in the dark
           </p>
         </div>
-        
+
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-pulse flex space-x-4">
@@ -68,8 +134,18 @@ function ServiceDetails() {
         ) : category.length === 0 ? (
           <div className="text-center py-16">
             <div className="inline-block p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl mb-6 border border-gray-800">
-              <svg className="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-16 h-16 mx-auto text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h3 className="text-2xl font-semibold text-gray-300 mb-2">No services available</h3>
@@ -78,9 +154,11 @@ function ServiceDetails() {
         ) : (
           <div className="flex flex-col space-y-8">
             {category.map((service, index) => (
-              <div 
-                key={service._id} 
-                className={`relative overflow-hidden rounded-3xl shadow-xl ${index % 2 === 0 ? 'bg-gradient-to-r from-gray-800 to-gray-900' : 'bg-gradient-to-r from-gray-900 to-gray-800'} border border-gray-800 hover:border-gray-700 transition-all duration-300`}
+              <div
+                key={service._id}
+                className={`relative overflow-hidden rounded-3xl shadow-xl ${
+                  index % 2 === 0 ? 'bg-gradient-to-r from-gray-800 to-gray-900' : 'bg-gradient-to-r from-gray-900 to-gray-800'
+                } border border-gray-800 hover:border-gray-700 transition-all duration-300`}
               >
                 <div className={`flex flex-col lg:flex-row ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
                   {/* Image Section */}
@@ -98,18 +176,29 @@ function ServiceDetails() {
                         <span className="inline-block px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-sm font-medium text-blue-300 mb-2 border border-gray-700">
                           {service.services[0]?.category || 'Service'}
                         </span>
-                        <h3 className="text-2xl font-bold text-white">{service.services[0]?.name || 'Professional Service'}</h3>
+                        <h3 className="text-2xl font-bold text-white">
+                          {service.services[0]?.name || 'Professional Service'}
+                        </h3>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Content Section */}
                   <div className="lg:w-3/5 p-8 lg:p-12">
                     <div className="flex justify-between items-start mb-6">
-                      <h2 className="text-3xl font-bold text-white">{service.name}</h2>
+                      <div>
+                        <h2 className="text-3xl font-bold text-white">{service.name}</h2>
+                        {/* Display Rating */}
+                        <div className="flex items-center mt-2">
+                          {renderStars(ratings[service._id] || 0)}
+                          <span className="ml-2 text-gray-400 text-sm">
+                            ({(ratings[service._id] || 0).toFixed(1)} / 5)
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex space-x-2">
                         {service.categories.map((cat, i) => (
-                          <span 
+                          <span
                             key={i}
                             className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-blue-300 border border-gray-700"
                           >
@@ -118,16 +207,26 @@ function ServiceDetails() {
                         ))}
                       </div>
                     </div>
-                    
+
                     <p className="text-gray-300 text-lg mb-8 leading-relaxed">
                       {service.services[0]?.description || 'Professional service with attention to detail and customer satisfaction.'}
                     </p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                       <div className="flex items-center">
                         <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
-                          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          <svg
+                            className="w-6 h-6 text-blue-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                            />
                           </svg>
                         </div>
                         <div>
@@ -135,11 +234,21 @@ function ServiceDetails() {
                           <p className="font-medium text-gray-200">{service.phone}</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center">
                         <div className="p-3 bg-gray-800 rounded-xl mr-4 border border-gray-700">
-                          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z" />
+                          <svg
+                            className="w-6 h-6 text-blue-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z"
+                            />
                           </svg>
                         </div>
                         <div>
@@ -148,35 +257,50 @@ function ServiceDetails() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-wrap gap-4">
                       <button
                         onClick={() => viewFullDetails(service)}
-                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30"
+                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
                       >
                         View Full Details
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
                         </svg>
                       </button>
-                      
+
                       <button
                         onClick={() => handleAddToCart(service.services[0]?._id)}
-                        className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30"
+                        className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30 cursor-pointer"
                       >
                         Add to Cart
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
                         </svg>
                       </button>
-                      
-                      <a 
-                        href={`tel:${service.phone}`} 
-                        className="—x-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700"
+
+                      <a
+                        href={`tel:${service.phone}`}
+                        className="px-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700 cursor-pointer"
                       >
                         Call Now
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
                         </svg>
                       </a>
                     </div>
@@ -194,7 +318,7 @@ function ServiceDetails() {
           <div className="relative bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-800">
             <button
               onClick={closePopup}
-              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-all duration-300 border border-gray-700"
+              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
             >
               <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
