@@ -149,21 +149,28 @@ function ServiceDetails() {
     }
   };
 
-  // Updated viewFullDetails to pass the entire category data and service ID
+  // Updated viewFullDetails to ensure correct service and vendor are passed
   const viewFullDetails = (serviceId) => {
-    // Find the specific service and vendor for additional context (optional)
+    // Debug: Log the serviceId being passed
+    console.log('viewFullDetails called with serviceId:', serviceId);
+
+    // Find the specific service and vendor
     const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
     const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
 
+    // Debug: Log the found service and vendor
+    console.log('Found service:', service);
+    console.log('Found vendor:', vendor);
+
     if (!service || !vendor) {
       console.error('Service or vendor not found for navigation:', { serviceId, service, vendor });
+      alert('Service or vendor not found.');
       return;
     }
 
-    // Navigate to the next page, passing the entire category data and service ID
+    // Navigate to the next page, passing only the necessary data
     navigate(`/service/detail/${serviceId}`, {
       state: {
-        category, // Entire category data from /api/detail
         service,  // Specific service details
         vendor,   // Specific vendor details
       },
