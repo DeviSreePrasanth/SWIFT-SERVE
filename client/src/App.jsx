@@ -11,13 +11,16 @@ import SearchResults from './pages/SearchResultsPage';
 import BookingsPage from './pages/BookingsPage';
 import CartPage from './pages/CartPage';
 import ServiceFullPage from './pages/Servicefullpge';
+import Login from './pages/Login';
+
 function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path='/' element={<Login/>}/>
+            <Route path="/home" element={<Home />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<ServiceDetails />} />
             <Route path="/vendor" element={<VendorPage />} />
