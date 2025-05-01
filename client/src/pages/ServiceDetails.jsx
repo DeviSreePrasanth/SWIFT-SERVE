@@ -4,6 +4,7 @@ import VendorCard from '../components/VendorCard';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function ServiceDetails() {
   const { id } = useParams();
@@ -13,6 +14,16 @@ function ServiceDetails() {
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [ratings, setRatings] = useState({});
+  const [notification, setNotification] = useState(null);
+  const [showViewCart, setShowViewCart] = useState(false);
+
+  // Show notification and auto-hide after delay
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -108,7 +119,7 @@ function ServiceDetails() {
   const handleAddToCart = async (serviceId) => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      alert('Please log in to add items to your cart.');
+      showNotification('Please log in to add items to your cart', true);
       navigate('/login');
       return;
     }
@@ -119,7 +130,7 @@ function ServiceDetails() {
 
       if (!service || !vendor) {
         console.error('Service or vendor not found:', { serviceId, service, vendor });
-        alert('Service or vendor not found.');
+        showNotification('Service or vendor not found', true);
         return;
       }
 
@@ -138,34 +149,39 @@ function ServiceDetails() {
       const response = await axios.post('http://localhost:5000/api/cart/add', payload);
 
       console.log('Cart add response:', response.data);
-      alert('Item added to cart successfully!');
+      
+      if (response.data.message === 'Service already in cart') {
+        showNotification('This service is already in your cart', true);
+      } else {
+        showNotification(`${service.name} added to cart successfully!`);
+        setShowViewCart(true);
+      }
     } catch (error) {
       console.error('Error adding to cart:', {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
       });
-      alert('Failed to add item to cart: ' + (error.response?.data?.message || error.message));
+      showNotification('Failed to add item to cart: ' + (error.response?.data?.message || error.message), true);
     }
   };
 
-  // Updated viewFullDetails to pass the entire category data and service ID
+  // Updated viewFullDetails to match the second code's behavior
   const viewFullDetails = (serviceId) => {
-    // Find the specific service and vendor for additional context (optional)
     const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
     const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
 
     if (!service || !vendor) {
       console.error('Service or vendor not found for navigation:', { serviceId, service, vendor });
+      showNotification('Service or vendor not found for details', true);
       return;
     }
 
-    // Navigate to the next page, passing the entire category data and service ID
     navigate(`/service/detail/${serviceId}`, {
       state: {
-        category, // Entire category data from /api/detail
-        service,  // Specific service details
-        vendor,   // Specific vendor details
+        category,
+        service,
+        vendor,
       },
     });
   };
@@ -173,6 +189,64 @@ function ServiceDetails() {
   return (
     <div className="dark bg-gray-900 min-h-screen">
       <Header />
+      
+      {/* Notification System */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
+              notification.isError 
+                ? 'bg-red-600/90 border-red-400/30' 
+                : 'bg-green-600/90 border-green-400/30'
+            } text-white flex items-center`}
+          >
+            <svg 
+              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d={notification.isError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M5 13l4 4L19 7"} 
+              />
+            </svg>
+            <span>{notification.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* View Cart Floating Button */}
+      <AnimatePresence>
+        {showViewCart && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className="fixed bottom-8 right-8 z-40"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate(`/cart/${localStorage.getItem('userId')}`)}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center border border-blue-400/30"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              View Cart
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
@@ -326,7 +400,7 @@ function ServiceDetails() {
 
                       <div className="flex flex-wrap gap-4">
                         <button
-                          onClick={() => viewFullDetails(service._id)} // Pass service._id
+                          onClick={() => viewFullDetails(service._id)} // Updated to pass service._id
                           className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
                         >
                           View Full Details
