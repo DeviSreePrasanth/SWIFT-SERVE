@@ -182,7 +182,7 @@ function ServiceDetails() {
       return;
     }
 
-    navigate(`/service/detail/${serviceId}`, {
+    navigate(`/service/detail/${vendor.name}`, {
       state: {
         category,
         service,
@@ -293,7 +293,7 @@ function ServiceDetails() {
             {category.map((vendor, vendorIndex) =>
               vendor.services.map((service, serviceIndex) => (
                 <div
-                  key={service._id}
+                  key={service.name}
                   className={`relative overflow-hidden rounded-3xl shadow-xl ${
                     (vendorIndex + serviceIndex) % 2 === 0
                       ? 'bg-gradient-to-r from-gray-800 to-gray-900'

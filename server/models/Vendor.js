@@ -7,7 +7,7 @@ const vendorSchema = new mongoose.Schema({
   address: String,
   services: [{
     name: String,
-    photo: String // URL or path to the service photo
+    photo: String
   }],
   categories: [{
     type: String,
