@@ -57,17 +57,6 @@ const BookingsPage = () => {
     return new Date(dateTimeString).toLocaleDateString(undefined, options);
   };
 
-  const getCategoryImage = (category) => {
-    // Replace with your actual image paths or API
-    const images = {
-      'cleaning': '/images/cleaning.jpg',
-      'repair': '/images/repair.jpg',
-      'beauty': '/images/beauty.jpg',
-      'default': '/images/default-service.jpg'
-    };
-    return images[category?.toLowerCase()] || images.default;
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-900">
       <Header />
@@ -138,14 +127,14 @@ const BookingsPage = () => {
                 </p>
               </div>
               <ul className="divide-y divide-gray-700">
-                {bookings.map((booking, index) => (
-                  <li key={`${booking.vendorId}-${booking.serviceName}-${booking.slot}-${index}`}>
+                {bookings.map((booking) => (
+                  <li key={booking._id}>
                     <div className="px-4 py-5 sm:px-6 hover:bg-gray-700/50 transition-colors">
                       <div className="flex flex-col sm:flex-row sm:items-center">
                         <div className="flex-shrink-0 mb-4 sm:mb-0 sm:mr-6">
                           <img
                             className="h-24 w-24 rounded-md object-cover border border-gray-600"
-                            src={getCategoryImage(booking.category)}
+                            src={booking.imageUrl || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'}
                             alt={booking.serviceName}
                           />
                         </div>
@@ -160,7 +149,7 @@ const BookingsPage = () => {
                           </div>
                           <div className="mt-2 space-y-2">
                             <p className="text-sm text-gray-300">
-                              <span className="font-medium text-gray-100">Vendor:</span> {booking.vendorId?.name || booking.vendorId}
+                              <span className="font-medium text-gray-100">Vendor:</span> {booking.vendorId}
                             </p>
                             <p className="text-sm text-gray-300">
                               <span className="font-medium text-gray-100">Category:</span> {booking.category || 'N/A'}

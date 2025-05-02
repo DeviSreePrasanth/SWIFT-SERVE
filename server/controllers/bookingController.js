@@ -1,4 +1,4 @@
-const Booking=require('../models/Bookings');
+const Booking = require('../models/Bookings');
 
 const isSlotBooked = async (vendorId, slot) => {
     const existingBooking = await Booking.findOne({ 
@@ -7,11 +7,11 @@ const isSlotBooked = async (vendorId, slot) => {
       status: { $ne: 'cancelled' } // Ignore cancelled bookings
     });
     return !!existingBooking;
-  };
+};
   
-  exports.bookService = async (req, res) => {
+exports.bookService = async (req, res) => {
     try {
-      const { userId, vendorId, serviceName, category } = req.body;
+      const { userId, vendorId, serviceName, category, imageUrl } = req.body; // Changed 'image' to 'imageUrl'
   
       // Validate slot is in the future
   
@@ -20,6 +20,7 @@ const isSlotBooked = async (vendorId, slot) => {
         vendorId,
         serviceName,
         category,
+        imageUrl,
         status: 'confirmed',
         paymentStatus: 'completed'
       });
@@ -40,15 +41,14 @@ const isSlotBooked = async (vendorId, slot) => {
         details: error.message 
       });
     }
-  };
+};
   
-exports.getUserBookings=async(req,res)=>{
-    try{
-        const{userId}=req.params;
-        const bookings=await Booking.find({userId}).populate('vendorId','name');
-        res.status(200).json({bookings});
-    }
-    catch(err){
-        res.status(500).json({message:'failed to fetch bookings',error:err.message});
+exports.getUserBookings = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const bookings = await Booking.find({ userId }).populate('vendorId', 'name');
+        res.status(200).json({ bookings });
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch bookings', error: err.message });
     }
 };

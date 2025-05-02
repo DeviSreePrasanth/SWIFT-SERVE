@@ -16,10 +16,10 @@ const CartPage = () => {
   const [isRemoving, setIsRemoving] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const navigate = useNavigate();
-  const user={
-    name: localStorage.getItem('userName') 
-  }
-  
+  const user = {
+    name: localStorage.getItem('userName')
+  };
+
   const fetchCart = async () => {
     setLoading(true);
     try {
@@ -79,33 +79,33 @@ const CartPage = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    show: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { 
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
         type: "spring",
         stiffness: 100,
         damping: 10
-      } 
+      }
     },
-    exit: { 
-      opacity: 0, 
-      x: -50, 
-      transition: { 
+    exit: {
+      opacity: 0,
+      x: -50,
+      transition: {
         duration: 0.3,
         ease: "easeInOut"
-      } 
+      }
     }
   };
 
   const fadeIn = {
     hidden: { opacity: 0 },
-    show: { 
-      opacity: 1, 
-      transition: { 
+    show: {
+      opacity: 1,
+      transition: {
         duration: 0.6,
         ease: "easeOut"
-      } 
+      }
     }
   };
 
@@ -135,12 +135,12 @@ const CartPage = () => {
         <main className="flex-grow flex items-center justify-center">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ 
-              scale: 1, 
+            animate={{
+              scale: 1,
               opacity: 1,
-              rotate: 360 
+              rotate: 360
             }}
-            transition={{ 
+            transition={{
               loop: Infinity,
               ease: "linear",
               duration: 1
@@ -159,7 +159,7 @@ const CartPage = () => {
 
       <main className="flex-grow">
         {/* Premium Hero Section */}
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -168,7 +168,7 @@ const CartPage = () => {
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop')] bg-cover opacity-10 mix-blend-overlay"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/30 to-gray-950/90"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, type: "spring" }}
@@ -176,7 +176,7 @@ const CartPage = () => {
             >
               Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Service Cart</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -188,18 +188,18 @@ const CartPage = () => {
         </motion.section>
 
         {/* Cart Content */}
-        <motion.section 
+        <motion.section
           initial="hidden"
           animate="show"
           variants={containerVariants}
           className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
         >
           {error ? (
-            <motion.div 
+            <motion.div
               variants={fadeIn}
               className="text-center py-16"
             >
-              <motion.div 
+              <motion.div
                 animate={{
                   rotate: [0, 10, -10, 0],
                   scale: [1, 1.1, 1.1, 1]
@@ -216,7 +216,7 @@ const CartPage = () => {
               </motion.div>
               <h3 className="text-xl font-medium text-white mb-2">Error Loading Cart</h3>
               <p className="text-gray-400 max-w-md mx-auto">{error}</p>
-              <motion.button 
+              <motion.button
                 whileHover={buttonHover}
                 whileTap={buttonTap}
                 onClick={fetchCart}
@@ -227,7 +227,7 @@ const CartPage = () => {
               </motion.button>
             </motion.div>
           ) : cartItems.length === 0 ? (
-            <motion.div 
+            <motion.div
               variants={fadeIn}
               className="text-center py-16"
             >
@@ -272,7 +272,7 @@ const CartPage = () => {
                       initial="hidden"
                       animate="show"
                       exit="exit"
-                      whileHover={{ 
+                      whileHover={{
                         y: -5,
                         boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
                       }}
@@ -314,7 +314,7 @@ const CartPage = () => {
                             {isRemoving ? (
                               <motion.span
                                 animate={{ rotate: 360 }}
-                                transition={{ 
+                                transition={{
                                   duration: 1,
                                   repeat: Infinity,
                                   ease: "linear"
@@ -340,17 +340,17 @@ const CartPage = () => {
               </div>
 
               <div className="lg:w-1/3">
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
+                  animate={{
+                    opacity: 1,
                     y: 0,
-                    transition: { 
+                    transition: {
                       delay: 0.4,
                       type: "spring",
                       stiffness: 100,
                       damping: 10
-                    } 
+                    }
                   }}
                   className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/30 sticky top-8"
                 >
@@ -423,6 +423,7 @@ const CartPage = () => {
           serviceName: item.serviceName,
           vendorId: item.vendorId,
           category: item.category,
+          imageUrl: item.imageUrl,
           dateTime: new Date().toISOString(),
           cost: item.price,
         }))}
