@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
@@ -21,7 +21,16 @@ function ServiceFullPage() {
     feedback: '',
   });
   const [error, setError] = useState('');
-  
+  const [notification, setNotification] = useState(null);
+  const [showViewCart, setShowViewCart] = useState(false);
+
+  // Show notification and auto-hide after delay
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   useEffect(() => {
     if (!service || !vendor) {
@@ -49,7 +58,7 @@ function ServiceFullPage() {
   const handleAddToCart = async () => {
     const userId = localStorage.getItem('userName');
     if (!userId) {
-      alert('Please log in to add items to your cart.');
+      showNotification('Please log in to add items to your cart', true);
       navigate('/login');
       return;
     }
@@ -67,11 +76,22 @@ function ServiceFullPage() {
       console.log(service);
       console.log(vendor);
       console.log(payload);
-      await axios.post('http://localhost:5000/api/cart/add', payload);
-      alert('Item added to cart successfully!');
+      const response = await axios.post('http://localhost:5000/api/cart/add', payload);
+      console.log('Cart add response:', response.data);
+      
+      if (response.data.message === 'Service already in cart') {
+        showNotification('This service is already in your cart', true);
+      } else {
+        showNotification(`${service.name} added to cart successfully!`);
+        setShowViewCart(true);
+      }
     } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Failed to add item to cart: ' + (error.response?.data?.message || error.message));
+      console.error('Error adding to cart:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      showNotification('Failed to add item to cart: ' + (error.response?.data?.message || error.message), true);
     }
   };
 
@@ -87,16 +107,11 @@ function ServiceFullPage() {
         user: newReview.user,
         rating: Number(newReview.rating),
         feedback: newReview.feedback,
-      },
-      {
+      }, {
         headers: {
           'Content-Type': 'application/json',
-          // Add more headers if needed:
-          // 'Authorization': 'Bearer your_token_here'
         },
-      }
-    
-    );
+      });
 
       setReviews([...reviews, response.data]);
       setAverageRating(
@@ -166,6 +181,63 @@ function ServiceFullPage() {
   return (
     <div className="dark bg-gray-900 min-h-screen overflow-hidden">
       <Header />
+
+      {/* Notification System */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
+              notification.isError 
+                ? 'bg-red-600/90 border-red-400/30' 
+                : 'bg-green-600/90 border-green-400/30'
+            } text-white flex items-center`}
+          >
+            <svg 
+              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d={notification.isError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M5 13l4 4L19 7"} 
+              />
+            </svg>
+            <span>{notification.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* View Cart Floating Button */}
+      <AnimatePresence>
+        {showViewCart && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className="fixed bottom-8 right-8 z-40"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate(`/cart/${localStorage.getItem('userId')}`)}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center border border-blue-400/30"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              View Cart
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Particle Background */}
       <div className="fixed inset-0 overflow-hidden z-0 opacity-20">
@@ -531,7 +603,7 @@ function ServiceFullPage() {
           {reviews.length === 0 ? (
             <div className="text-center py-12">
               <svg className="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                <path CotrokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
               <p className="text-gray-400 mb-4">No reviews yet</p>
               <p className="text-gray-500 text-sm max-w-md mx-auto">Be the first to share your experience with {vendor.name}.</p>
