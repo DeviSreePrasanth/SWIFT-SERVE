@@ -92,7 +92,6 @@ const SearchResults = () => {
             </div>
           </div>
         )}
-
         {/* Services Section */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
