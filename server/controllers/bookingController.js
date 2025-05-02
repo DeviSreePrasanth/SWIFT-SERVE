@@ -1,4 +1,6 @@
 const Booking = require('../models/Bookings');
+const Cart = require('../models/CartSchema');
+
 const isSlotBooked = async (vendorId, slot) => {
     const existingBooking = await Booking.findOne({ 
       vendorId, 
@@ -7,6 +9,7 @@ const isSlotBooked = async (vendorId, slot) => {
     });
     return !!existingBooking;
 };
+
 exports.bookService = async (req, res) => {
     try {
       const { userId, vendorId, serviceName, category, imageUrl } = req.body; 
@@ -20,8 +23,20 @@ exports.bookService = async (req, res) => {
         paymentStatus: 'completed'
       });
       await newBooking.save();
+
+      // Clear the cart for the user after successful booking
+      const cart = await Cart.findOneAndUpdate(
+        { userId },
+        { $set: { items: [] } },
+        { new: true }
+      );
+
+      if (!cart) {
+        console.warn(`No cart found for userId: ${userId} while clearing after booking`);
+      }
+
       res.status(200).json({ 
-        message: 'Booking successful', 
+        message: 'Booking successful and cart cleared', 
         booking: newBooking 
       });
     } catch (error) {
@@ -32,6 +47,7 @@ exports.bookService = async (req, res) => {
       });
     }
 };
+
 exports.getUserBookings = async (req, res) => {
     try {
         const { userId } = req.params;
