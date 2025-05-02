@@ -22,7 +22,8 @@ const detail = async (req, res) => {
                     name: h.name,
                     description: h.description,
                     category: h.category,
-                    photo: i.services.find(s => s.name === h.name)?.photo
+                    photo: i.services.find(s => s.name === h.name)?.photo,
+                    price: i.services.find(s => s.name === h.name)?.price // Add price
                 }))
             };
         });
