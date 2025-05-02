@@ -1,4 +1,5 @@
 const Cart = require('../models/CartSchema');
+
 exports.addToCart = async (req, res) => {
   try {
     const { userId, vendorId, serviceName, category, price, imageUrl } = req.body;
@@ -68,5 +69,26 @@ exports.removeFromCart = async (req, res) => {
     res.status(200).json({ message: 'Service removed from cart', cart: cart.items });
   } catch (err) {
     res.status(500).json({ message: 'Failed to remove item from cart', error: err.message });
+  }
+};
+
+exports.clearCart = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const cart = await Cart.findOneAndUpdate(
+      { userId },
+      { $set: { items: [] } }, // Clear the items array
+      { new: true }
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found for user' });
+    }
+
+    res.status(200).json({ message: 'Cart cleared successfully', cart: cart.items });
+  } catch (err) {
+    console.error('Error in clearCart:', err);
+    res.status(500).json({ message: 'Failed to clear cart', error: err.message });
   }
 };
