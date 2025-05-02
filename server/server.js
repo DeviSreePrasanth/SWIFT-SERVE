@@ -11,7 +11,7 @@ const cartRoute=require('./routes/cartRoutes');
 const bookingRoute=require('./routes/bookingsRoutes');
 const detailRoute=require('./routes/detailRoute');
 const reviewRoutes=require('./routes/reviewRoute');
-
+const fullRoute=require('./routes/fullRoute');
 const db=require('./config/connectDB');
 const app=express();
 
@@ -30,7 +30,7 @@ app.use('/api/review',reviewRoutes);
 app.use('/api/cart',cartRoute); 
 app.use('/api/bookings',bookingRoute);
 app.use('/api/detail',detailRoute);
-
+app.use('/api/vendor-service',fullRoute);
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");
 })
