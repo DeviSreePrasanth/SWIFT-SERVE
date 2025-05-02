@@ -237,9 +237,9 @@ function ServiceFullPage() {
               whileHover={{ scale: 1.01 }}
               className="relative h-[400px] sm:h-[500px] rounded-3xl overflow-hidden border-2 border-gray-700/50 backdrop-blur-lg bg-gradient-to-br from-gray-800/50 to-gray-900/70 shadow-xl"
             >
-              {service.imageUrl && (
+              {service.photo && (
                 <img
-                  src={service.imageUrl}
+                  src={service.photo}
                   alt={service.name}
                   className="absolute inset-0 w-full h-full object-cover opacity-90 transition-all duration-500"
                   style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}

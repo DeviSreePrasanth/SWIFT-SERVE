@@ -307,7 +307,7 @@ function ServiceDetails() {
                   >
                     <div className="lg:w-2/5 relative h-80 lg:h-auto">
                       <img
-                        src={service.imageUrl || 'https://via.placeholder.com/400'}
+                        src={service.photo || 'https://via.placeholder.com/400'}
                         alt={service.name}
                         className="absolute inset-0 w-full h-full object-cover opacity-90"
                       />
