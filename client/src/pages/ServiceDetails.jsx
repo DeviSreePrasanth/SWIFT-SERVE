@@ -127,7 +127,8 @@ function ServiceDetails() {
     try {
       const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
       const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
-
+      console.log('Service:', service);
+      console.log('Vendor:', vendor);
       if (!service || !vendor) {
         console.error('Service or vendor not found:', { serviceId, service, vendor });
         showNotification('Service or vendor not found', true);
@@ -139,9 +140,9 @@ function ServiceDetails() {
         vendorId: vendor._id,
         vendorName: vendor.name,
         serviceName: service.name,
-        category: service.category,
+        category: id,
         price: Number(service.price || service.cost || 0),
-        imageUrl: service.imageUrl || '',
+        imageUrl: service.photo || '',
       };
 
       console.log('Adding to cart with payload:', payload);
