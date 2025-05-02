@@ -1,6 +1,4 @@
 const Vendor = require('../models/Vendor');
-
-// Controller to get a specific vendor and service by names
 const getVendorAndService = async (req, res) => {
   try {
     const { vendorName, serviceName } = req.query;
@@ -11,8 +9,6 @@ const getVendorAndService = async (req, res) => {
         message: 'Both vendorName and serviceName are required query parameters',
       });
     }
-
-    // Find the vendor by name and match the service by name
     const vendor = await Vendor.findOne(
       {
         name: { $regex: new RegExp(`^${vendorName}$`, 'i') }, // Case-insensitive exact match
@@ -35,8 +31,6 @@ const getVendorAndService = async (req, res) => {
         message: 'Vendor or service not found',
       });
     }
-
-    // Extract the single service from the services array
     const service = vendor.services[0];
 
     res.status(200).json({

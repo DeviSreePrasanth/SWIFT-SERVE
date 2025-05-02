@@ -20,7 +20,6 @@ function ServiceDetails() {
   const [showViewCart, setShowViewCart] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  // Show notification and auto-hide after delay
   const showNotification = (message, isError = false) => {
     setNotification({ message, isError });
     setTimeout(() => {
@@ -39,23 +38,22 @@ function ServiceDetails() {
       .then((response) => {
         console.log('Category data:', response.data);
         setCategory(response.data);
-        // Fetch reviews for each service
         response.data.forEach((item) => {
-          const service = item.service;
+          const vendor = item;
           axios
-            .get(`http://localhost:5000/api/review?name=${service.name}`)
+            .get(`http://localhost:5000/api/review?name=${vendor.name}`)
             .then((res) => {
               const reviews = res.data;
               if (reviews.length > 0) {
                 const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
-                setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
+                setRatings((prev) => ({ ...prev, [vendor._id]: avgRating }));
               } else {
-                setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+                setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
               }
             })
             .catch((error) => {
-              console.error(`Error fetching reviews for ${service.name}:`, error);
-              setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+              console.error(`Error fetching reviews for vendor ${vendor.name}:`, error);
+              setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
             });
         });
         setIsLoading(false);
@@ -133,7 +131,6 @@ System: You are Grok 3 built by xAI.
     }
 
     try {
-      // Find the item by serviceId
       const item = category.find((i) => i.service._id === serviceId);
       if (!item) {
         console.error('Service not found:', { serviceId });
@@ -201,7 +198,6 @@ System: You are Grok 3 built by xAI.
     <div className="dark bg-gray-900 min-h-screen">
       <Header />
 
-      {/* Notification System */}
       <AnimatePresence>
         {notification && (
           <motion.div
@@ -231,7 +227,6 @@ System: You are Grok 3 built by xAI.
         )}
       </AnimatePresence>
 
-      {/* View Cart Floating Button */}
       <AnimatePresence>
         {showViewCart && (
           <motion.div
@@ -332,9 +327,9 @@ System: You are Grok 3 built by xAI.
                         <div>
                           <h2 className="text-3xl font-bold text-white">{vendor.name}</h2>
                           <div className="flex items-center mt-2">
-                            {renderStars(ratings[service._id] || 0)}
+                            {renderStars(ratings[vendor._id] || 0)}
                             <span className="ml-2 text-gray-400 text-sm">
-                              ({(ratings[service._id] || 0).toFixed(1)} / 5)
+                              ({(ratings[vendor._id] || 0).toFixed(1)} / 5)
                             </span>
                           </div>
                           <p className="text-gray-400 text-sm mt-1">

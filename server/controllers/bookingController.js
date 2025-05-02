@@ -1,20 +1,15 @@
 const Booking = require('../models/Bookings');
-
 const isSlotBooked = async (vendorId, slot) => {
     const existingBooking = await Booking.findOne({ 
       vendorId, 
       slot,
-      status: { $ne: 'cancelled' } // Ignore cancelled bookings
+      status: { $ne: 'cancelled' }
     });
     return !!existingBooking;
 };
-  
 exports.bookService = async (req, res) => {
     try {
-      const { userId, vendorId, serviceName, category, imageUrl } = req.body; // Changed 'image' to 'imageUrl'
-  
-      // Validate slot is in the future
-  
+      const { userId, vendorId, serviceName, category, imageUrl } = req.body; 
       const newBooking = new Booking({
         userId,
         vendorId,
@@ -24,12 +19,7 @@ exports.bookService = async (req, res) => {
         status: 'confirmed',
         paymentStatus: 'completed'
       });
-  
       await newBooking.save();
-      
-      // In a real app, you would integrate with a payment processor here
-      // and update payment status based on the result
-      
       res.status(200).json({ 
         message: 'Booking successful', 
         booking: newBooking 
@@ -42,7 +32,6 @@ exports.bookService = async (req, res) => {
       });
     }
 };
-  
 exports.getUserBookings = async (req, res) => {
     try {
         const { userId } = req.params;

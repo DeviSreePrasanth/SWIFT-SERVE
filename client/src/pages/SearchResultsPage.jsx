@@ -8,9 +8,9 @@ const SearchResults = () => {
   const [results, setResults] = useState({ services: [], vendors: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { name } = useParams(); // Extract 'name' from URL path
+  const { name } = useParams(); 
 
-  console.log('Param name:', name); // Debug the name parameter
+  console.log('Param name:', name); 
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -92,7 +92,6 @@ const SearchResults = () => {
             </div>
           </div>
         )}
-        {/* Services Section */}
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
@@ -173,7 +172,6 @@ const SearchResults = () => {
           )}
         </section>
 
-        {/* Vendors Section */}
         <section>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">

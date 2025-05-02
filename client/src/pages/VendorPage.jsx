@@ -19,7 +19,7 @@ function VendorPage() {
       try {
         const response = await axios.get('http://localhost:5000/api/vendor');
         setVendors(response.data);
-        // Fetch ratings for each vendor
+        
         response.data.forEach((vendor) => {
           axios
             .get(`http://localhost:5000/api/review?name=${vendor.name}`)
@@ -47,8 +47,6 @@ function VendorPage() {
 
     fetchVendors();
   }, []);
-
-  // Function to render star rating
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -97,7 +95,7 @@ function VendorPage() {
       <Header />
 
       <main className="flex-grow">
-        {/* Hero Section */}
+        
         <section className="relative bg-gradient-to-b from-gray-800 to-gray-900 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-4">
@@ -112,7 +110,6 @@ function VendorPage() {
           </div>
         </section>
 
-        {/* Vendors Section */}
         <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

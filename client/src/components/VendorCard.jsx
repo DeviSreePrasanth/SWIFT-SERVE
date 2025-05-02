@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 export default function VendorCard({ vendor, rating }) {
-  // Function to render star rating
+  
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
