@@ -22,7 +22,7 @@ const services = JSON.parse(fs.readFileSync('./Vendor.json', 'utf-8'));
 
 const insertData = async () => {
   try {
-    //await Vendor.deleteMany(); // optional: clear existing data
+    await Service.deleteMany(); // optional: clear existing data
     await Service.insertMany(services);
     console.log('✅ Service data imported successfully!');
     process.exit();

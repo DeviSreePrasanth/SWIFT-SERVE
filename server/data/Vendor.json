@@ -1,22 +1,302 @@
 [
   {
-    "name": "ajay",
+    "name": "QuickFix Plumbing",
     "contactEmail": "contact@quickfixplumbing.com",
     "phone": "+1 (555) 123-4567",
     "address": "123 Main St, Boston, MA 02108",
     "services": [
       {
         "name": "Pipe Repair",
-        "photo": "https://images.unsplash.com/photo-1605087880595-8cc6db61f12c",
-        "price":200
+        "photo": "https://media.istockphoto.com/id/2197665899/photo/plumber-fixing-a-water-leak-in-a-sink-drain-siphon.jpg?s=1024x1024&w=is&k=20&c=BzR-5RK-j76gpFBy7jV7Zc9PT6XIKTt7mSI_kUpOa3c=",
+        "price": "200"
       },
       {
         "name": "Leak Detection",
-        "photo": "https://images.unsplash.com/photo-1551218808-94e220e084d2",
-        "price":100
+        "photo": "https://images.unsplash.com/photo-1526898943670-92bfa9f94c12?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "price": "450"
       }
     ],
     "categories": ["Plumbing", "Maintenance"],
-    "createdAt": "2023-01-15T00:00:00.000Z"
+    "createdAt": "2023-01-15T00:00:00Z"
+  },
+  {
+    "name": "Bright Spark Electric",
+    "contactEmail": "info@brightspark.com",
+    "phone": "+1 (555) 987-6543",
+    "address": "456 Elm Ave, New York, NY 10001",
+    "services": [
+      {
+        "name": "Wiring Installation",
+        "photo": "https://media.istockphoto.com/id/1049775258/photo/smiling-handsome-electrician-repairing-electrical-box-with-pliers-in-corridor-and-looking-at.jpg?s=2048x2048&w=is&k=20&c=2MfJrDttEgalp7h1BQNUi8XZSgjKUH0dONnALk8QgN4=",
+        "price": "320"
+      },
+      {
+        "name": "Light Fixture Repair",
+        "photo": "https://cassellbros.com/wp-content/uploads/2024/05/getty-images-fsBhBDjxT-4-unsplash-scaled.jpg",
+        "price": "510"
+      }
+    ],
+    "categories": ["Electrical"],
+    "createdAt": "2023-02-20T00:00:00Z"
+  },
+  {
+    "name": "Clean Sweep Services",
+    "contactEmail": "hello@cleansweep.com",
+    "phone": "+1 (555) 456-7890",
+    "address": "789 Oak Blvd, Chicago, IL 60601",
+    "services": [
+      {
+        "name": "Office Cleaning",
+        "photo": "https://images.unsplash.com/photo-1581578731548-c64695cc6952",
+        "price": "280"
+      },
+      {
+        "name": "Deep Cleaning",
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ3E5XzE_LXrbLNJ6_jVCBRsoggFShYIF-6g&s",
+        "price": "620"
+      }
+    ],
+    "categories": ["Cleaning"],
+    "createdAt": "2023-03-10T00:00:00Z"
+  },
+  {
+    "name": "TechSolutions IT",
+    "contactEmail": "support@techsolutions.com",
+    "phone": "+1 (555) 234-5678",
+    "address": "321 Pine St, San Francisco, CA 94102",
+    "services": [
+      {
+        "name": "Network Setup",
+        "photo": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31",
+        "price": "390"
+      },
+      {
+        "name": "Computer Repair",
+        "photo": "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d",
+        "price": "540"
+      }
+    ],
+    "categories": ["IT"],
+    "createdAt": "2023-04-05T00:00:00Z"
+  },
+  {
+    "name": "Perfect Painters",
+    "contactEmail": "contact@perfectpainters.com",
+    "phone": "+1 (555) 345-6789",
+    "address": "654 Cedar Ln, Austin, TX 78701",
+    "services": [
+      {
+        "name": "Interior Painting",
+        "photo": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7",
+        "price": "470"
+      },
+      {
+        "name": "Exterior Painting",
+        "photo": "https://media.gettyimages.com/id/155369538/photo/house-painter-with-paint-brush.jpg?s=612x612&w=gi&k=20&c=yYMPmOusddbTJvcHSV4QeOlXAotALsd-F8UdSMqt4dQ=",
+        "price": "650"
+      }
+    ],
+    "categories": ["Painting"],
+    "createdAt": "2023-05-12T00:00:00Z"
+  },
+  {
+    "name": "Green Thumb Landscaping",
+    "contactEmail": "info@greenthumb.com",
+    "phone": "+1 (555) 567-8901",
+    "address": "987 Maple Dr, Seattle, WA 98101",
+    "services": [
+      {
+        "name": "Lawn Maintenance",
+        "photo": "https://img.freepik.com/free-photo/residential-garden-worker-trimming-backyard-lawn_587448-5004.jpg?ga=GA1.1.2020879034.1725295043&semt=ais_hybrid&w=740",
+        "price": "250"
+      },
+      {
+        "name": "Garden Design",
+        "photo": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae",
+        "price": "580"
+      }
+    ],
+    "categories": ["Maintenance"],
+    "createdAt": "2023-06-18T00:00:00Z"
+  },
+  {
+    "name": "Cool Breeze AC",
+    "contactEmail": "service@coolbreeze.com",
+    "phone": "+1 (555) 678-9012",
+    "address": "753 Palm Blvd, Miami, FL 33101",
+    "services": [
+      {
+        "name": "AC Installation",
+        "photo": "https://img.freepik.com/free-photo/hand-checking-air-conditioner-room_157027-3053.jpg?ga=GA1.1.2020879034.1725295043&semt=ais_hybrid&w=740",
+        "price": "670"
+      },
+      {
+        "name": "AC Repair",
+        "photo": "https://img.freepik.com/premium-photo/technician-uniform-installing-air-conditioning-system-residential-home_693425-83883.jpg?ga=GA1.1.2020879034.1725295043&semt=ais_hybrid&w=740",
+        "price": "360"
+      }
+    ],
+    "categories": ["Maintenance"],
+    "createdAt": "2023-07-22T00:00:00Z"
+  },
+  {
+    "name": "SafeGuard Security",
+    "contactEmail": "contact@safeguard.com",
+    "phone": "+1 (555) 789-0123",
+    "address": "159 Birch St, Los Angeles, CA 90001",
+    "services": [
+      {
+        "name": "Security System Installation",
+        "photo": "https://images.unsplash.com/photo-1558002038-1055907df827",
+        "price": "430"
+      },
+      {
+        "name": "Camera Setup",
+        "photo": "https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564799.jpg?ga=GA1.1.2020879034.1725295043&semt=ais_hybrid&w=740",
+        "price": "290"
+      }
+    ],
+    "categories": ["IT", "Electrical"],
+    "createdAt": "2023-08-30T00:00:00Z"
+  },
+  {
+    "name": "Fresh Coat Painters",
+    "contactEmail": "info@freshcoat.com",
+    "phone": "+1 (555) 890-1234",
+    "address": "357 Spruce Ave, Denver, CO 80202",
+    "services": [
+      {
+        "name": "Wall Painting",
+        "photo": "https://images.unsplash.com/photo-1560448204-603b3fc33ddc",
+        "price": "340"
+      },
+      {
+        "name": "Cabinet Refinishing",
+        "photo": "https://images.unsplash.com/photo-1560448204-e02e62d78064",
+        "price": "560"
+      }
+    ],
+    "categories": ["Painting"],
+    "createdAt": "2023-09-05T00:00:00Z"
+  },
+  {
+    "name": "PowerLine Electrical",
+    "contactEmail": "service@powerline.com",
+    "phone": "+1 (555) 901-2345",
+    "address": "852 Redwood Rd, Portland, OR 97201",
+    "services": [
+      {
+        "name": "Electrical Panel Upgrade",
+        "photo": "https://images.unsplash.com/photo-1603302576837-37561b2e2302",
+        "price": "600"
+      },
+      {
+        "name": "Outlet Installation",
+        "photo": "https://images.unsplash.com/photo-1603302576837-37561b2e2302",
+        "price": "220"
+      }
+    ],
+    "categories": ["Electrical"],
+    "createdAt": "2023-10-10T00:00:00Z"
+  },
+  {
+    "name": "DrainMaster Plumbing",
+    "contactEmail": "help@drainmaster.com",
+    "phone": "+1 (555) 012-3456",
+    "address": "456 Willow Ln, Dallas, TX 75201",
+    "services": [
+      {
+        "name": "Drain Cleaning",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c4",
+        "price": "310"
+      },
+      {
+        "name": "Water Heater Repair",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c5",
+        "price": "480"
+      }
+    ],
+    "categories": ["Plumbing"],
+    "createdAt": "2023-11-15T00:00:00Z"
+  },
+  {
+    "name": "Spotless Cleaners",
+    "contactEmail": "book@spotless.com",
+    "phone": "+1 (555) 123-7890",
+    "address": "753 Magnolia Dr, Atlanta, GA 30301",
+    "services": [
+      {
+        "name": "Carpet Cleaning",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c6",
+        "price": "370"
+      },
+      {
+        "name": "Upholstery Cleaning",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c7",
+        "price": "530"
+      }
+    ],
+    "categories": ["Cleaning"],
+    "createdAt": "2023-12-20T00:00:00Z"
+  },
+  {
+    "name": "NetPro IT Solutions",
+    "contactEmail": "support@netpro.com",
+    "phone": "+1 (555) 234-8901",
+    "address": "159 Cypress St, San Diego, CA 92101",
+    "services": [
+      {
+        "name": "WiFi Setup",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c8",
+        "price": "260"
+      },
+      {
+        "name": "Data Recovery",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c9",
+        "price": "690"
+      }
+    ],
+    "categories": ["IT"],
+    "createdAt": "2024-01-25T00:00:00Z"
+  },
+  {
+    "name": "FixIt All Handyman",
+    "contactEmail": "contact@fixitall.com",
+    "phone": "+1 (555) 345-9012",
+    "address": "852 Ash Ave, Phoenix, AZ 85001",
+    "services": [
+      {
+        "name": "General Repairs",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6d0",
+        "price": "400"
+      },
+      {
+        "name": "Furniture Assembly",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6d1",
+        "price": "230"
+      }
+    ],
+    "categories": ["Maintenance"],
+    "createdAt": "2024-02-10T00:00:00Z"
+  },
+  {
+    "name": "Elite Electricians",
+    "contactEmail": "service@eliteelectric.com",
+    "phone": "+1 (555) 456-0123",
+    "address": "357 Poplar Rd, Philadelphia, PA 19101",
+    "services": [
+      {
+        "name": "Ceiling Fan Installation",
+        "photo": "https://img.freepik.com/premium-photo/homeowner-installing-ceiling-fan-comfort_1079150-242304.jpg?ga=GA1.1.1350590548.1722104947&semt=ais_hybrid&w=740",
+        "price": "410"
+      },
+      {
+        "name": "Smart Home Wiring",
+        "photo": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6d3",
+        "price": "590"
+      }
+    ],
+    "categories": ["Electrical"],
+    "createdAt": "2024-03-15T00:00:00Z"
   }
 ]
