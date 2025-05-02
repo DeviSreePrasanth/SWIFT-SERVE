@@ -20,6 +20,7 @@ const detail = async (req, res) => {
                 ...i.toObject(),
                 services: help.map(h => ({
                     name: h.name,
+                    description: h.description,
                     photo: i.services.find(s => s.name === h.name)?.photo
                 }))
             };
