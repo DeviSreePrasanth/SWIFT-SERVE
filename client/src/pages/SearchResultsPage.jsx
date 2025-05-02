@@ -129,7 +129,7 @@ const SearchResults = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {results.services.map((service) => (
                 <Link
-                  to={`/services/${service._id}`}
+                  to={`/service/${service.category}`}
                   key={service._id}
                   className="group bg-gray-800/40 rounded-2xl overflow-hidden shadow-xl hover:shadow-cyan-500/30 transition-all duration-500 hover:-translate-y-2 border border-gray-700/50 hover:border-cyan-500/50 backdrop-blur-md"
                 >
