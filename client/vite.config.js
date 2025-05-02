@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/search': {
-        target: 'http://localhost:5000',
+        target: 'https://user-one-lemon.vercel.app/',
         changeOrigin: true,
         secure: false,
       },
