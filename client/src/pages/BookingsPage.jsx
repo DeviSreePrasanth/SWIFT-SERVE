@@ -58,12 +58,7 @@ const BookingsPage = () => {
   };
 
   const getCategoryImage = (category) => {
-    // Replace with your actual image paths or API
     const images = {
-      'cleaning': '/images/cleaning.jpg',
-      'repair': '/images/repair.jpg',
-      'beauty': '/images/beauty.jpg',
-      'default': '/images/default-service.jpg'
     };
     return images[category?.toLowerCase()] || images.default;
   };
