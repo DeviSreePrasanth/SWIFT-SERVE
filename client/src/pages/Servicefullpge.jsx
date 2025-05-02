@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
+import { CartContext } from '../context/CartContext';
 
 function ServiceFullPage() {
   const { vendorName, serviceName } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { addToCart, cartItems, fetchCart } = useContext(CartContext);
   const [service, setService] = useState(state?.service || null);
   const [vendor, setVendor] = useState(state?.vendor || null);
   const [category, setCategory] = useState(state?.category || []);
@@ -52,7 +54,7 @@ function ServiceFullPage() {
             setIsLoaded(true);
           } else {
             console.error('Failed to fetch vendor and service:', response.data.message);
-            showNotification(response.data.message, true);
+            showNotification('Failed to load service details', true);
             navigate('/services');
           }
         } catch (error) {
@@ -89,32 +91,49 @@ function ServiceFullPage() {
   }, [vendor]);
 
   const handleAddToCart = async () => {
-    const userId = localStorage.getItem('userName');
+    const userId = localStorage.getItem('userId');
     if (!userId) {
       showNotification('Please log in to add items to your cart', true);
       navigate('/login');
       return;
     }
-
+  
+    const item = {
+      vendorId: vendor._id,
+      vendorName: vendor.name,
+      serviceName: service.name,
+      category: service.category || 'Unknown',
+      price: Number(service.price || 0),
+      imageUrl: service.photo || '',
+    };
+  
+    // Check if the item is already in the cart
+    const isItemInCart = Array.isArray(cartItems) && cartItems.some(
+      (cartItem) => cartItem.vendorId === item.vendorId && cartItem.serviceName === item.serviceName
+    );
+  
+    if (isItemInCart) {
+      showNotification(`${service.name} is already in your cart`, true);
+      return;
+    }
+  
     try {
-      const payload = {
-        userId,
-        vendorId: vendor._id,
-        vendorName: vendor.name,
-        serviceName: service.name,
-        category: service.category || category[0]?.categories[0] || 'Unknown',
-        price: Number(service.price || 0),
-        imageUrl: service.photo || '',
-      };
-      console.log('Add to cart payload:', payload);
-      const response = await axios.post('http://localhost:5000/api/cart/add', payload);
-      console.log('Cart add response:', response.data);
-
-      if (response.data.message === 'Service already in cart') {
-        showNotification('This service is already in your cart', true);
-      } else {
-        showNotification(`${service.name} added to cart successfully!`);
+      console.log('Add to cart payload:', item);
+  
+      // Add item to cart
+      await addToCart(item);
+      // No need to call fetchCart since addToCart updates cartItems
+  
+      // Confirm the item was added
+      const isNowInCart = cartItems.some(
+        (cartItem) => cartItem.vendorId === item.vendorId && cartItem.serviceName === item.serviceName
+      );
+  
+      if (isNowInCart) {
+        showNotification(`${service.name} added to cart successfully!`, false);
         setShowViewCart(true);
+      } else {
+        showNotification(`${service.name} added to cart successfully!`, true);
       }
     } catch (error) {
       console.error('Error adding to cart:', {
@@ -122,7 +141,13 @@ function ServiceFullPage() {
         response: error.response?.data,
         status: error.response?.status,
       });
-      showNotification('Failed to add item to cart: ' + (error.response?.data?.message || error.message), true);
+      const errorMessage = error.response?.data?.message || error.message;
+      showNotification(
+        errorMessage === 'Service already added to cart'
+          ? `${service.name} is already in your cart`
+          : 'Failed to add item to cart',
+        true
+      );
     }
   };
 
@@ -156,6 +181,7 @@ function ServiceFullPage() {
       setNewReview({ user: '', rating: 0, feedback: '' });
       setIsModalOpen(false);
       setError('');
+      showNotification('Review submitted successfully!', false);
     } catch (error) {
       console.error('Error submitting review:', error);
       setError(error.response?.data?.message || 'Failed to submit review. Please try again.');
@@ -232,7 +258,7 @@ function ServiceFullPage() {
             exit={{ opacity: 0, y: -50 }}
             transition={{ type: 'spring', damping: 25 }}
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-              notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
+              notification.isError ? 'bg-green-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
             } text-white flex items-center`}
           >
             <svg
@@ -339,9 +365,7 @@ function ServiceFullPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
-          
           <div className="relative lg:col-span-2 space-y-8">
-            
             <motion.div
               whileHover={{ scale: 1.01 }}
               className="relative h-[400px] sm:h-[500px] rounded-3xl overflow-hidden border-2 border-gray-700/50 backdrop-blur-lg bg-gradient-to-br from-gray-800/50 to-gray-900/70 shadow-xl"
@@ -478,8 +502,8 @@ function ServiceFullPage() {
 
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Standard Rate</span>
-                  <span className="text-2xl font-bold text-white">${Number(service.price || 99).toFixed(2)}</span>
+                    <span className="text-gray-300">Standard Rate</span>
+                    <span className="text-2xl font-bold text-white">${Number(service.price || 99).toFixed(2)}</span>
                 </div>
 
                 <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">

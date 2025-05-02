@@ -36,9 +36,11 @@ export const CartProvider = ({ children }) => {
   };
 
   // Add item to cart
-  const addToCart = async (item) => {
+  const addToCart = async (item, suppressToast = false) => {
     if (!user.id) {
-      toast.error('Please log in to add items to your cart.', { autoClose: 3000 });
+      if (!suppressToast) {
+        toast.error('Please log in to add items to your cart.', { autoClose: 3000 });
+      }
       throw new Error('User not logged in');
     }
     try {
@@ -48,19 +50,24 @@ export const CartProvider = ({ children }) => {
       });
       setCartItems(response.data.cart.items || []);
       setError(null);
-      toast.success(`${item.serviceName} added to cart!`, {
-        autoClose: 3000,
-        hideProgressBar: false,
-      });
+      if (!suppressToast) {
+        toast.success(`${item.serviceName} added to cart!`, {
+          autoClose: 3000,
+          hideProgressBar: false,
+        });
+      }
+      return response.data; // Return response for confirmation
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message;
       setError('Failed to add item to cart: ' + errorMessage);
-      if (errorMessage === 'Service already added to cart') {
-        toast.error(`${item.serviceName} is already in your cart.`, { autoClose: 3000 });
-      } else {
-        toast.error('Failed to add item to cart. Please try again.', { autoClose: 3000 });
+      if (!suppressToast) {
+        if (errorMessage === 'Service already added to cart') {
+          toast.error(`${item.serviceName} is already in your cart.`, { autoClose: 3000 });
+        } else {
+          toast.error('Failed to add item to cart. Please try again.', { autoClose: 3000 });
+        }
       }
-      throw err; // Re-throw to allow ServiceDetails to handle
+      throw err; // Re-throw to allow caller to handle
     }
   };
 
