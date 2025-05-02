@@ -56,7 +56,7 @@ const CartPage = () => {
   const handleCheckoutComplete = (success) => {
     setIsCheckoutOpen(false);
     if (success) {
-      // Clear cart on successful payment
+      
       setCartItems([]);
     }
   };
@@ -65,7 +65,6 @@ const CartPage = () => {
     fetchCart();
   }, []);
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -158,7 +157,7 @@ const CartPage = () => {
       <Header />
 
       <main className="flex-grow">
-        {/* Premium Hero Section */}
+        
         <motion.section
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,7 +186,6 @@ const CartPage = () => {
           </div>
         </motion.section>
 
-        {/* Cart Content */}
         <motion.section
           initial="hidden"
           animate="show"

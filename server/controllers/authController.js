@@ -47,8 +47,6 @@ const authController = {
   login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
-  
-      // Basic validation
       if (!email || !password) {
         return res.status(400).json({ 
           success: false,

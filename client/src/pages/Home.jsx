@@ -13,7 +13,6 @@ function Home() {
   const [loadingServices, setLoadingServices] = useState(true);
   const [error, setError] = useState(null);
   
-  // Create a ref for the Why Choose Us section
   const whyChooseUsRef = useRef(null);
 
   useEffect(() => {
@@ -36,10 +35,8 @@ function Home() {
     fetchServices();
   }, []);
 
-  // Get first 6 services only
   const displayedServices = services.slice(0, 6);
 
-  // Function to scroll to Why Choose Us section
   const scrollToWhyChooseUs = () => {
     whyChooseUsRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -49,7 +46,7 @@ function Home() {
       <Header />
 
       <main className="flex-grow">
-        {/* Hero Section */}
+        
         <section
           className="relative bg-cover bg-center h-screen max-h-[800px] flex items-center justify-center overflow-hidden"
           style={{
@@ -82,10 +79,9 @@ function Home() {
           </div>
         </section>
 
-        {/* Why Choose Us Section */}
         <section ref={whyChooseUsRef} className="py-20 bg-gray-900"> {/* Add ref here */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Heading */}
+            
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
                 Why <span className="text-blue-500">Choose Us</span>
@@ -96,7 +92,6 @@ function Home() {
               </p>
             </div>
 
-            {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 {
@@ -135,7 +130,6 @@ function Home() {
               ))}
             </div>
 
-            {/* Stats with SpotlightCard */}
             <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {[
                 { value: "10,000+", label: "Happy Customers" },
@@ -156,7 +150,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Services Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">

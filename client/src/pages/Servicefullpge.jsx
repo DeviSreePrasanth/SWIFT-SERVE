@@ -27,7 +27,6 @@ function ServiceFullPage() {
   const [notification, setNotification] = useState(null);
   const [showViewCart, setShowViewCart] = useState(false);
 
-  // Show notification and auto-hide after delay
   const showNotification = (message, isError = false) => {
     setNotification({ message, isError });
     setTimeout(() => {
@@ -35,7 +34,6 @@ function ServiceFullPage() {
     }, 3000);
   };
 
-  // Fetch vendor and service if state is missing
   useEffect(() => {
     if (!service || !vendor) {
       const fetchVendorAndService = async () => {
@@ -50,7 +48,6 @@ function ServiceFullPage() {
           if (response.data.success) {
             setVendor(response.data.data.vendor);
             setService(response.data.data.service);
-            // Note: category is not returned by this endpoint; set to empty array
             setCategory([]);
             setIsLoaded(true);
           } else {
@@ -72,7 +69,6 @@ function ServiceFullPage() {
     }
   }, [service, vendor, vendorName, serviceName, navigate]);
 
-  // Fetch reviews
   useEffect(() => {
     if (vendor) {
       const fetchReviews = async () => {
@@ -228,7 +224,6 @@ function ServiceFullPage() {
     <div className="dark bg-gray-900 min-h-screen overflow-hidden">
       <Header />
 
-      {/* Notification System */}
       <AnimatePresence>
         {notification && (
           <motion.div
@@ -258,7 +253,6 @@ function ServiceFullPage() {
         )}
       </AnimatePresence>
 
-      {/* View Cart Floating Button */}
       <AnimatePresence>
         {showViewCart && (
           <motion.div
@@ -314,14 +308,12 @@ function ServiceFullPage() {
         ))}
       </div>
 
-      {/* Main Content */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
       >
-        {/* Hero Section */}
         <div className="relative mb-16 sm:mb-20">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl -z-10" />
 
@@ -346,11 +338,10 @@ function ServiceFullPage() {
           </div>
         </div>
 
-        {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
-          {/* Left Panel */}
+          
           <div className="relative lg:col-span-2 space-y-8">
-            {/* Service Image */}
+            
             <motion.div
               whileHover={{ scale: 1.01 }}
               className="relative h-[400px] sm:h-[500px] rounded-3xl overflow-hidden border-2 border-gray-700/50 backdrop-blur-lg bg-gradient-to-br from-gray-800/50 to-gray-900/70 shadow-xl"
@@ -374,7 +365,6 @@ function ServiceFullPage() {
                 </div>
               </div>
 
-              {/* Floating Tag */}
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -385,7 +375,6 @@ function ServiceFullPage() {
               </motion.div>
             </motion.div>
 
-            {/* Tabs Navigation */}
             <div className="bg-gray-800/30 border border-gray-700/30 rounded-xl backdrop-blur-lg p-1">
               <nav className="flex space-x-1">
                 {['details', 'features', 'faq'].map((tab) => (
@@ -402,7 +391,6 @@ function ServiceFullPage() {
               </nav>
             </div>
 
-            {/* Tab Content */}
             <div className="bg-gray-800/30 border-2 border-gray-700/30 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-xl min-h-[300px]">
               {activeTab === 'details' && (
                 <div>
@@ -490,9 +478,7 @@ function ServiceFullPage() {
             </div>
           </div>
 
-          {/* Right Panel */}
           <div className="space-y-8">
-            {/* Pricing Card */}
             <div className="bg-gray-800/30 border-2 border-gray-700/30 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                 <span className="bg-blue-500/20 p-2 rounded-lg mr-3">💲</span>
@@ -543,7 +529,6 @@ function ServiceFullPage() {
               </div>
             </div>
 
-            {/* Service Highlights */}
             <div className="bg-gray-800/30 border-2 border-gray-700/30 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-xl">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                 <span className="bg-blue-500/20 p-2 rounded-lg mr-3">⚡</span>
@@ -568,7 +553,6 @@ function ServiceFullPage() {
           </div>
         </div>
 
-        {/* Vendor Details */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -626,7 +610,6 @@ function ServiceFullPage() {
           </div>
         </motion.div>
 
-        {/* Reviews Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -705,7 +688,6 @@ function ServiceFullPage() {
         </motion.div>
       </motion.div>
 
-      {/* Review Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <motion.div

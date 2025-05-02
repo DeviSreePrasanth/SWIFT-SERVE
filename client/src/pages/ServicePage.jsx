@@ -10,7 +10,6 @@ function ServicesPage() {
   const [loadingServices, setLoadingServices] = useState(true);
   const [error, setError] = useState(null);
 
-  // Scroll to top when component loads
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -36,7 +35,6 @@ function ServicesPage() {
       <Header />
 
       <main className="flex-grow">
-        {/* Hero Section */}
         <section className="relative bg-gray-900 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -47,8 +45,6 @@ function ServicesPage() {
             </p>
           </div>
         </section>
-
-        {/* Services Section */}
         <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {loadingServices ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

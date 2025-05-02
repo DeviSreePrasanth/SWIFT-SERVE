@@ -17,7 +17,6 @@ function ServiceDetails() {
   const [notification, setNotification] = useState(null);
   const [showViewCart, setShowViewCart] = useState(false);
 
-  // Show notification and auto-hide after delay
   const showNotification = (message, isError = false) => {
     setNotification({ message, isError });
     setTimeout(() => {
@@ -36,23 +35,22 @@ function ServiceDetails() {
       .then((response) => {
         console.log('Category data:', response.data);
         setCategory(response.data);
-        // Fetch reviews for each service
         response.data.forEach((item) => {
-          const service = item.service;
+          const vendor = item;
           axios
-            .get(`http://localhost:5000/api/review?name=${service.name}`)
+            .get(`http://localhost:5000/api/review?name=${vendor.name}`)
             .then((res) => {
               const reviews = res.data;
               if (reviews.length > 0) {
                 const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
-                setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
+                setRatings((prev) => ({ ...prev, [vendor._id]: avgRating }));
               } else {
-                setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+                setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
               }
             })
             .catch((error) => {
-              console.error(`Error fetching reviews for ${service.name}:`, error);
-              setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+              console.error(`Error fetching reviews for vendor ${vendor.name}:`, error);
+              setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
             });
         });
         setIsLoading(false);
@@ -125,7 +123,6 @@ function ServiceDetails() {
     }
 
     try {
-      // Find the item by serviceId
       const item = category.find((i) => i.service._id === serviceId);
       if (!item) {
         console.error('Service not found:', { serviceId });
@@ -168,7 +165,6 @@ function ServiceDetails() {
   };
 
   const viewFullDetails = (serviceId) => {
-    // Find the item by serviceId
     const item = category.find((i) => i.service._id === serviceId);
     if (!item) {
       console.error('Service not found for navigation:', { serviceId });
@@ -184,7 +180,6 @@ function ServiceDetails() {
       vendorName: vendor.name,
     });
 
-    // Encode vendor and service names for URL
     const encodedVendorName = encodeURIComponent(vendor.name);
     const encodedServiceName = encodeURIComponent(service.name);
 
@@ -201,7 +196,6 @@ function ServiceDetails() {
     <div className="dark bg-gray-900 min-h-screen">
       <Header />
 
-      {/* Notification System */}
       <AnimatePresence>
         {notification && (
           <motion.div
@@ -237,7 +231,6 @@ function ServiceDetails() {
         )}
       </AnimatePresence>
 
-      {/* View Cart Floating Button */}
       <AnimatePresence>
         {showViewCart && (
           <motion.div
@@ -338,9 +331,9 @@ function ServiceDetails() {
                         <div>
                           <h2 className="text-3xl font-bold text-white">{vendor.name}</h2>
                           <div className="flex items-center mt-2">
-                            {renderStars(ratings[service._id] || 0)}
+                            {renderStars(ratings[vendor._id] || 0)}
                             <span className="ml-2 text-gray-400 text-sm">
-                              ({(ratings[service._id] || 0).toFixed(1)} / 5)
+                              ({(ratings[vendor._id] || 0).toFixed(1)} / 5)
                             </span>
                           </div>
                           <p className="text-gray-400 text-sm mt-1">
@@ -475,8 +468,7 @@ function ServiceDetails() {
           <div className="relative bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-800">
             <button
               onClick={closePopup}
-              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-7
-00 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
+              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
             >
               <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
