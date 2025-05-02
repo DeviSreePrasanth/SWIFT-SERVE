@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import ServicesPage from './pages/ServicePage';
 import ServiceDetails from './pages/ServiceDetails';
-import BookingConfirmation from './pages/BookingConfirmation';
 import VendorPage from './pages/VendorPage';
 import SearchResults from './pages/SearchResultsPage';
 import BookingsPage from './pages/BookingsPage';
@@ -25,7 +24,6 @@ function App() {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<ServiceDetails />} />
             <Route path="/vendor" element={<VendorPage />} />
-            <Route path="/booking-confirmation" element={<BookingConfirmation />} />
             <Route path="/bookings/:userId" element={<BookingsPage />} />
             <Route path="/searchQuery/:name" element={<SearchResults />}/>
             <Route path="/cart/:userId" element={<CartPage/>}/>
