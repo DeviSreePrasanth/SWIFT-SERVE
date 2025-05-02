@@ -27,7 +27,7 @@ function App() {
             <Route path="/bookings/:userId" element={<BookingsPage />} />
             <Route path="/searchQuery/:name" element={<SearchResults />}/>
             <Route path="/cart/:userId" element={<CartPage/>}/>
-            <Route path="/service/detail/:id" element={<ServiceFullPage />} />
+            <Route path="/service/detail/:vendorName/:serviceName" element={<ServiceFullPage />} />
             
           </Routes>
         </main>

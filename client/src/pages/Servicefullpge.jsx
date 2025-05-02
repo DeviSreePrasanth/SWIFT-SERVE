@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
 
 function ServiceFullPage() {
+  const { vendorName, serviceName } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { category, service, vendor } = state || {};
+  const [service, setService] = useState(state?.service || null);
+  const [vendor, setVendor] = useState(state?.vendor || null);
+  const [category, setCategory] = useState(state?.category || []);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
@@ -32,28 +35,62 @@ function ServiceFullPage() {
     }, 3000);
   };
 
+  // Fetch vendor and service if state is missing
   useEffect(() => {
     if (!service || !vendor) {
-      navigate('/services');
+      const fetchVendorAndService = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/vendor-service', {
+            params: {
+              vendorName: decodeURIComponent(vendorName),
+              serviceName: decodeURIComponent(serviceName),
+            },
+          });
+
+          if (response.data.success) {
+            setVendor(response.data.data.vendor);
+            setService(response.data.data.service);
+            // Note: category is not returned by this endpoint; set to empty array
+            setCategory([]);
+            setIsLoaded(true);
+          } else {
+            console.error('Failed to fetch vendor and service:', response.data.message);
+            showNotification(response.data.message, true);
+            navigate('/services');
+          }
+        } catch (error) {
+          console.error('Error fetching vendor and service:', error);
+          showNotification('Failed to load service details', true);
+          navigate('/services');
+        }
+      };
+
+      fetchVendorAndService();
     } else {
-      setTimeout(() => setIsLoaded(true), 300);
+      setIsLoaded(true);
+      console.log('Using state data:', { service, vendor, category });
+    }
+  }, [service, vendor, vendorName, serviceName, navigate]);
+
+  // Fetch reviews
+  useEffect(() => {
+    if (vendor) {
+      const fetchReviews = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/review?name=${vendor.name}`);
+          const reviewsData = response.data;
+          setReviews(reviewsData);
+          if (reviewsData.length > 0) {
+            const avgRating = reviewsData.reduce((sum, review) => sum + review.rating, 0) / reviewsData.length;
+            setAverageRating(avgRating);
+          }
+        } catch (error) {
+          console.error('Error fetching reviews:', error);
+        }
+      };
       fetchReviews();
     }
-  }, [service, vendor, navigate]);
-
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/review?name=${vendor.name}`);
-      const reviewsData = response.data;
-      setReviews(reviewsData);
-      if (reviewsData.length > 0) {
-        const avgRating = reviewsData.reduce((sum, review) => sum + review.rating, 0) / reviewsData.length;
-        setAverageRating(avgRating);
-      }
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    }
-  };
+  }, [vendor]);
 
   const handleAddToCart = async () => {
     const userId = localStorage.getItem('userName');
@@ -69,16 +106,14 @@ function ServiceFullPage() {
         vendorId: vendor._id,
         vendorName: vendor.name,
         serviceName: service.name,
-        category: service.category,
-        price: Number(service.price || service.cost || 0),
+        category: service.category || category[0]?.categories[0] || 'Unknown',
+        price: Number(service.price || 0),
         imageUrl: service.photo || '',
       };
-      console.log(service);
-      console.log(vendor);
-      console.log(payload);
+      console.log('Add to cart payload:', payload);
       const response = await axios.post('http://localhost:5000/api/cart/add', payload);
       console.log('Cart add response:', response.data);
-      
+
       if (response.data.message === 'Service already in cart') {
         showNotification('This service is already in your cart', true);
       } else {
@@ -102,21 +137,25 @@ function ServiceFullPage() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/review', {
-        name: vendor.name,
-        user: newReview.user,
-        rating: Number(newReview.rating),
-        feedback: newReview.feedback,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        'http://localhost:5000/api/review',
+        {
+          name: vendor.name,
+          user: newReview.user,
+          rating: Number(newReview.rating),
+          feedback: newReview.feedback,
         },
-      });
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       setReviews([...reviews, response.data]);
       setAverageRating(
         (reviews.reduce((sum, review) => sum + review.rating, 0) + response.data.rating) /
-        (reviews.length + 1)
+          (reviews.length + 1)
       );
       setNewReview({ user: '', rating: 0, feedback: '' });
       setIsModalOpen(false);
@@ -128,38 +167,23 @@ function ServiceFullPage() {
   };
 
   const renderStars = (rating) => {
-    return Array(5).fill(0).map((_, i) => {
-      const starValue = i + 1;
-      let fillPercentage = '0%';
-      
-      if (rating >= starValue) {
-        fillPercentage = '100%';
-      } else if (rating >= starValue - 0.5) {
-        fillPercentage = '50%';
-      }
+    return Array(5)
+      .fill(0)
+      .map((_, i) => {
+        const starValue = i + 1;
+        let fillPercentage = '0%';
 
-      return (
-        <div key={i} className="relative inline-block w-6 h-6">
-          <svg
-            className="absolute w-6 h-6 text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
-            />
-          </svg>
-          <div 
-            className="absolute overflow-hidden"
-            style={{ width: fillPercentage, height: '100%' }}
-          >
+        if (rating >= starValue) {
+          fillPercentage = '100%';
+        } else if (rating >= starValue - 0.5) {
+          fillPercentage = '50%';
+        }
+
+        return (
+          <div key={i} className="relative inline-block w-6 h-6">
             <svg
-              className="w-6 h-6 text-yellow-400"
-              fill="currentColor"
+              className="absolute w-6 h-6 text-gray-600"
+              fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
@@ -170,13 +194,35 @@ function ServiceFullPage() {
                 d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
               />
             </svg>
+            <div className="absolute overflow-hidden" style={{ width: fillPercentage, height: '100%' }}>
+              <svg
+                className="w-6 h-6 text-yellow-400"
+                fill="currentColor"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-      );
-    });
+        );
+      });
   };
 
-  if (!service || !vendor) return null;
+  if (!isLoaded) {
+    return (
+      <div className="dark bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="animate-pulse flex space-x-4">
+          <div className="rounded-full h-12 w-12 bg-gradient-to-r from-blue-900 to-purple-900"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dark bg-gray-900 min-h-screen overflow-hidden">
@@ -191,22 +237,20 @@ function ServiceFullPage() {
             exit={{ opacity: 0, y: -50 }}
             transition={{ type: 'spring', damping: 25 }}
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-              notification.isError 
-                ? 'bg-red-600/90 border-red-400/30' 
-                : 'bg-green-600/90 border-green-400/30'
+              notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
             } text-white flex items-center`}
           >
-            <svg 
-              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`} 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d={notification.isError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M5 13l4 4L19 7"} 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
               />
             </svg>
             <span>{notification.message}</span>
@@ -231,7 +275,12 @@ function ServiceFullPage() {
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center border border-blue-400/30"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
               View Cart
             </motion.button>
@@ -258,8 +307,8 @@ function ServiceFullPage() {
             transition={{
               duration: Math.random() * 10 + 5,
               repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
+              repeatType: 'reverse',
+              ease: 'easeInOut',
             }}
           />
         ))}
@@ -275,7 +324,7 @@ function ServiceFullPage() {
         {/* Hero Section */}
         <div className="relative mb-16 sm:mb-20">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl -z-10" />
-          
+
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
               {service.name}
@@ -283,7 +332,7 @@ function ServiceFullPage() {
             <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
               Provided by <span className="font-bold text-blue-400">{vendor.name}</span>
             </p>
-            
+
             <div className="mt-6 flex justify-center items-center space-x-4">
               <div className="flex items-center">
                 {renderStars(averageRating)}
@@ -292,9 +341,7 @@ function ServiceFullPage() {
                 </span>
               </div>
               <span className="h-4 w-px bg-gray-600"></span>
-              <span className="text-gray-300 text-sm sm:text-base">
-                {service.category || 'Premium Service'}
-              </span>
+              <span className="text-gray-300 text-sm sm:text-base">{service.category || 'Premium Service'}</span>
             </div>
           </div>
         </div>
@@ -304,7 +351,7 @@ function ServiceFullPage() {
           {/* Left Panel */}
           <div className="relative lg:col-span-2 space-y-8">
             {/* Service Image */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.01 }}
               className="relative h-[400px] sm:h-[500px] rounded-3xl overflow-hidden border-2 border-gray-700/50 backdrop-blur-lg bg-gradient-to-br from-gray-800/50 to-gray-900/70 shadow-xl"
             >
@@ -326,6 +373,16 @@ function ServiceFullPage() {
                   <h2 className="text-2xl sm:text-3xl font-bold text-white">{service.name}</h2>
                 </div>
               </div>
+
+              {/* Floating Tag */}
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl shadow-2xl z-20 flex items-center"
+              >
+                <span className="font-bold text-xs sm:text-sm">⭐ Top Rated</span>
+              </motion.div>
             </motion.div>
 
             {/* Tabs Navigation */}
@@ -335,7 +392,9 @@ function ServiceFullPage() {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${activeTab === tab ? 'bg-gray-700/50 text-white shadow' : 'text-gray-400 hover:text-gray-300'}`}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      activeTab === tab ? 'bg-gray-700/50 text-white shadow' : 'text-gray-400 hover:text-gray-300'
+                    }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
@@ -366,7 +425,7 @@ function ServiceFullPage() {
                   </div>
                 </div>
               )}
-              
+
               {activeTab === 'features' && (
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
@@ -375,12 +434,12 @@ function ServiceFullPage() {
                   </h3>
                   <div className="grid grid-cols-1 gap-3">
                     {[
-                      "24/7 Emergency Support with 1-hour response time",
-                      "Fully Licensed & Certified Professionals",
-                      "1-Year Comprehensive Warranty on all work",
-                      "Free Initial Consultation and Quote",
-                      "Eco-Friendly Materials and Practices",
-                      "Transparent Pricing with No Hidden Fees"
+                      '24/7 Emergency Support with 1-hour response time',
+                      'Fully Licensed & Certified Professionals',
+                      '1-Year Comprehensive Warranty on all work',
+                      'Free Initial Consultation and Quote',
+                      'Eco-Friendly Materials and Practices',
+                      'Transparent Pricing with No Hidden Fees',
                     ].map((item, i) => (
                       <div
                         key={i}
@@ -393,7 +452,7 @@ function ServiceFullPage() {
                   </div>
                 </div>
               )}
-              
+
               {activeTab === 'faq' && (
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
@@ -403,17 +462,17 @@ function ServiceFullPage() {
                   <div className="space-y-4">
                     {[
                       {
-                        question: "What areas do you service?",
-                        answer: vendor.serviceAreas || "We cover all major metropolitan areas within a 50-mile radius of our headquarters."
+                        question: 'What areas do you service?',
+                        answer: vendor.serviceAreas || 'We cover all major metropolitan areas within a 50-mile radius of our headquarters.',
                       },
                       {
-                        question: "How do I schedule an appointment?",
-                        answer: "You can book directly through our website, mobile app, or by calling our customer service line."
+                        question: 'How do I schedule an appointment?',
+                        answer: 'You can book directly through our website, mobile app, or by calling our customer service line.',
                       },
                       {
-                        question: "What payment methods do you accept?",
-                        answer: "We accept all major credit cards, PayPal, and bank transfers. Financing options are also available."
-                      }
+                        question: 'What payment methods do you accept?',
+                        answer: 'We accept all major credit cards, PayPal, and bank transfers. Financing options are also available.',
+                      },
                     ].map((faq, i) => (
                       <div key={i} className="bg-gray-800/50 rounded-xl border border-gray-700/30 overflow-hidden">
                         <button className="w-full text-left p-4 flex justify-between items-center">
@@ -422,9 +481,7 @@ function ServiceFullPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
-                        <div className="px-4 pb-4 text-gray-300">
-                          {faq.answer}
-                        </div>
+                        <div className="px-4 pb-4 text-gray-300">{faq.answer}</div>
                       </div>
                     ))}
                   </div>
@@ -441,22 +498,27 @@ function ServiceFullPage() {
                 <span className="bg-blue-500/20 p-2 rounded-lg mr-3">💲</span>
                 Pricing & Booking
               </h3>
-              
+
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Standard Rate</span>
-                  <span className="text-2xl font-bold text-white">${Number(service.price || service.cost || 99).toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-white">${Number(service.price || 99).toFixed(2)}</span>
                 </div>
-                
+
                 <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
                   <div className="flex items-start">
-                    <svg className="w-5 h-5 text-blue-400 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5 text-blue-400 mt-0.5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span className="text-blue-300 text-sm">Price includes all materials and labor. No hidden fees.</span>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -467,7 +529,7 @@ function ServiceFullPage() {
                     <span>🛒</span>
                     <span>Add to Cart</span>
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -487,14 +549,14 @@ function ServiceFullPage() {
                 <span className="bg-blue-500/20 p-2 rounded-lg mr-3">⚡</span>
                 Why Choose {vendor.name}
               </h3>
-              
+
               <div className="space-y-4">
                 {[
-                  { icon: "🏆", text: "Award-winning service quality" },
-                  { icon: "⏱️", text: "On-time guarantee or it's free" },
-                  { icon: "🛡️", text: "Fully insured for your protection" },
-                  { icon: "🌱", text: "Eco-friendly practices" },
-                  { icon: "💎", text: "Premium materials included" }
+                  { icon: '🏆', text: 'Award-winning service quality' },
+                  { icon: '⏱️', text: "On-time guarantee or it's free" },
+                  { icon: '🛡️', text: 'Fully insured for your protection' },
+                  { icon: '🌱', text: 'Eco-friendly practices' },
+                  { icon: '💎', text: 'Premium materials included' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center bg-gray-800/50 p-3 rounded-lg border border-gray-700/30">
                     <span className="text-2xl mr-3">{item.icon}</span>
@@ -507,17 +569,14 @@ function ServiceFullPage() {
         </div>
 
         {/* Vendor Details */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="mt-16 sm:mt-20 bg-gradient-to-br from-gray-800/40 to-gray-900/60 border-2 border-gray-700/20 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-xl overflow-hidden"
         >
           <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-center">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="relative"
-            >
+            <motion.div whileHover={{ scale: 1.05 }} className="relative">
               <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-3xl sm:text-4xl font-bold text-white shadow-xl">
                 {vendor.name.charAt(0)}
               </div>
@@ -568,7 +627,7 @@ function ServiceFullPage() {
         </motion.div>
 
         {/* Reviews Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -588,14 +647,21 @@ function ServiceFullPage() {
               Write a Review
             </motion.button>
           </div>
-          
+
           {reviews.length === 0 ? (
             <div className="text-center py-12">
               <svg className="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path CotrokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
               </svg>
               <p className="text-gray-400 mb-4">No reviews yet</p>
-              <p className="text-gray-500 text-sm max-w-md mx-auto">Be the first to share your experience with {vendor.name}.</p>
+              <p className="text-gray-500 text-sm max-w-md mx-auto">
+                Be the first to share your experience with {vendor.name}.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -625,10 +691,10 @@ function ServiceFullPage() {
               ))}
             </div>
           )}
-          
+
           {reviews.length > 4 && (
             <div className="mt-8 text-center">
-              <button 
+              <button
                 onClick={() => navigate(`/reviews/${vendor._id}`)}
                 className="px-5 py-2.5 bg-gray-800/50 text-gray-300 rounded-lg border border-gray-700/30 text-sm hover:bg-gray-700/50 transition-all flex items-center mx-auto"
               >
@@ -652,7 +718,7 @@ function ServiceFullPage() {
               <span className="bg-blue-500/20 p-2 rounded-lg mr-3">✍️</span>
               Write a Review for {vendor.name}
             </h3>
-            
+
             {error && (
               <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-3 mb-4">
                 <p className="text-red-400 text-sm">{error}</p>
@@ -685,9 +751,7 @@ function ServiceFullPage() {
                       {star <= newReview.rating ? '⭐' : '☆'}
                     </button>
                   ))}
-                  <span className="ml-2 text-gray-400 text-sm">
-                    ({newReview.rating}/5)
-                  </span>
+                  <span className="ml-2 text-gray-400 text-sm">({newReview.rating}/5)</span>
                 </div>
               </div>
 
@@ -696,14 +760,22 @@ function ServiceFullPage() {
                 <textarea
                   value={newReview.feedback}
                   onChange={(e) => setNewReview({ ...newReview, feedback: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50 resize-none"
-                  rows="4"
+                  className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50"
+                  rows={4}
                   placeholder="Share your experience..."
                   required
                 />
               </div>
 
-              <div className="flex justify-end space-x-3">
+              <div className="flex space-x-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleReviewSubmit}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
+                >
+                  Submit Review
+                </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -712,17 +784,9 @@ function ServiceFullPage() {
                     setError('');
                     setNewReview({ user: '', rating: 0, feedback: '' });
                   }}
-                  className="px-4 py-2 bg-gray-800/70 text-gray-300 border border-gray-700/50 rounded-lg hover:bg-gray-700/50 transition-all"
+                  className="flex-1 px-4 py-2 bg-gray-800/70 text-gray-300 border border-gray-700/50 rounded-lg hover:bg-gray-700/50 transition-all"
                 >
                   Cancel
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleReviewSubmit}
-                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
-                >
-                  Submit Review
                 </motion.button>
               </div>
             </div>

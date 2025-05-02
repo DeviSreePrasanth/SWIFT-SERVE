@@ -4,32 +4,55 @@ const Service = require('../models/Service');
 const detail = async (req, res) => {
     try {
         const { name } = req.query;
-        const temp = await Service.find({ category: name });
-        const arr = temp.map(i => i.name);
-        
-        const data = await Vendor.find({
+        if (!name) {
+            return res.status(400).json({ error: 'Category name is required' });
+        }
+
+        // Find services matching the category
+        const services = await Service.find({ category: name });
+        if (!services.length) {
+            return res.status(200).json([]);
+        }
+
+        const serviceNames = services.map(s => s.name);
+
+        // Find vendors that offer these services and have the category
+        const vendors = await Vendor.find({
             categories: { $in: [name] },
-            'services.name': { $in: arr }
+            'services.name': { $in: serviceNames }
         });
-        
-        const ans = data.map(i => {
-            const help = temp.filter(j =>
-                i.services.some(service => service.name === j.name)
+
+        // Create a flat array of vendor-service pairs
+        const result = vendors.reduce((acc, vendor) => {
+            const vendorServices = services.filter(s =>
+                vendor.services.some(vs => vs.name === s.name)
             );
-            return {
-                ...i.toObject(),
-                services: help.map(h => ({
-                    name: h.name,
-                    description: h.description,
-                    category: h.category,
-                    photo: i.services.find(s => s.name === h.name)?.photo,
-                    price: i.services.find(s => s.name === h.name)?.price // Add price
-                }))
-            };
-        });
-        
-        res.status(200).json(ans);
+
+            // For each service, create a new object with vendor details and one service
+            const vendorServicePairs = vendorServices.map(service => ({
+                _id: vendor._id,
+                name: vendor.name,
+                phone: vendor.phone,
+                contactEmail: vendor.contactEmail,
+                address: vendor.address,
+                categories: vendor.categories,
+                createdAt: vendor.createdAt,
+                service: {
+                    _id: service._id,
+                    name: service.name,
+                    description: service.description,
+                    category: service.category,
+                    photo: vendor.services.find(vs => vs.name === service.name)?.photo || '',
+                    price: vendor.services.find(vs => vs.name === service.name)?.price || 0
+                }
+            }));
+
+            return [...acc, ...vendorServicePairs];
+        }, []);
+
+        res.status(200).json(result);
     } catch (error) {
+        console.error('Error in detail controller:', error);
         res.status(500).json({ error: error.message });
     }
 };

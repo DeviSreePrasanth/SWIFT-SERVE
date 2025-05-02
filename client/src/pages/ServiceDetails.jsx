@@ -36,25 +36,24 @@ function ServiceDetails() {
       .then((response) => {
         console.log('Category data:', response.data);
         setCategory(response.data);
-       
-        response.data.forEach((vendor) => {
-          vendor.services.forEach((service) => {
-            axios
-              .get(`http://localhost:5000/api/review?name=${service.name}`)
-              .then((res) => {
-                const reviews = res.data;
-                if (reviews.length > 0) {
-                  const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
-                  setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
-                } else {
-                  setRatings((prev) => ({ ...prev, [service._id]: 0 }));
-                }
-              })
-              .catch((error) => {
-                console.error(`Error fetching reviews for ${service.name}:`, error);
+        // Fetch reviews for each service
+        response.data.forEach((item) => {
+          const service = item.service;
+          axios
+            .get(`http://localhost:5000/api/review?name=${service.name}`)
+            .then((res) => {
+              const reviews = res.data;
+              if (reviews.length > 0) {
+                const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+                setRatings((prev) => ({ ...prev, [service._id]: avgRating }));
+              } else {
                 setRatings((prev) => ({ ...prev, [service._id]: 0 }));
-              });
-          });
+              }
+            })
+            .catch((error) => {
+              console.error(`Error fetching reviews for ${service.name}:`, error);
+              setRatings((prev) => ({ ...prev, [service._id]: 0 }));
+            });
         });
         setIsLoading(false);
       })
@@ -126,15 +125,15 @@ function ServiceDetails() {
     }
 
     try {
-      const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
-      const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
-      console.log('Service:', service);
-      console.log('Vendor:', vendor);
-      if (!service || !vendor) {
-        console.error('Service or vendor not found:', { serviceId, service, vendor });
-        showNotification('Service or vendor not found', true);
+      // Find the item by serviceId
+      const item = category.find((i) => i.service._id === serviceId);
+      if (!item) {
+        console.error('Service not found:', { serviceId });
+        showNotification('Service not found', true);
         return;
       }
+
+      const { service, ...vendor } = item;
 
       const payload = {
         userId,
@@ -142,7 +141,7 @@ function ServiceDetails() {
         vendorName: vendor.name,
         serviceName: service.name,
         category: id,
-        price: Number(service.price || service.cost || 0),
+        price: Number(service.price || 0),
         imageUrl: service.photo || '',
       };
 
@@ -151,7 +150,7 @@ function ServiceDetails() {
       const response = await axios.post('http://localhost:5000/api/cart/add', payload);
 
       console.log('Cart add response:', response.data);
-      
+
       if (response.data.message === 'Service already in cart') {
         showNotification('This service is already in your cart', true);
       } else {
@@ -168,22 +167,28 @@ function ServiceDetails() {
     }
   };
 
-  // Updated viewFullDetails to match the second code's behavior
   const viewFullDetails = (serviceId) => {
-    const service = category.flatMap((cat) => cat.services).find((s) => s._id === serviceId);
-    const vendor = category.find((cat) => cat.services.some((s) => s._id === serviceId));
-
-    // Debug: Log the found service and vendor
-    console.log('Found service:', service);
-    console.log('Found vendor:', vendor);
-
-    if (!service || !vendor) {
-      console.error('Service or vendor not found for navigation:', { serviceId, service, vendor });
-      showNotification('Service or vendor not found for details', true);
+    // Find the item by serviceId
+    const item = category.find((i) => i.service._id === serviceId);
+    if (!item) {
+      console.error('Service not found for navigation:', { serviceId });
+      showNotification('Service not found for details', true);
       return;
     }
 
-    navigate(`/service/detail/${vendor.name}`, {
+    const { service, ...vendor } = item;
+
+    console.log('Navigating with:', {
+      serviceId,
+      serviceName: service.name,
+      vendorName: vendor.name,
+    });
+
+    // Encode vendor and service names for URL
+    const encodedVendorName = encodeURIComponent(vendor.name);
+    const encodedServiceName = encodeURIComponent(service.name);
+
+    navigate(`/service/detail/${encodedVendorName}/${encodedServiceName}`, {
       state: {
         category,
         service,
@@ -195,7 +200,7 @@ function ServiceDetails() {
   return (
     <div className="dark bg-gray-900 min-h-screen">
       <Header />
-      
+
       {/* Notification System */}
       <AnimatePresence>
         {notification && (
@@ -205,22 +210,26 @@ function ServiceDetails() {
             exit={{ opacity: 0, y: -50 }}
             transition={{ type: 'spring', damping: 25 }}
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-              notification.isError 
-                ? 'bg-red-600/90 border-red-400/30' 
+              notification.isError
+                ? 'bg-red-600/90 border-red-400/30'
                 : 'bg-green-600/90 border-green-400/30'
             } text-white flex items-center`}
           >
-            <svg 
-              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`} 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d={notification.isError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M5 13l4 4L19 7"} 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={
+                  notification.isError
+                    ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                    : 'M5 13l4 4L19 7'
+                }
               />
             </svg>
             <span>{notification.message}</span>
@@ -245,7 +254,12 @@ function ServiceDetails() {
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center border border-blue-400/30"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
               View Cart
             </motion.button>
@@ -291,21 +305,18 @@ function ServiceDetails() {
           </div>
         ) : (
           <div className="flex flex-col space-y-8">
-            {category.map((vendor, vendorIndex) =>
-              vendor.services.map((service, serviceIndex) => (
+            {category.map((item, index) => {
+              const { service, ...vendor } = item;
+              return (
                 <div
-                  key={service.name}
+                  key={`${vendor._id}-${service._id}`}
                   className={`relative overflow-hidden rounded-3xl shadow-xl ${
-                    (vendorIndex + serviceIndex) % 2 === 0
+                    index % 2 === 0
                       ? 'bg-gradient-to-r from-gray-800 to-gray-900'
                       : 'bg-gradient-to-r from-gray-900 to-gray-800'
                   } border border-gray-800 hover:border-gray-700 transition-all duration-300`}
                 >
-                  <div
-                    className={`flex flex-col lg:flex-row ${
-                      (vendorIndex + serviceIndex) % 2 === 0 ? '' : 'lg:flex-row-reverse'
-                    }`}
-                  >
+                  <div className={`flex flex-col lg:flex-row ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
                     <div className="lg:w-2/5 relative h-80 lg:h-auto">
                       <img
                         src={service.photo || 'https://via.placeholder.com/400'}
@@ -333,7 +344,7 @@ function ServiceDetails() {
                             </span>
                           </div>
                           <p className="text-gray-400 text-sm mt-1">
-                            Price: ${service.price || service.cost ? Number(service.price || service.cost).toFixed(2) : 'N/A'}
+                            Price: ${service.price ? Number(service.price).toFixed(2) : 'N/A'}
                           </p>
                         </div>
                         <div className="flex space-x-2">
@@ -393,7 +404,7 @@ function ServiceDetails() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v24a2 2 0 002 2z"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                               />
                             </svg>
                           </div>
@@ -406,7 +417,7 @@ function ServiceDetails() {
 
                       <div className="flex flex-wrap gap-4">
                         <button
-                          onClick={() => viewFullDetails(service._id)} // Updated to pass service._id
+                          onClick={() => viewFullDetails(service._id)}
                           className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
                         >
                           View Full Details
@@ -453,8 +464,8 @@ function ServiceDetails() {
                     </div>
                   </div>
                 </div>
-              ))
-            )}
+              );
+            })}
           </div>
         )}
       </div>
@@ -464,7 +475,8 @@ function ServiceDetails() {
           <div className="relative bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-800">
             <button
               onClick={closePopup}
-              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
+              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-7
+00 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
             >
               <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
