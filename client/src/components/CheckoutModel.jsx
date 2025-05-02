@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
@@ -13,6 +11,15 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
     name: '',
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  // Show notification and auto-hide after delay
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const validateCardDetails = () => {
     const { number, expiry, cvv, name } = cardDetails;
@@ -52,15 +59,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
       }
 
       if (paymentMethod === 'paypal') {
-        toast.info('PayPal payment not implemented. Please use credit card.', {
-          position: 'top-center',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: 'dark',
-        });
+        showNotification('PayPal payment not implemented. Please use credit card.', true);
         setIsProcessing(false);
         return;
       }
@@ -71,39 +70,23 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
           vendorId: booking.vendorId,
           serviceName: booking.serviceName,
           category: booking.category,
-          imageUrl: booking.imageUrl || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
+          imageUrl: booking.imageUrl || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
         })
       );
 
       await Promise.all(bookingPromises);
 
-      toast.success('Payment successful! Bookings confirmed.', {
-        position: 'top-center',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: 'dark',
-      });
+      showNotification('Payment successful! Bookings confirmed.', false);
 
       setTimeout(() => {
-        onClose(true);
+        onClose(true); // Signal successful checkout to clear cart
       }, 1000);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
         'An unexpected error occurred. Please try again.';
-      toast.error(`Payment failed: ${errorMessage}`, {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: 'dark',
-      });
+      showNotification(`Payment failed: ${errorMessage}`, true);
     } finally {
       setIsProcessing(false);
     }
@@ -119,13 +102,45 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       >
+        {/* Notification System */}
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              transition={{ type: 'spring', damping: 25 }}
+              className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-60 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
+                notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
+              } text-white flex items-center`}
+            >
+              <svg
+                className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
+                />
+              </svg>
+              <span>{notification.message}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: 20 }}
           className="relative bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-700"
         >
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={() => onClose(false)}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700 transition-colors"
             aria-label="Close modal"
@@ -143,7 +158,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                 d="M6 18L18 6M6 6l12 12"
               ></path>
             </svg>
-          </button>
+          </motion.button>
 
           <div className="p-6">
             <h2 className="text-2xl font-bold text-white mb-6">
@@ -157,9 +172,11 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                 </h3>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {['credit', 'paypal'].map((method) => (
-                    <button
+                    <motion.button
                       key={method}
                       type="button"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setPaymentMethod(method)}
                       className={`py-3 px-4 rounded-lg border transition-colors ${
                         paymentMethod === method
@@ -168,7 +185,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                       }`}
                     >
                       {method === 'credit' ? 'Credit Card' : 'PayPal'}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
 
@@ -277,7 +294,9 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                 </div>
               </div>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={isProcessing}
                 className={`w-full py-4 px-6 rounded-xl font-semibold text-white shadow-lg transition-all relative overflow-hidden ${
@@ -295,12 +314,11 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                   <span className="relative z-10">Confirm & Pay</span>
                 )}
                 <span className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
-              </button>
+              </motion.button>
             </form>
           </div>
         </motion.div>
       </motion.div>
-      <ToastContainer />
     </AnimatePresence>
   );
 };

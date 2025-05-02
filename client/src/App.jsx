@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import ServicesPage from './pages/ServicePage';
@@ -14,6 +15,7 @@ import Login from './pages/Login';
 
 function App() {
   return (
+    <CartProvider>
     <Router>
       <div className="min-h-screen flex flex-col">
         <main className="flex-1">
@@ -36,6 +38,7 @@ function App() {
         {/* <Footer /> */}
       </div>
     </Router>
+    </CartProvider>
   );
 }
 

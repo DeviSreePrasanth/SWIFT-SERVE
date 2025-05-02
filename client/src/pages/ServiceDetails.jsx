@@ -3,19 +3,22 @@ import Header from '../components/Header';
 import VendorCard from '../components/VendorCard';
 import Footer from '../components/Footer';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CartContext } from '../context/CartContext';
+import { toast } from 'react-toastify';
 
 function ServiceDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
   const [category, setCategory] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [ratings, setRatings] = useState({});
-  const [notification, setNotification] = useState(null);
   const [showViewCart, setShowViewCart] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   // Show notification and auto-hide after delay
   const showNotification = (message, isError = false) => {
@@ -59,6 +62,7 @@ function ServiceDetails() {
       })
       .catch((error) => {
         console.error('Error fetching category:', error);
+        showNotification('Failed to load services', true);
         setIsLoading(false);
       });
   }, [id]);
@@ -98,7 +102,11 @@ function ServiceDetails() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+            d="M11.049 2.927c pełni
+
+System: You are Grok 3 built by xAI.
+
+.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
           />
         </svg>
       );
@@ -117,7 +125,7 @@ function ServiceDetails() {
   };
 
   const handleAddToCart = async (serviceId) => {
-    const userId = localStorage.getItem('userName');
+    const userId = localStorage.getItem('userId');
     if (!userId) {
       showNotification('Please log in to add items to your cart', true);
       navigate('/login');
@@ -135,8 +143,7 @@ function ServiceDetails() {
 
       const { service, ...vendor } = item;
 
-      const payload = {
-        userId,
+      const cartItem = {
         vendorId: vendor._id,
         vendorName: vendor.name,
         serviceName: service.name,
@@ -145,30 +152,24 @@ function ServiceDetails() {
         imageUrl: service.photo || '',
       };
 
-      console.log('Adding to cart with payload:', payload);
+      console.log('Adding to cart with payload:', cartItem);
 
-      const response = await axios.post('http://localhost:5000/api/cart/add', payload);
-
-      console.log('Cart add response:', response.data);
-
-      if (response.data.message === 'Service already in cart') {
-        showNotification('This service is already in your cart', true);
-      } else {
-        showNotification(`${service.name} added to cart successfully!`);
-        setShowViewCart(true);
-      }
+      // Use addToCart from CartContext
+      await addToCart(cartItem);
+      // CartContext already shows toast.success, but we can also show our notification
+      showNotification(`${service.name} added to cart successfully!`);
+      setShowViewCart(true);
     } catch (error) {
-      console.error('Error adding to cart:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      showNotification('Failed to add item to cart: ' + (error.response?.data?.message || error.message), true);
+      console.error('Error adding to cart:', error);
+      // Use the notification system instead of toast for consistency
+      const errorMessage = error.response?.data?.message || error.message;
+      showNotification(errorMessage === 'Service already added to cart' 
+        ? `${item.service.name} is already in your cart` 
+        : 'Failed to add item to cart', true);
     }
   };
 
   const viewFullDetails = (serviceId) => {
-    // Find the item by serviceId
     const item = category.find((i) => i.service._id === serviceId);
     if (!item) {
       console.error('Service not found for navigation:', { serviceId });
@@ -184,7 +185,6 @@ function ServiceDetails() {
       vendorName: vendor.name,
     });
 
-    // Encode vendor and service names for URL
     const encodedVendorName = encodeURIComponent(vendor.name);
     const encodedServiceName = encodeURIComponent(service.name);
 
@@ -210,9 +210,7 @@ function ServiceDetails() {
             exit={{ opacity: 0, y: -50 }}
             transition={{ type: 'spring', damping: 25 }}
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-              notification.isError
-                ? 'bg-red-600/90 border-red-400/30'
-                : 'bg-green-600/90 border-green-400/30'
+              notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
             } text-white flex items-center`}
           >
             <svg
@@ -225,11 +223,7 @@ function ServiceDetails() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d={
-                  notification.isError
-                    ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                    : 'M5 13l4 4L19 7'
-                }
+                d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
               />
             </svg>
             <span>{notification.message}</span>
@@ -416,7 +410,9 @@ function ServiceDetails() {
                       </div>
 
                       <div className="flex flex-wrap gap-4">
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => viewFullDetails(service._id)}
                           className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
                         >
@@ -429,9 +425,11 @@ function ServiceDetails() {
                               d="M14 5l7 7m0 0l-7 7m7-7H3"
                             />
                           </svg>
-                        </button>
+                        </motion.button>
 
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => handleAddToCart(service._id)}
                           className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30 cursor-pointer"
                         >
@@ -444,7 +442,7 @@ function ServiceDetails() {
                               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                             />
                           </svg>
-                        </button>
+                        </motion.button>
 
                         <a
                           href={`tel:${vendor.phone}`}
@@ -473,15 +471,16 @@ function ServiceDetails() {
       {showPopup && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="relative bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-800">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={closePopup}
-              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-7
-00 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
+              className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
             >
               <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </button>
+            </motion.button>
             <VendorCard vendor={selectedVendor} />
           </div>
         </div>

@@ -1,14 +1,15 @@
+// src/components/Header.js
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useRef, useEffect, useContext } from 'react';
+import { CartContext } from '../context/CartContext';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
   const profileRef = useRef(null);
   const navigate = useNavigate();
+  const { cartLength } = useContext(CartContext); // Use cartLength from context
 
   // Fetch user data from localStorage
   const user = {
@@ -17,22 +18,6 @@ const Header = () => {
     avatar: localStorage.getItem('userAvatar') || '',
     id: localStorage.getItem('userId') || '',
   };
-
-  // Fetch cart items
-  const fetchCart = async () => {
-    if (!user.id) return; // Skip if no user ID
-    try {
-      const response = await axios.get(`http://localhost:5000/api/cart/${user.id}`);
-      setCartItems(response.data[0]?.items || []);
-    } catch (err) {
-      console.error('Failed to fetch cart items:', err);
-    }
-  };
-
-  // Fetch cart items on mount and when user ID changes
-  useEffect(() => {
-    fetchCart();
-  }, [user.id]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -192,9 +177,9 @@ const Header = () => {
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                {cartItems.length > 0 && (
+                {cartLength > 0 && (
                   <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                    {cartItems.length}
+                    {cartLength}
                   </span>
                 )}
               </Link>
@@ -297,7 +282,7 @@ const Header = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <svg
-              className="absolute left-3 quetop-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

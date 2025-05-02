@@ -1,50 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CheckoutModal from '../components/CheckoutModel';
+import { CartContext } from '../context/CartContext';
 
 const CartPage = () => {
+  const { cartItems, cartLength, loading, error, removeFromCart, clearCart, fetchCart } =
+    useContext(CartContext);
   const { userId } = useParams();
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isRemoving, setIsRemoving] = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const navigate = useNavigate();
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [notification, setNotification] = useState(null);
   const user = {
-    name: localStorage.getItem('userName')
+    name: localStorage.getItem('userName'),
   };
 
-  const fetchCart = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`http://localhost:5000/api/cart/${user.name}`);
-      setCartItems(response.data[0]?.items || []);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch cart items: ' + (err.response?.data?.message || err.message));
-    }
-    setLoading(false);
-  };
-
-  const handleRemoveFromCart = async (vendorId, serviceName) => {
-    setIsRemoving(true);
-    try {
-      const response = await axios.delete(`http://localhost:5000/api/cart/remove/${user.name}`, {
-        data: { vendorId, serviceName },
-      });
-      setCartItems(response.data.cart || []);
-      setError(null);
-    } catch (err) {
-      setError('Failed to remove item from cart: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setIsRemoving(false);
-    }
+  // Show notification and auto-hide after delay
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   const totalAmount = cartItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
@@ -56,14 +34,10 @@ const CartPage = () => {
   const handleCheckoutComplete = (success) => {
     setIsCheckoutOpen(false);
     if (success) {
-      // Clear cart on successful payment
-      setCartItems([]);
+      clearCart();
+      showNotification('Bookings confirmed successfully!', false);
     }
   };
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
 
   // Animation variants
   const containerVariants = {
@@ -72,9 +46,9 @@ const CartPage = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
-    }
+        when: 'beforeChildren',
+      },
+    },
   };
 
   const itemVariants = {
@@ -83,19 +57,19 @@ const CartPage = () => {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 100,
-        damping: 10
-      }
+        damping: 10,
+      },
     },
     exit: {
       opacity: 0,
       x: -50,
       transition: {
         duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
+        ease: 'easeInOut',
+      },
+    },
   };
 
   const fadeIn = {
@@ -104,28 +78,28 @@ const CartPage = () => {
       opacity: 1,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: 'easeOut',
+      },
+    },
   };
 
   const buttonHover = {
     scale: 1.03,
-    boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.4)",
+    boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.4)',
     transition: {
-      type: "spring",
+      type: 'spring',
       stiffness: 400,
-      damping: 10
-    }
+      damping: 10,
+    },
   };
 
   const buttonTap = {
     scale: 0.98,
     transition: {
-      type: "spring",
+      type: 'spring',
       stiffness: 400,
-      damping: 10
-    }
+      damping: 10,
+    },
   };
 
   if (loading) {
@@ -138,12 +112,12 @@ const CartPage = () => {
             animate={{
               scale: 1,
               opacity: 1,
-              rotate: 360
+              rotate: 360,
             }}
             transition={{
-              loop: Infinity,
-              ease: "linear",
-              duration: 1
+              repeat: Infinity,
+              ease: 'linear',
+              duration: 1,
             }}
             className="w-16 h-16 rounded-full border-4 border-blue-500 border-t-transparent"
           ></motion.div>
@@ -157,8 +131,37 @@ const CartPage = () => {
     <div className="min-h-screen flex flex-col bg-gray-950">
       <Header />
 
+      {/* Notification System */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
+              notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
+            } text-white flex items-center`}
+          >
+            <svg
+              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
+              />
+            </svg>
+            <span>{notification.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <main className="flex-grow">
-        {/* Premium Hero Section */}
         <motion.section
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,11 +170,15 @@ const CartPage = () => {
         >
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop')] bg-cover opacity-10 mix-blend-overlay"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/30 to-gray-950/90"></div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-
+
+System: You are Grok 3 built by xAI.
+
+6 lg:px-8 text-center relative z-10">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, type: "spring" }}
+              transition={{ delay: 0.2, type: 'spring' }}
               className="text-4xl md:text-6xl font-bold text-white mb-6"
             >
               Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Service Cart</span>
@@ -187,7 +194,6 @@ const CartPage = () => {
           </div>
         </motion.section>
 
-        {/* Cart Content */}
         <motion.section
           initial="hidden"
           animate="show"
@@ -195,18 +201,15 @@ const CartPage = () => {
           className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
         >
           {error ? (
-            <motion.div
-              variants={fadeIn}
-              className="text-center py-16"
-            >
+            <motion.div variants={fadeIn} className="text-center py-16">
               <motion.div
                 animate={{
                   rotate: [0, 10, -10, 0],
-                  scale: [1, 1.1, 1.1, 1]
+                  scale: [1, 1.1, 1.1, 1],
                 }}
                 transition={{
                   duration: 0.6,
-                  ease: "easeInOut"
+                  ease: 'easeInOut',
                 }}
                 className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-900/20 mb-4"
               >
@@ -227,23 +230,25 @@ const CartPage = () => {
               </motion.button>
             </motion.div>
           ) : cartItems.length === 0 ? (
-            <motion.div
-              variants={fadeIn}
-              className="text-center py-16"
-            >
+            <motion.div variants={fadeIn} className="text-center py-16">
               <motion.div
                 animate={{
                   y: [0, -10, 0],
                   transition: {
                     repeat: Infinity,
-                    repeatType: "reverse",
-                    duration: 2
-                  }
+                    repeatType: 'reverse',
+                    duration: 2,
+                  },
                 }}
                 className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4"
               >
                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  ></path>
                 </svg>
               </motion.div>
               <h3 className="text-2xl font-medium text-white mb-3">Your Cart Feels Lonely</h3>
@@ -274,7 +279,7 @@ const CartPage = () => {
                       exit="exit"
                       whileHover={{
                         y: -5,
-                        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
                       }}
                       className="flex flex-col sm:flex-row gap-6 p-6 mb-6 bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-700/30 transition-all hover:border-blue-500/30"
                     >
@@ -282,7 +287,10 @@ const CartPage = () => {
                         <motion.img
                           initial={{ scale: 1 }}
                           whileHover={{ scale: 1.05 }}
-                          src={item.imageUrl || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'}
+                          src={
+                            item.imageUrl ||
+                            'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
+                          }
                           alt={item.serviceName}
                           className="w-full h-full object-cover absolute inset-0"
                         />
@@ -299,7 +307,12 @@ const CartPage = () => {
                             <h3 className="text-xl font-semibold text-white">{item.serviceName}</h3>
                             <p className="text-sm text-gray-400 mt-2 flex items-center gap-2">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                ></path>
                               </svg>
                               {item.vendorName || 'Professional Vendor'}
                             </p>
@@ -307,23 +320,34 @@ const CartPage = () => {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handleRemoveFromCart(item.vendorId, item.serviceName)}
-                            disabled={isRemoving}
+                            onClick={() => removeFromCart(item.vendorId, item.serviceName)}
+                            disabled={loading}
                             className="p-2 rounded-full bg-gray-700 hover:bg-red-500/20 text-red-400 hover:text-red-500 disabled:opacity-50 transition-colors relative overflow-hidden"
                           >
-                            {isRemoving ? (
+                            {loading ? (
                               <motion.span
                                 animate={{ rotate: 360 }}
                                 transition={{
                                   duration: 1,
                                   repeat: Infinity,
-                                  ease: "linear"
+                                  ease: 'linear',
                                 }}
                                 className="block w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full"
                               ></motion.span>
                             ) : (
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
                               </svg>
                             )}
                           </motion.button>
@@ -338,7 +362,6 @@ const CartPage = () => {
                   ))}
                 </AnimatePresence>
               </div>
-
               <div className="lg:w-1/3">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -347,17 +370,17 @@ const CartPage = () => {
                     y: 0,
                     transition: {
                       delay: 0.4,
-                      type: "spring",
+                      type: 'spring',
                       stiffness: 100,
-                      damping: 10
-                    }
+                      damping: 10,
+                    },
                   }}
                   className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/30 sticky top-8"
                 >
                   <h2 className="text-2xl font-bold text-white mb-6">Order Summary</h2>
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Subtotal ({cartItems.length} items)</span>
+                      <span className="text-gray-400">Subtotal ({cartLength} items)</span>
                       <span className="font-medium text-white">${totalAmount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
@@ -387,7 +410,7 @@ const CartPage = () => {
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       Proceed to Checkout
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5 Gardiner7m0 0l-7 7m7-7H3"></path>
                       </svg>
                     </span>
                     <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -395,16 +418,25 @@ const CartPage = () => {
                   <motion.button
                     whileHover={{
                       scale: 1.02,
-                      boxShadow: "0 5px 15px -5px rgba(255, 255, 255, 0.1)"
+                      boxShadow: '0 5px 15px -5px rgba(255, 255, 255, 0.1)',
                     }}
                     whileTap={buttonTap}
                     onClick={() => navigate('/services')}
-                    className="w-full mt-4 py-3.5 px-6 bg-gray-700/50 hover:bg-gray-600/50 text-white font-medium rounded-xl shadow-lg border border-gray-600/30 hover:border-gray-500/50 transition-all relative overflow-hidden"
+                    className="w-full mt-4 py-3.5 px-6 bg-gray-700/50
+
+System: You are Grok 3 built by xAI.
+
+hover:bg-gray-600/50 text-white font-medium rounded-xl shadow-lg border border-gray-600/30 hover:border-gray-500/50 transition-all relative overflow-hidden"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       Continue Shopping
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        ></path>
                       </svg>
                     </span>
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -415,7 +447,6 @@ const CartPage = () => {
           )}
         </motion.section>
       </main>
-
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={handleCheckoutComplete}
@@ -429,7 +460,6 @@ const CartPage = () => {
         }))}
         userId={user.name}
       />
-
       <Footer />
     </div>
   );
