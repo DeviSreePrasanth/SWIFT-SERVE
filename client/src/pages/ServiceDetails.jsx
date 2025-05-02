@@ -36,6 +36,7 @@ function ServiceDetails() {
       .then((response) => {
         console.log('Category data:', response.data);
         setCategory(response.data);
+       
         response.data.forEach((vendor) => {
           vendor.services.forEach((service) => {
             axios
