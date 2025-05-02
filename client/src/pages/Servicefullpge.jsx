@@ -239,7 +239,6 @@ function ServiceFullPage() {
         )}
       </AnimatePresence>
 
-      {/* Particle Background */}
       <div className="fixed inset-0 overflow-hidden z-0 opacity-20">
         {[...Array(30)].map((_, i) => (
           <motion.div
