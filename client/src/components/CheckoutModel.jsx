@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "../api/axios";
 
 const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
-  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [paymentMethod, setPaymentMethod] = useState("credit");
   const [cardDetails, setCardDetails] = useState({
-    number: '',
-    expiry: '',
-    cvv: '',
-    name: '',
+    number: "",
+    expiry: "",
+    cvv: "",
+    name: "",
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -26,18 +26,18 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
     const cardNumberRegex = /^\d{16}$/;
     const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
     const cvvRegex = /^\d{3,4}$/;
-    const sanitizedNumber = number.replace(/\s/g, '');
+    const sanitizedNumber = number.replace(/\s/g, "");
     if (!cardNumberRegex.test(sanitizedNumber)) {
-      return { valid: false, error: 'Card number must be 16 digits' };
+      return { valid: false, error: "Card number must be 16 digits" };
     }
     if (!expiryRegex.test(expiry)) {
-      return { valid: false, error: 'Expiry date must be in MM/YY format' };
+      return { valid: false, error: "Expiry date must be in MM/YY format" };
     }
     if (!cvvRegex.test(cvv)) {
-      return { valid: false, error: 'CVV must be 3 or 4 digits' };
+      return { valid: false, error: "CVV must be 3 or 4 digits" };
     }
     if (!name.trim()) {
-      return { valid: false, error: 'Name on card is required' };
+      return { valid: false, error: "Name on card is required" };
     }
     return { valid: true };
   };
@@ -48,35 +48,40 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
 
     try {
       if (!bookings || bookings.length === 0) {
-        throw new Error('No bookings selected');
+        throw new Error("No bookings selected");
       }
 
-      if (paymentMethod === 'credit') {
+      if (paymentMethod === "credit") {
         const validation = validateCardDetails();
         if (!validation.valid) {
           throw new Error(validation.error);
         }
       }
 
-      if (paymentMethod === 'paypal') {
-        showNotification('PayPal payment not implemented. Please use credit card.', true);
+      if (paymentMethod === "paypal") {
+        showNotification(
+          "PayPal payment not implemented. Please use credit card.",
+          true
+        );
         setIsProcessing(false);
         return;
       }
 
       const bookingPromises = bookings.map((booking) =>
-        axios.post('http://localhost:5000/api/bookings/book', {
+        axios.post("/bookings/book", {
           userId,
           vendorId: booking.vendorId,
           serviceName: booking.serviceName,
           category: booking.category,
-          imageUrl: booking.imageUrl || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
+          imageUrl:
+            booking.imageUrl ||
+            "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
         })
       );
 
       await Promise.all(bookingPromises);
 
-      showNotification('Payment successful! Bookings confirmed.', false);
+      showNotification("Payment successful! Bookings confirmed.", false);
 
       setTimeout(() => {
         onClose(true); // Signal successful checkout to clear cart
@@ -85,7 +90,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
-        'An unexpected error occurred. Please try again.';
+        "An unexpected error occurred. Please try again.";
       showNotification(`Payment failed: ${errorMessage}`, true);
     } finally {
       setIsProcessing(false);
@@ -109,13 +114,17 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -50 }}
-              transition={{ type: 'spring', damping: 25 }}
+              transition={{ type: "spring", damping: 25 }}
               className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-60 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-                notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
+                notification.isError
+                  ? "bg-red-600/90 border-red-400/30"
+                  : "bg-green-600/90 border-green-400/30"
               } text-white flex items-center`}
             >
               <svg
-                className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+                className={`w-5 h-5 mr-2 ${
+                  notification.isError ? "text-red-200" : "text-green-200"
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -124,7 +133,11 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
+                  d={
+                    notification.isError
+                      ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      : "M5 13l4 4L19 7"
+                  }
                 />
               </svg>
               <span>{notification.message}</span>
@@ -171,7 +184,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                   Payment Method
                 </h3>
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  {['credit', 'paypal'].map((method) => (
+                  {["credit", "paypal"].map((method) => (
                     <motion.button
                       key={method}
                       type="button"
@@ -180,16 +193,16 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                       onClick={() => setPaymentMethod(method)}
                       className={`py-3 px-4 rounded-lg border transition-colors ${
                         paymentMethod === method
-                          ? 'border-blue-500 bg-blue-500/10 text-white'
-                          : 'border-gray-600 hover:border-gray-500 text-gray-300'
+                          ? "border-blue-500 bg-blue-500/10 text-white"
+                          : "border-gray-600 hover:border-gray-500 text-gray-300"
                       }`}
                     >
-                      {method === 'credit' ? 'Credit Card' : 'PayPal'}
+                      {method === "credit" ? "Credit Card" : "PayPal"}
                     </motion.button>
                   ))}
                 </div>
 
-                {paymentMethod === 'credit' && (
+                {paymentMethod === "credit" && (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">
@@ -203,7 +216,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                         onChange={(e) =>
                           setCardDetails({
                             ...cardDetails,
-                            number: e.target.value.replace(/[^\d\s]/g, ''),
+                            number: e.target.value.replace(/[^\d\s]/g, ""),
                           })
                         }
                         required
@@ -221,7 +234,10 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                           className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                           value={cardDetails.expiry}
                           onChange={(e) =>
-                            setCardDetails({ ...cardDetails, expiry: e.target.value })
+                            setCardDetails({
+                              ...cardDetails,
+                              expiry: e.target.value,
+                            })
                           }
                           required
                         />
@@ -238,7 +254,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                           onChange={(e) =>
                             setCardDetails({
                               ...cardDetails,
-                              cvv: e.target.value.replace(/[^\d]/g, ''),
+                              cvv: e.target.value.replace(/[^\d]/g, ""),
                             })
                           }
                           required
@@ -256,7 +272,10 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                         className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         value={cardDetails.name}
                         onChange={(e) =>
-                          setCardDetails({ ...cardDetails, name: e.target.value })
+                          setCardDetails({
+                            ...cardDetails,
+                            name: e.target.value,
+                          })
                         }
                         required
                       />
@@ -264,7 +283,7 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                   </div>
                 )}
 
-                {paymentMethod === 'paypal' && (
+                {paymentMethod === "paypal" && (
                   <div className="bg-gray-700/50 rounded-lg p-6 text-center">
                     <p className="text-gray-300 mb-4">
                       You'll be redirected to PayPal to complete your payment
@@ -287,7 +306,8 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-gray-400">Total</span>
                   <span className="font-bold text-xl text-white">
-                    ${bookings
+                    $
+                    {bookings
                       .reduce((sum, item) => sum + Number(item.cost || 0), 0)
                       .toFixed(2)}
                   </span>
@@ -301,8 +321,8 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
                 disabled={isProcessing}
                 className={`w-full py-4 px-6 rounded-xl font-semibold text-white shadow-lg transition-all relative overflow-hidden ${
                   isProcessing
-                    ? 'bg-blue-600/50 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600'
+                    ? "bg-blue-600/50 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
                 }`}
               >
                 {isProcessing ? (

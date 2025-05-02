@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import axios from 'axios';
-import { CartContext } from '../context/CartContext';
+import React, { useEffect, useState, useContext } from "react";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import axios from "../api/axios";
+import { CartContext } from "../context/CartContext";
 
 function ServiceFullPage() {
   const { vendorName, serviceName } = useParams();
@@ -18,14 +18,14 @@ function ServiceFullPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
   const [reviews, setReviews] = useState([]);
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState("details");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newReview, setNewReview] = useState({
-    user: '',
+    user: "",
     rating: 0,
-    feedback: '',
+    feedback: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [notification, setNotification] = useState(null);
   const [showViewCart, setShowViewCart] = useState(false);
 
@@ -40,7 +40,7 @@ function ServiceFullPage() {
     if (!service || !vendor) {
       const fetchVendorAndService = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/vendor-service', {
+          const response = await axios.get("/vendor-service", {
             params: {
               vendorName: decodeURIComponent(vendorName),
               serviceName: decodeURIComponent(serviceName),
@@ -53,21 +53,24 @@ function ServiceFullPage() {
             setCategory([]);
             setIsLoaded(true);
           } else {
-            console.error('Failed to fetch vendor and service:', response.data.message);
-            showNotification('Failed to load service details', true);
-            navigate('/services');
+            console.error(
+              "Failed to fetch vendor and service:",
+              response.data.message
+            );
+            showNotification("Failed to load service details", true);
+            navigate("/services");
           }
         } catch (error) {
-          console.error('Error fetching vendor and service:', error);
-          showNotification('Failed to load service details', true);
-          navigate('/services');
+          console.error("Error fetching vendor and service:", error);
+          showNotification("Failed to load service details", true);
+          navigate("/services");
         }
       };
 
       fetchVendorAndService();
     } else {
       setIsLoaded(true);
-      console.log('Using state data:', { service, vendor, category });
+      console.log("Using state data:", { service, vendor, category });
     }
   }, [service, vendor, vendorName, serviceName, navigate]);
 
@@ -75,15 +78,17 @@ function ServiceFullPage() {
     if (vendor) {
       const fetchReviews = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/review?name=${vendor.name}`);
+          const response = await axios.get(`/review?name=${vendor.name}`);
           const reviewsData = response.data;
           setReviews(reviewsData);
           if (reviewsData.length > 0) {
-            const avgRating = reviewsData.reduce((sum, review) => sum + review.rating, 0) / reviewsData.length;
+            const avgRating =
+              reviewsData.reduce((sum, review) => sum + review.rating, 0) /
+              reviewsData.length;
             setAverageRating(avgRating);
           }
         } catch (error) {
-          console.error('Error fetching reviews:', error);
+          console.error("Error fetching reviews:", error);
         }
       };
       fetchReviews();
@@ -91,44 +96,50 @@ function ServiceFullPage() {
   }, [vendor]);
 
   const handleAddToCart = async () => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     if (!userId) {
-      showNotification('Please log in to add items to your cart', true);
-      navigate('/login');
+      showNotification("Please log in to add items to your cart", true);
+      navigate("/login");
       return;
     }
-  
+
     const item = {
       vendorId: vendor._id,
       vendorName: vendor.name,
       serviceName: service.name,
-      category: service.category || 'Unknown',
+      category: service.category || "Unknown",
       price: Number(service.price || 0),
-      imageUrl: service.photo || '',
+      imageUrl: service.photo || "",
     };
-  
+
     // Check if the item is already in the cart
-    const isItemInCart = Array.isArray(cartItems) && cartItems.some(
-      (cartItem) => cartItem.vendorId === item.vendorId && cartItem.serviceName === item.serviceName
-    );
-  
+    const isItemInCart =
+      Array.isArray(cartItems) &&
+      cartItems.some(
+        (cartItem) =>
+          cartItem.vendorId === item.vendorId &&
+          cartItem.serviceName === item.serviceName
+      );
+
     if (isItemInCart) {
       showNotification(`${service.name} is already in your cart`, true);
       return;
     }
-  
+
     try {
-      console.log('Add to cart payload:', item);
-  
+      console.log("Add to cart payload:", item);
+
       // Add item to cart
       await addToCart(item);
       // No need to call fetchCart since addToCart updates cartItems
-  
+
       // Confirm the item was added
       const isNowInCart = cartItems.some(
-        (cartItem) => cartItem.vendorId === item.vendorId && cartItem.serviceName === item.serviceName
+        (cartItem) =>
+          cartItem.vendorId === item.vendorId &&
+          cartItem.serviceName === item.serviceName
       );
-  
+
       if (isNowInCart) {
         showNotification(`${service.name} added to cart successfully!`, false);
         setShowViewCart(true);
@@ -136,30 +147,37 @@ function ServiceFullPage() {
         showNotification(`${service.name} added to cart successfully!`, true);
       }
     } catch (error) {
-      console.error('Error adding to cart:', {
+      console.error("Error adding to cart:", {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
       });
       const errorMessage = error.response?.data?.message || error.message;
       showNotification(
-        errorMessage === 'Service already added to cart'
+        errorMessage === "Service already added to cart"
           ? `${service.name} is already in your cart`
-          : 'Failed to add item to cart',
+          : "Failed to add item to cart",
         true
       );
     }
   };
 
   const handleReviewSubmit = async () => {
-    if (!newReview.user || !newReview.feedback || newReview.rating < 1 || newReview.rating > 5) {
-      setError('Please provide your name, feedback, and a rating between 1 and 5.');
+    if (
+      !newReview.user ||
+      !newReview.feedback ||
+      newReview.rating < 1 ||
+      newReview.rating > 5
+    ) {
+      setError(
+        "Please provide your name, feedback, and a rating between 1 and 5."
+      );
       return;
     }
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/review',
+        "/review",
         {
           name: vendor.name,
           user: newReview.user,
@@ -168,23 +186,27 @@ function ServiceFullPage() {
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
 
       setReviews([...reviews, response.data]);
       setAverageRating(
-        (reviews.reduce((sum, review) => sum + review.rating, 0) + response.data.rating) /
+        (reviews.reduce((sum, review) => sum + review.rating, 0) +
+          response.data.rating) /
           (reviews.length + 1)
       );
-      setNewReview({ user: '', rating: 0, feedback: '' });
+      setNewReview({ user: "", rating: 0, feedback: "" });
       setIsModalOpen(false);
-      setError('');
-      showNotification('Review submitted successfully!', false);
+      setError("");
+      showNotification("Review submitted successfully!", false);
     } catch (error) {
-      console.error('Error submitting review:', error);
-      setError(error.response?.data?.message || 'Failed to submit review. Please try again.');
+      console.error("Error submitting review:", error);
+      setError(
+        error.response?.data?.message ||
+          "Failed to submit review. Please try again."
+      );
     }
   };
 
@@ -193,12 +215,12 @@ function ServiceFullPage() {
       .fill(0)
       .map((_, i) => {
         const starValue = i + 1;
-        let fillPercentage = '0%';
+        let fillPercentage = "0%";
 
         if (rating >= starValue) {
-          fillPercentage = '100%';
+          fillPercentage = "100%";
         } else if (rating >= starValue - 0.5) {
-          fillPercentage = '50%';
+          fillPercentage = "50%";
         }
 
         return (
@@ -216,7 +238,10 @@ function ServiceFullPage() {
                 d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
               />
             </svg>
-            <div className="absolute overflow-hidden" style={{ width: fillPercentage, height: '100%' }}>
+            <div
+              className="absolute overflow-hidden"
+              style={{ width: fillPercentage, height: "100%" }}
+            >
               <svg
                 className="w-6 h-6 text-yellow-400"
                 fill="currentColor"
@@ -256,13 +281,17 @@ function ServiceFullPage() {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            transition={{ type: 'spring', damping: 25 }}
+            transition={{ type: "spring", damping: 25 }}
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-              notification.isError ? 'bg-green-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
+              notification.isError
+                ? "bg-green-600/90 border-red-400/30"
+                : "bg-green-600/90 border-green-400/30"
             } text-white flex items-center`}
           >
             <svg
-              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+              className={`w-5 h-5 mr-2 ${
+                notification.isError ? "text-red-200" : "text-green-200"
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -271,7 +300,11 @@ function ServiceFullPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
+                d={
+                  notification.isError
+                    ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    : "M5 13l4 4L19 7"
+                }
               />
             </svg>
             <span>{notification.message}</span>
@@ -285,16 +318,23 @@ function ServiceFullPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25 }}
+            transition={{ type: "spring", damping: 25 }}
             className="fixed bottom-8 right-8 z-40"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(`/cart/${localStorage.getItem('userId')}`)}
+              onClick={() =>
+                navigate(`/cart/${localStorage.getItem("userId")}`)
+              }
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center border border-blue-400/30"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -327,8 +367,8 @@ function ServiceFullPage() {
             transition={{
               duration: Math.random() * 10 + 5,
               repeat: Infinity,
-              repeatType: 'reverse',
-              ease: 'easeInOut',
+              repeatType: "reverse",
+              ease: "easeInOut",
             }}
           />
         ))}
@@ -348,7 +388,8 @@ function ServiceFullPage() {
               {service.name}
             </h1>
             <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
-              Provided by <span className="font-bold text-blue-400">{vendor.name}</span>
+              Provided by{" "}
+              <span className="font-bold text-blue-400">{vendor.name}</span>
             </p>
 
             <div className="mt-6 flex justify-center items-center space-x-4">
@@ -359,7 +400,9 @@ function ServiceFullPage() {
                 </span>
               </div>
               <span className="h-4 w-px bg-gray-600"></span>
-              <span className="text-gray-300 text-sm sm:text-base">{service.category || 'Premium Service'}</span>
+              <span className="text-gray-300 text-sm sm:text-base">
+                {service.category || "Premium Service"}
+              </span>
             </div>
           </div>
         </div>
@@ -375,7 +418,7 @@ function ServiceFullPage() {
                   src={service.photo}
                   alt={service.name}
                   className="absolute inset-0 w-full h-full object-cover opacity-90 transition-all duration-500"
-                  style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
+                  style={{ transform: isHovered ? "scale(1.05)" : "scale(1)" }}
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                 />
@@ -383,21 +426,25 @@ function ServiceFullPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 sm:p-8">
                 <div>
                   <span className="inline-block px-3 py-1 sm:px-4 sm:py-2 bg-black/50 backdrop-blur-md rounded-full text-xs sm:text-sm font-bold text-blue-300 border border-blue-500/30 mb-2 sm:mb-3">
-                    {service.category || 'Premium Service'}
+                    {service.category || "Premium Service"}
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white">{service.name}</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-white">
+                    {service.name}
+                  </h2>
                 </div>
               </div>
             </motion.div>
 
             <div className="bg-gray-800/30 border border-gray-700/30 rounded-xl backdrop-blur-lg p-1">
               <nav className="flex space-x-1">
-                {['details', 'features', 'faq'].map((tab) => (
+                {["details", "features", "faq"].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                      activeTab === tab ? 'bg-gray-700/50 text-white shadow' : 'text-gray-400 hover:text-gray-300'
+                      activeTab === tab
+                        ? "bg-gray-700/50 text-white shadow"
+                        : "text-gray-400 hover:text-gray-300"
                     }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -407,42 +454,53 @@ function ServiceFullPage() {
             </div>
 
             <div className="bg-gray-800/30 border-2 border-gray-700/30 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-xl min-h-[300px]">
-              {activeTab === 'details' && (
+              {activeTab === "details" && (
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <span className="bg-blue-500/20 p-2 rounded-lg mr-3">📋</span>
+                    <span className="bg-blue-500/20 p-2 rounded-lg mr-3">
+                      📋
+                    </span>
                     Service Details
                   </h3>
                   <p className="text-gray-300 leading-relaxed mb-6">
-                    {service.description || 'Expert service with precision and care.'}
+                    {service.description ||
+                      "Expert service with precision and care."}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700/30">
-                      <p className="text-gray-400 text-sm mb-1">Service Duration</p>
-                      <p className="text-white font-medium">{service.duration || '2-4 Hours'}</p>
+                      <p className="text-gray-400 text-sm mb-1">
+                        Service Duration
+                      </p>
+                      <p className="text-white font-medium">
+                        {service.duration || "2-4 Hours"}
+                      </p>
                     </div>
                     <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700/30">
                       <p className="text-gray-400 text-sm mb-1">Warranty</p>
-                      <p className="text-white font-medium">{service.warranty || '1 Year'}</p>
+                      <p className="text-white font-medium">
+                        {service.warranty || "1 Year"}
+                      </p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {activeTab === 'features' && (
+              {activeTab === "features" && (
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <span className="bg-blue-500/20 p-2 rounded-lg mr-3">✨</span>
+                    <span className="bg-blue-500/20 p-2 rounded-lg mr-3">
+                      ✨
+                    </span>
                     Key Features
                   </h3>
                   <div className="grid grid-cols-1 gap-3">
                     {[
-                      '24/7 Emergency Support with 1-hour response time',
-                      'Fully Licensed & Certified Professionals',
-                      '1-Year Comprehensive Warranty on all work',
-                      'Free Initial Consultation and Quote',
-                      'Eco-Friendly Materials and Practices',
-                      'Transparent Pricing with No Hidden Fees',
+                      "24/7 Emergency Support with 1-hour response time",
+                      "Fully Licensed & Certified Professionals",
+                      "1-Year Comprehensive Warranty on all work",
+                      "Free Initial Consultation and Quote",
+                      "Eco-Friendly Materials and Practices",
+                      "Transparent Pricing with No Hidden Fees",
                     ].map((item, i) => (
                       <div
                         key={i}
@@ -456,35 +514,58 @@ function ServiceFullPage() {
                 </div>
               )}
 
-              {activeTab === 'faq' && (
+              {activeTab === "faq" && (
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <span className="bg-blue-500/20 p-2 rounded-lg mr-3">❓</span>
+                    <span className="bg-blue-500/20 p-2 rounded-lg mr-3">
+                      ❓
+                    </span>
                     Frequently Asked Questions
                   </h3>
                   <div className="space-y-4">
                     {[
                       {
-                        question: 'What areas do you service?',
-                        answer: vendor.serviceAreas || 'We cover all major metropolitan areas within a 50-mile radius of our headquarters.',
+                        question: "What areas do you service?",
+                        answer:
+                          vendor.serviceAreas ||
+                          "We cover all major metropolitan areas within a 50-mile radius of our headquarters.",
                       },
                       {
-                        question: 'How do I schedule an appointment?',
-                        answer: 'You can book directly through our website, mobile app, or by calling our customer service line.',
+                        question: "How do I schedule an appointment?",
+                        answer:
+                          "You can book directly through our website, mobile app, or by calling our customer service line.",
                       },
                       {
-                        question: 'What payment methods do you accept?',
-                        answer: 'We accept all major credit cards, PayPal, and bank transfers. Financing options are also available.',
+                        question: "What payment methods do you accept?",
+                        answer:
+                          "We accept all major credit cards, PayPal, and bank transfers. Financing options are also available.",
                       },
                     ].map((faq, i) => (
-                      <div key={i} className="bg-gray-800/50 rounded-xl border border-gray-700/30 overflow-hidden">
+                      <div
+                        key={i}
+                        className="bg-gray-800/50 rounded-xl border border-gray-700/30 overflow-hidden"
+                      >
                         <button className="w-full text-left p-4 flex justify-between items-center">
-                          <span className="font-medium text-gray-200">{faq.question}</span>
-                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          <span className="font-medium text-gray-200">
+                            {faq.question}
+                          </span>
+                          <svg
+                            className="w-5 h-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
                           </svg>
                         </button>
-                        <div className="px-4 pb-4 text-gray-300">{faq.answer}</div>
+                        <div className="px-4 pb-4 text-gray-300">
+                          {faq.answer}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -502,8 +583,10 @@ function ServiceFullPage() {
 
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Standard Rate</span>
-                    <span className="text-2xl font-bold text-white">${Number(service.price || 99).toFixed(2)}</span>
+                  <span className="text-gray-300">Standard Rate</span>
+                  <span className="text-2xl font-bold text-white">
+                    ${Number(service.price || 99).toFixed(2)}
+                  </span>
                 </div>
 
                 <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
@@ -514,9 +597,16 @@ function ServiceFullPage() {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <span className="text-blue-300 text-sm">Price includes all materials and labor. No hidden fees.</span>
+                    <span className="text-blue-300 text-sm">
+                      Price includes all materials and labor. No hidden fees.
+                    </span>
                   </div>
                 </div>
 
@@ -552,13 +642,16 @@ function ServiceFullPage() {
 
               <div className="space-y-4">
                 {[
-                  { icon: '🏆', text: 'Award-winning service quality' },
-                  { icon: '⏱️', text: "On-time guarantee or it's free" },
-                  { icon: '🛡️', text: 'Fully insured for your protection' },
-                  { icon: '🌱', text: 'Eco-friendly practices' },
-                  { icon: '💎', text: 'Premium materials included' },
+                  { icon: "🏆", text: "Award-winning service quality" },
+                  { icon: "⏱️", text: "On-time guarantee or it's free" },
+                  { icon: "🛡️", text: "Fully insured for your protection" },
+                  { icon: "🌱", text: "Eco-friendly practices" },
+                  { icon: "💎", text: "Premium materials included" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center bg-gray-800/50 p-3 rounded-lg border border-gray-700/30">
+                  <div
+                    key={i}
+                    className="flex items-center bg-gray-800/50 p-3 rounded-lg border border-gray-700/30"
+                  >
                     <span className="text-2xl mr-3">{item.icon}</span>
                     <span className="text-gray-200">{item.text}</span>
                   </div>
@@ -580,21 +673,35 @@ function ServiceFullPage() {
                 {vendor.name.charAt(0)}
               </div>
               <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 rounded-full p-1 sm:p-2 border-4 border-gray-900">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-3 h-3 sm:w-4 sm:h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
             </motion.div>
 
             <div className="flex-1 w-full">
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{vendor.name}</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                {vendor.name}
+              </h3>
               <div className="flex items-center mb-2">
                 {renderStars(averageRating)}
                 <span className="ml-2 text-gray-400 text-sm">
                   ({averageRating.toFixed(1)} / 5 from {reviews.length} reviews)
                 </span>
               </div>
-              <p className="text-gray-400 mb-4">Professional since {new Date(vendor.createdAt).getFullYear()}</p>
+              <p className="text-gray-400 mb-4">
+                Professional since {new Date(vendor.createdAt).getFullYear()}
+              </p>
 
               <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
                 {(vendor.categories || []).map((cat, i) => (
@@ -609,16 +716,26 @@ function ServiceFullPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="bg-gray-800/50 p-3 sm:p-4 rounded-xl border border-gray-700/30">
-                  <p className="text-gray-400 text-xs sm:text-sm mb-1">Contact</p>
-                  <p className="text-white font-medium text-sm sm:text-base">{vendor.phone || 'N/A'}</p>
+                  <p className="text-gray-400 text-xs sm:text-sm mb-1">
+                    Contact
+                  </p>
+                  <p className="text-white font-medium text-sm sm:text-base">
+                    {vendor.phone || "N/A"}
+                  </p>
                 </div>
                 <div className="bg-gray-800/50 p-3 sm:p-4 rounded-xl border border-gray-700/30">
                   <p className="text-gray-400 text-xs sm:text-sm mb-1">Email</p>
-                  <p className="text-white font-medium text-sm sm:text-base">{vendor.contactEmail || 'N/A'}</p>
+                  <p className="text-white font-medium text-sm sm:text-base">
+                    {vendor.contactEmail || "N/A"}
+                  </p>
                 </div>
                 <div className="bg-gray-800/50 p-3 sm:p-4 rounded-xl border border-gray-700/30">
-                  <p className="text-gray-400 text-xs sm:text-sm mb-1">Location</p>
-                  <p className="text-white font-medium text-sm sm:text-base">{vendor.address || 'N/A'}</p>
+                  <p className="text-gray-400 text-xs sm:text-sm mb-1">
+                    Location
+                  </p>
+                  <p className="text-white font-medium text-sm sm:text-base">
+                    {vendor.address || "N/A"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -648,7 +765,12 @@ function ServiceFullPage() {
 
           {reviews.length === 0 ? (
             <div className="text-center py-12">
-              <svg className="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-16 h-16 mx-auto text-gray-500 mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -674,17 +796,23 @@ function ServiceFullPage() {
                       {review.user.charAt(0)}
                     </div>
                     <div className="ml-3">
-                      <h4 className="text-white font-semibold">{review.user}</h4>
+                      <h4 className="text-white font-semibold">
+                        {review.user}
+                      </h4>
                       <div className="flex items-center">
                         {renderStars(review.rating)}
-                        <span className="ml-2 text-gray-400 text-xs sm:text-sm">({review.rating}/5)</span>
+                        <span className="ml-2 text-gray-400 text-xs sm:text-sm">
+                          ({review.rating}/5)
+                        </span>
                       </div>
                     </div>
                     <div className="ml-auto text-gray-500 text-xs">
                       {new Date(review.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <p className="text-gray-300 leading-relaxed text-sm sm:text-base">{review.feedback}</p>
+                  <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+                    {review.feedback}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -724,11 +852,15 @@ function ServiceFullPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-300 text-sm mb-1">Your Name</label>
+                <label className="block text-gray-300 text-sm mb-1">
+                  Your Name
+                </label>
                 <input
                   type="text"
                   value={newReview.user}
-                  onChange={(e) => setNewReview({ ...newReview, user: e.target.value })}
+                  onChange={(e) =>
+                    setNewReview({ ...newReview, user: e.target.value })
+                  }
                   className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50"
                   placeholder="Enter your name"
                   required
@@ -736,27 +868,37 @@ function ServiceFullPage() {
               </div>
 
               <div>
-                <label className="block text-gray-300 text-sm mb-1">Rating</label>
+                <label className="block text-gray-300 text-sm mb-1">
+                  Rating
+                </label>
                 <div className="flex items-center space-x-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
-                      onClick={() => setNewReview({ ...newReview, rating: star })}
+                      onClick={() =>
+                        setNewReview({ ...newReview, rating: star })
+                      }
                       className="text-2xl focus:outline-none"
                     >
-                      {star <= newReview.rating ? '⭐' : '☆'}
+                      {star <= newReview.rating ? "⭐" : "☆"}
                     </button>
                   ))}
-                  <span className="ml-2 text-gray-400 text-sm">({newReview.rating}/5)</span>
+                  <span className="ml-2 text-gray-400 text-sm">
+                    ({newReview.rating}/5)
+                  </span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 text-sm mb-1">Feedback</label>
+                <label className="block text-gray-300 text-sm mb-1">
+                  Feedback
+                </label>
                 <textarea
                   value={newReview.feedback}
-                  onChange={(e) => setNewReview({ ...newReview, feedback: e.target.value })}
+                  onChange={(e) =>
+                    setNewReview({ ...newReview, feedback: e.target.value })
+                  }
                   className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700/50 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500/50"
                   rows={4}
                   placeholder="Share your experience..."
@@ -778,8 +920,8 @@ function ServiceFullPage() {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     setIsModalOpen(false);
-                    setError('');
-                    setNewReview({ user: '', rating: 0, feedback: '' });
+                    setError("");
+                    setNewReview({ user: "", rating: 0, feedback: "" });
                   }}
                   className="flex-1 px-4 py-2 bg-gray-800/70 text-gray-300 border border-gray-700/50 rounded-lg hover:bg-gray-700/50 transition-all"
                 >

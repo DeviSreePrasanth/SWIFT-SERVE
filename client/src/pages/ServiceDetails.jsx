@@ -1,12 +1,12 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import VendorCard from '../components/VendorCard';
-import Footer from '../components/Footer';
-import axios from 'axios';
-import { useEffect, useState, useContext } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CartContext } from '../context/CartContext';
-import { toast } from 'react-toastify';
+import { useParams, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import VendorCard from "../components/VendorCard";
+import Footer from "../components/Footer";
+import axios from "../api/axios";
+import { useEffect, useState, useContext } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CartContext } from "../context/CartContext";
+import { toast } from "react-toastify";
 
 function ServiceDetails() {
   const { id } = useParams();
@@ -28,39 +28,44 @@ function ServiceDetails() {
   };
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(`http://localhost:5000/api/detail?name=${id}`)
+      .get(`/detail?name=${id}`)
       .then((response) => {
-        console.log('Category data:', response.data);
+        console.log("Category data:", response.data);
         setCategory(response.data);
         response.data.forEach((item) => {
           const vendor = item;
           axios
-            .get(`http://localhost:5000/api/review?name=${vendor.name}`)
+            .get(`/review?name=${vendor.name}`)
             .then((res) => {
               const reviews = res.data;
               if (reviews.length > 0) {
-                const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+                const avgRating =
+                  reviews.reduce((sum, review) => sum + review.rating, 0) /
+                  reviews.length;
                 setRatings((prev) => ({ ...prev, [vendor._id]: avgRating }));
               } else {
                 setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
               }
             })
             .catch((error) => {
-              console.error(`Error fetching reviews for vendor ${vendor.name}:`, error);
+              console.error(
+                `Error fetching reviews for vendor ${vendor.name}:`,
+                error
+              );
               setRatings((prev) => ({ ...prev, [vendor._id]: 0 }));
             });
         });
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching category:', error);
-        showNotification('Failed to load services', true);
+        console.error("Error fetching category:", error);
+        showNotification("Failed to load services", true);
         setIsLoading(false);
       });
   }, [id]);
@@ -68,27 +73,33 @@ function ServiceDetails() {
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
-      let starType = 'empty';
+      let starType = "empty";
       if (rating >= i) {
-        starType = 'filled';
+        starType = "filled";
       } else if (rating >= i - 0.5) {
-        starType = 'half';
+        starType = "half";
       }
       stars.push(
         <svg
           key={i}
           className={`w-5 h-5 inline-block ${
-            starType === 'filled'
-              ? 'text-yellow-400'
-              : starType === 'half'
-              ? 'text-yellow-400'
-              : 'text-gray-600'
+            starType === "filled"
+              ? "text-yellow-400"
+              : starType === "half"
+              ? "text-yellow-400"
+              : "text-gray-600"
           }`}
-          fill={starType === 'filled' ? 'currentColor' : starType === 'half' ? 'url(#half)' : 'none'}
+          fill={
+            starType === "filled"
+              ? "currentColor"
+              : starType === "half"
+              ? "url(#half)"
+              : "none"
+          }
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          {starType === 'half' && (
+          {starType === "half" && (
             <defs>
               <linearGradient id="half">
                 <stop offset="50%" stopColor="currentColor" />
@@ -123,18 +134,18 @@ System: You are Grok 3 built by xAI.
   };
 
   const handleAddToCart = async (serviceId) => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     if (!userId) {
-      showNotification('Please log in to add items to your cart', true);
-      navigate('/login');
+      showNotification("Please log in to add items to your cart", true);
+      navigate("/login");
       return;
     }
 
     try {
       const item = category.find((i) => i.service._id === serviceId);
       if (!item) {
-        console.error('Service not found:', { serviceId });
-        showNotification('Service not found', true);
+        console.error("Service not found:", { serviceId });
+        showNotification("Service not found", true);
         return;
       }
 
@@ -146,10 +157,10 @@ System: You are Grok 3 built by xAI.
         serviceName: service.name,
         category: id,
         price: Number(service.price || 0),
-        imageUrl: service.photo || '',
+        imageUrl: service.photo || "",
       };
 
-      console.log('Adding to cart with payload:', cartItem);
+      console.log("Adding to cart with payload:", cartItem);
 
       // Use addToCart from CartContext
       await addToCart(cartItem);
@@ -157,26 +168,29 @@ System: You are Grok 3 built by xAI.
       showNotification(`${service.name} added to cart successfully!`);
       setShowViewCart(true);
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error("Error adding to cart:", error);
       // Use the notification system instead of toast for consistency
       const errorMessage = error.response?.data?.message || error.message;
-      showNotification(errorMessage === 'Service already added to cart' 
-        ? `${item.service.name} is already in your cart` 
-        : 'Failed to add item to cart', true);
+      showNotification(
+        errorMessage === "Service already added to cart"
+          ? `${item.service.name} is already in your cart`
+          : "Failed to add item to cart",
+        true
+      );
     }
   };
 
   const viewFullDetails = (serviceId) => {
     const item = category.find((i) => i.service._id === serviceId);
     if (!item) {
-      console.error('Service not found for navigation:', { serviceId });
-      showNotification('Service not found for details', true);
+      console.error("Service not found for navigation:", { serviceId });
+      showNotification("Service not found for details", true);
       return;
     }
 
     const { service, ...vendor } = item;
 
-    console.log('Navigating with:', {
+    console.log("Navigating with:", {
       serviceId,
       serviceName: service.name,
       vendorName: vendor.name,
@@ -204,13 +218,17 @@ System: You are Grok 3 built by xAI.
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            transition={{ type: 'spring', damping: 25 }}
+            transition={{ type: "spring", damping: 25 }}
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl backdrop-blur-sm border ${
-              notification.isError ? 'bg-red-600/90 border-red-400/30' : 'bg-green-600/90 border-green-400/30'
+              notification.isError
+                ? "bg-red-600/90 border-red-400/30"
+                : "bg-green-600/90 border-green-400/30"
             } text-white flex items-center`}
           >
             <svg
-              className={`w-5 h-5 mr-2 ${notification.isError ? 'text-red-200' : 'text-green-200'}`}
+              className={`w-5 h-5 mr-2 ${
+                notification.isError ? "text-red-200" : "text-green-200"
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -219,7 +237,11 @@ System: You are Grok 3 built by xAI.
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d={notification.isError ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'}
+                d={
+                  notification.isError
+                    ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    : "M5 13l4 4L19 7"
+                }
               />
             </svg>
             <span>{notification.message}</span>
@@ -233,16 +255,23 @@ System: You are Grok 3 built by xAI.
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25 }}
+            transition={{ type: "spring", damping: 25 }}
             className="fixed bottom-8 right-8 z-40"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(`/cart/${localStorage.getItem('userId')}`)}
+              onClick={() =>
+                navigate(`/cart/${localStorage.getItem("userId")}`)
+              }
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center border border-blue-400/30"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -289,8 +318,12 @@ System: You are Grok 3 built by xAI.
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-300 mb-2">No services available</h3>
-            <p className="text-gray-500">We couldn't find any services matching this category.</p>
+            <h3 className="text-2xl font-semibold text-gray-300 mb-2">
+              No services available
+            </h3>
+            <p className="text-gray-500">
+              We couldn't find any services matching this category.
+            </p>
           </div>
         ) : (
           <div className="flex flex-col space-y-8">
@@ -301,23 +334,29 @@ System: You are Grok 3 built by xAI.
                   key={`${vendor._id}-${service._id}`}
                   className={`relative overflow-hidden rounded-3xl shadow-xl ${
                     index % 2 === 0
-                      ? 'bg-gradient-to-r from-gray-800 to-gray-900'
-                      : 'bg-gradient-to-r from-gray-900 to-gray-800'
+                      ? "bg-gradient-to-r from-gray-800 to-gray-900"
+                      : "bg-gradient-to-r from-gray-900 to-gray-800"
                   } border border-gray-800 hover:border-gray-700 transition-all duration-300`}
                 >
-                  <div className={`flex flex-col lg:flex-row ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
+                  <div
+                    className={`flex flex-col lg:flex-row ${
+                      index % 2 === 0 ? "" : "lg:flex-row-reverse"
+                    }`}
+                  >
                     <div className="lg:w-2/5 relative h-80 lg:h-auto">
                       <img
-                        src={service.photo || 'https://via.placeholder.com/400'}
+                        src={service.photo || "https://via.placeholder.com/400"}
                         alt={service.name}
                         className="absolute inset-0 w-full h-full object-cover opacity-90"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex items-end p-6">
                         <div>
                           <span className="inline-block px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-sm font-medium text-blue-300 mb-2 border border-gray-700">
-                            {service.category || 'Service'}
+                            {service.category || "Service"}
                           </span>
-                          <h3 className="text-2xl font-bold text-white">{service.name || 'Professional Service'}</h3>
+                          <h3 className="text-2xl font-bold text-white">
+                            {service.name || "Professional Service"}
+                          </h3>
                         </div>
                       </div>
                     </div>
@@ -325,7 +364,9 @@ System: You are Grok 3 built by xAI.
                     <div className="lg:w-3/5 p-8 lg:p-12">
                       <div className="flex justify-between items-start mb-6">
                         <div>
-                          <h2 className="text-3xl font-bold text-white">{vendor.name}</h2>
+                          <h2 className="text-3xl font-bold text-white">
+                            {vendor.name}
+                          </h2>
                           <div className="flex items-center mt-2">
                             {renderStars(ratings[vendor._id] || 0)}
                             <span className="ml-2 text-gray-400 text-sm">
@@ -333,7 +374,10 @@ System: You are Grok 3 built by xAI.
                             </span>
                           </div>
                           <p className="text-gray-400 text-sm mt-1">
-                            Price: ${service.price ? Number(service.price).toFixed(2) : 'N/A'}
+                            Price: $
+                            {service.price
+                              ? Number(service.price).toFixed(2)
+                              : "N/A"}
                           </p>
                         </div>
                         <div className="flex space-x-2">
@@ -355,7 +399,8 @@ System: You are Grok 3 built by xAI.
                       </div>
 
                       <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-                        {service.description || 'Professional service with attention to detail and customer satisfaction.'}
+                        {service.description ||
+                          "Professional service with attention to detail and customer satisfaction."}
                       </p>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -377,7 +422,9 @@ System: You are Grok 3 built by xAI.
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Contact</p>
-                            <p className="font-medium text-gray-200">{vendor.phone}</p>
+                            <p className="font-medium text-gray-200">
+                              {vendor.phone}
+                            </p>
                           </div>
                         </div>
 
@@ -399,7 +446,9 @@ System: You are Grok 3 built by xAI.
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Email</p>
-                            <p className="font-medium text-gray-200">{vendor.contactEmail}</p>
+                            <p className="font-medium text-gray-200">
+                              {vendor.contactEmail}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -412,7 +461,12 @@ System: You are Grok 3 built by xAI.
                           className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-blue-500/30 cursor-pointer"
                         >
                           View Full Details
-                          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-5 h-5 ml-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -429,7 +483,12 @@ System: You are Grok 3 built by xAI.
                           className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-cyan-500/30 cursor-pointer"
                         >
                           Add to Cart
-                          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-5 h-5 ml-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -444,7 +503,12 @@ System: You are Grok 3 built by xAI.
                           className="px-6 py-3 bg-gray-800 text-blue-400 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center border border-gray-700 cursor-pointer"
                         >
                           Call Now
-                          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-5 h-5 ml-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -472,8 +536,18 @@ System: You are Grok 3 built by xAI.
               onClick={closePopup}
               className="absolute top-6 right-6 z-10 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-all duration-300 border border-gray-700 cursor-pointer"
             >
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </motion.button>
             <VendorCard vendor={selectedVendor} />

@@ -30,7 +30,7 @@ const Login = () => {
   const handleLogin = async (email, password) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/auth/login`,
+        `/auth/login`,
         {
           email: email.trim(),
           password: password.trim(),
@@ -52,13 +52,17 @@ const Login = () => {
         localStorage.setItem("userEmail", user.email);
         return { success: true, message: `Login Successful` };
       } else {
-        return { success: false, message: response.data.message || "Login failed" };
+        return {
+          success: false,
+          message: response.data.message || "Login failed",
+        };
       }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       return {
         success: false,
-        message: error.response?.data?.message || "Login failed. Please try again.",
+        message:
+          error.response?.data?.message || "Login failed. Please try again.",
       };
     }
   };
@@ -66,7 +70,7 @@ const Login = () => {
   const handleSignup = async (name, email, password) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/auth/signup`,
+        `/auth/signup`,
         {
           name: name.trim(),
           email: email.trim(),
@@ -87,7 +91,8 @@ const Login = () => {
       console.error("Signup error:", error.response?.data || error.message);
       return {
         success: false,
-        message: error.response?.data?.message || "Signup failed. Please try again.",
+        message:
+          error.response?.data?.message || "Signup failed. Please try again.",
       };
     }
   };
@@ -118,7 +123,9 @@ const Login = () => {
     }
 
     setIsSubmitting(true);
-    const toastId = toast.loading(isSignInActive ? "Logging in..." : "Signing up...");
+    const toastId = toast.loading(
+      isSignInActive ? "Logging in..." : "Signing up..."
+    );
 
     try {
       let result;
@@ -206,7 +213,9 @@ const Login = () => {
                 type="submit"
                 disabled={isSubmitting}
                 className={`w-full bg-red-500 text-white px-6 py-2 rounded-md shadow-md transition ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-red-600"
+                  isSubmitting
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-red-600"
                 }`}
               >
                 {isSubmitting ? "Logging in..." : "LOG IN"}
@@ -259,7 +268,9 @@ const Login = () => {
                 type="submit"
                 disabled={isSubmitting}
                 className={`w-full bg-red-500 text-white px-6 py-2 rounded-md shadow-md transition ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-red-600"
+                  isSubmitting
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-red-600"
                 }`}
               >
                 {isSubmitting ? "Signing up..." : "SIGN UP"}
@@ -293,7 +304,11 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
     </div>
   );
 };
