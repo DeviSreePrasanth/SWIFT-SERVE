@@ -44,8 +44,6 @@ const Login = () => {
 
       if (response.data.success) {
         const { token, user } = response.data;
-        console.log(`${user.name}`);
-        console.log(`${user.email}`);
         localStorage.setItem("authToken", token);
         localStorage.setItem("userId", user.id);
         localStorage.setItem("userName", user.name);
