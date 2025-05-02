@@ -21,6 +21,7 @@ function ServiceFullPage() {
     feedback: '',
   });
   const [error, setError] = useState('');
+  
 
   useEffect(() => {
     if (!service || !vendor) {
@@ -46,7 +47,7 @@ function ServiceFullPage() {
   };
 
   const handleAddToCart = async () => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('userName');
     if (!userId) {
       alert('Please log in to add items to your cart.');
       navigate('/login');
@@ -61,9 +62,11 @@ function ServiceFullPage() {
         serviceName: service.name,
         category: service.category,
         price: Number(service.price || service.cost || 0),
-        imageUrl: service.imageUrl || '',
+        imageUrl: service.photo || '',
       };
-
+      console.log(service);
+      console.log(vendor);
+      console.log(payload);
       await axios.post('http://localhost:5000/api/cart/add', payload);
       alert('Item added to cart successfully!');
     } catch (error) {

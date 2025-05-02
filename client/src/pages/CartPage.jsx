@@ -16,11 +16,14 @@ const CartPage = () => {
   const [isRemoving, setIsRemoving] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const navigate = useNavigate();
-
+  const user={
+    name: localStorage.getItem('userName') 
+  }
+  
   const fetchCart = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+      const response = await axios.get(`http://localhost:5000/api/cart/${user.name}`);
       setCartItems(response.data[0]?.items || []);
       setError(null);
     } catch (err) {
@@ -32,7 +35,7 @@ const CartPage = () => {
   const handleRemoveFromCart = async (vendorId, serviceName) => {
     setIsRemoving(true);
     try {
-      const response = await axios.delete(`http://localhost:5000/api/cart/remove/${userId}`, {
+      const response = await axios.delete(`http://localhost:5000/api/cart/remove/${user.name}`, {
         data: { vendorId, serviceName },
       });
       setCartItems(response.data.cart || []);
@@ -423,7 +426,7 @@ const CartPage = () => {
           dateTime: new Date().toISOString(),
           cost: item.price,
         }))}
-        userId={userId}
+        userId={user.name}
       />
 
       <Footer />

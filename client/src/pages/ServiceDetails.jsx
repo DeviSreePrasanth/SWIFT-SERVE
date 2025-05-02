@@ -117,7 +117,7 @@ function ServiceDetails() {
   };
 
   const handleAddToCart = async (serviceId) => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('userName');
     if (!userId) {
       showNotification('Please log in to add items to your cart', true);
       navigate('/login');

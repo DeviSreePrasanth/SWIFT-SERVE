@@ -3,7 +3,14 @@ const Cart = require('../models/CartSchema');
 exports.addToCart = async (req, res) => {
   try {
     const { userId, vendorId, serviceName, category, price, imageUrl } = req.body;
-
+    console.log('Request body:', req.body); // Log the request body for debugging
+    console.log('User ID:', userId); // Log the userId for debugging
+    console.log('Vendor ID:', vendorId); // Log the vendorId for debugging
+    console.log('Service Name:', serviceName); // Log the serviceName for debugging
+    console.log('Category:', category); // Log the category for debugging
+    console.log('Price:', price); // Log the price for debugging
+    console.log('Image URL:', imageUrl); // Log the imageUrl for debugging
+    
     // Validate required fields
     if (!userId || !vendorId || !serviceName || !category || price === undefined || !imageUrl) {
       return res.status(400).json({

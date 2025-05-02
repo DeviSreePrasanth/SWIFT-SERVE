@@ -15,6 +15,7 @@ const BookingsPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(`http://localhost:5000/api/bookings/user/${userId}`);
+        console.log(response.data);
         setBookings(response.data.bookings || []);
         setError(null);
       } catch (err) {

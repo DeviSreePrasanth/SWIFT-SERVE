@@ -21,6 +21,7 @@ const detail = async (req, res) => {
                 services: help.map(h => ({
                     name: h.name,
                     description: h.description,
+                    category: h.category,
                     photo: i.services.find(s => s.name === h.name)?.photo
                 }))
             };

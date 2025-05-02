@@ -19,18 +19,18 @@ const CheckoutModal = ({ isOpen, onClose, bookings, userId }) => {
     
     try {
       // Process each booking
+      console.log(userId);
       const bookingPromises = bookings.map(booking => 
         axios.post('http://localhost:5000/api/bookings/book', {
           userId,
           vendorId: booking.vendorId,
           serviceName: booking.serviceName,
-          category: booking.category,
-          slot: booking.dateTime // Using dateTime as slot
+          category: booking.category
         })
       );
       
       await Promise.all(bookingPromises);
-      
+      console.log('All bookings processed successfully!');
       toast.success('Payment successful! Bookings confirmed.', {
         position: "top-center",
         autoClose: 5000,
