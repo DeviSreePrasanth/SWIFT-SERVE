@@ -4,7 +4,6 @@ const mongoose=require('mongoose');
     vendorId:{type:String,required:true},
     serviceName:{type:String,required:true},
     category:{type:String},
-    slot:{type:String,required:true},
     status:{
         type:String,
         enum:['confirmed','pending'],

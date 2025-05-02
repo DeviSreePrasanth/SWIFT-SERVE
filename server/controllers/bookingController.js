@@ -11,25 +11,15 @@ const isSlotBooked = async (vendorId, slot) => {
   
   exports.bookService = async (req, res) => {
     try {
-      const { userId, vendorId, serviceName, category, slot } = req.body;
+      const { userId, vendorId, serviceName, category } = req.body;
   
       // Validate slot is in the future
-      const slotDate = new Date(slot);
-      if (slotDate < new Date()) {
-        return res.status(400).json({ message: 'Cannot book past time slots' });
-      }
-  
-      const slotTaken = await isSlotBooked(vendorId, slot);
-      if (slotTaken) {
-        return res.status(400).json({ message: 'Selected slot is already booked' });
-      }
   
       const newBooking = new Booking({
         userId,
         vendorId,
         serviceName,
         category,
-        slot,
         status: 'confirmed',
         paymentStatus: 'completed'
       });
