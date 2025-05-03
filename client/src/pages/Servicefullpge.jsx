@@ -128,12 +128,7 @@ function ServiceFullPage() {
 
     try {
       console.log("Add to cart payload:", item);
-
-      // Add item to cart
       await addToCart(item);
-      // No need to call fetchCart since addToCart updates cartItems
-
-      // Confirm the item was added
       const isNowInCart = cartItems.some(
         (cartItem) =>
           cartItem.vendorId === item.vendorId &&
