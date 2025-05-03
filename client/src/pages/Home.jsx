@@ -53,11 +53,11 @@ function Home() {
               "url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/70 to-gray-950/60 z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-gray-950/50 to-gray-950/40 z-0"></div>
 
           <div className="text-center text-white relative z-10 px-4 max-w-6xl mx-auto">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in leading-tight">
-              Premium <span className="text-blue-500">Home Services</span>{" "}
+              Premium <span className="text-cyan-300">Home Services</span>{" "}
               <br />
               On Demand
             </h1>
