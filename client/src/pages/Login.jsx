@@ -9,11 +9,9 @@ const Login = () => {
   const [isSignInActive, setIsSignInActive] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Login form states
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
-  // Signup form states
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
@@ -99,7 +97,6 @@ const Login = () => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // Client-side validation
     if (isSignInActive) {
       if (!loginEmail.trim() || !loginPassword.trim()) {
         toast.error("Please fill all fields.");
@@ -171,7 +168,6 @@ const Login = () => {
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-300">
       <div className="relative w-full max-w-3xl h-[480px] bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="absolute top-0 w-full h-full flex">
-          {/* Login Panel */}
           <div
             className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${
               isSignInActive
@@ -221,7 +217,6 @@ const Login = () => {
             </form>
           </div>
 
-          {/* Signup Panel */}
           <div
             className={`w-1/2 flex flex-col justify-center items-center bg-white px-8 transition-all duration-700 ${
               !isSignInActive
@@ -277,7 +272,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Overlay Panel */}
         <div
           className={`absolute top-0 w-1/2 h-full flex items-center justify-center bg-gradient-to-r from-red-400 to-orange-500 transition-transform duration-700 ${
             isSignInActive ? "translate-x-full" : "translate-x-0"

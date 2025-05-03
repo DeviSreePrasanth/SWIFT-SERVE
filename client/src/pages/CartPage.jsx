@@ -17,7 +17,6 @@ const CartPage = () => {
     name: localStorage.getItem('userName'),
   };
 
-  // Show notification and auto-hide after delay
   const showNotification = (message, isError = false) => {
     setNotification({ message, isError });
     setTimeout(() => {
@@ -39,7 +38,6 @@ const CartPage = () => {
     }
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -131,7 +129,6 @@ const CartPage = () => {
     <div className="min-h-screen flex flex-col bg-gray-950">
       <Header />
 
-      {/* Notification System */}
       <AnimatePresence>
         {notification && (
           <motion.div

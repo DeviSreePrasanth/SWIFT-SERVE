@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"; // Add useRef
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import ServiceCard from "../components/ServiceCard";
@@ -74,7 +74,7 @@ function Home() {
               </button>
               <button
                 className="px-8 py-4 cursor-pointer rounded-lg font-semibold transition-all transform hover:scale-105 bg-transparent border-2 border-gray-300 hover:border-white text-white"
-                onClick={scrollToWhyChooseUs} // Updated to scroll to Why Choose Us
+                onClick={scrollToWhyChooseUs} 
               >
                 Know More
               </button>
@@ -84,7 +84,6 @@ function Home() {
 
         <section ref={whyChooseUsRef} className="py-20 bg-gray-900">
           {" "}
-          {/* Add ref here */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
