@@ -11,8 +11,8 @@ const getVendorAndService = async (req, res) => {
     }
     const vendor = await Vendor.findOne(
       {
-        name: { $regex: new RegExp(`^${vendorName}$`, 'i') }, // Case-insensitive exact match
-        'services.name': { $regex: new RegExp(`^${serviceName}$`, 'i') }, // Match service name
+        name: { $regex: new RegExp(`^${vendorName}$`, 'i') },
+        'services.name': { $regex: new RegExp(`^${serviceName}$`, 'i') },
       },
       {
         name: 1,
@@ -21,7 +21,7 @@ const getVendorAndService = async (req, res) => {
         address: 1,
         categories: 1,
         createdAt: 1,
-        services: { $elemMatch: { name: { $regex: new RegExp(`^${serviceName}$`, 'i') } } }, // Return only the matching service
+        services: { $elemMatch: { name: { $regex: new RegExp(`^${serviceName}$`, 'i') } } },
       }
     );
 

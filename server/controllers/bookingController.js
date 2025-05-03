@@ -24,7 +24,6 @@ exports.bookService = async (req, res) => {
       });
       await newBooking.save();
 
-      // Clear the cart for the user after successful booking
       const cart = await Cart.findOneAndUpdate(
         { userId },
         { $set: { items: [] } },

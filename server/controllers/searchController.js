@@ -1,5 +1,3 @@
-// controllers/searchController.js
-
 const Service = require("../models/Service");
 const Vendor = require("../models/Vendor");
 

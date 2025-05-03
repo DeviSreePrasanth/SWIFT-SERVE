@@ -78,7 +78,7 @@ exports.clearCart = async (req, res) => {
 
     const cart = await Cart.findOneAndUpdate(
       { userId },
-      { $set: { items: [] } }, // Clear the items array
+      { $set: { items: [] } },
       { new: true }
     );
 

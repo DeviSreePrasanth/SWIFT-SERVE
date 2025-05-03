@@ -6,8 +6,7 @@ const authController = {
     signup: async (req, res, next) => {
         try {
           const { name, email, password } = req.body;
-      
-          // Validation
+          
           if (!name || !email || !password) {
             return res.status(400).json({ message: 'All fields are required' });
           }
