@@ -2,18 +2,28 @@
     "version": 2,
     "builds": [
       {
-        "src": "package.json",
+        "src": "index.html",
         "use": "@vercel/static-build",
         "config": {
           "distDir": "dist"
         }
       }
     ],
-    "routes": [
+    "rewrites": [
       {
-        "src": "/(.*)",
-        "dest": "/index.html"
+        "source": "/(.*)",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/(.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
       }
     ]
   }
-  

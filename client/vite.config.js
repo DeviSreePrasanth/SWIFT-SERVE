@@ -4,6 +4,10 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    outDir: "dist",
+    base: "/"
+  },
   server: {
     proxy: {
       "/search": {
@@ -11,6 +15,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/auth": {
+        target: "https://user-m3hd.onrender.com",
+        changeOrigin: true,
+        secure: false,
+      }
     },
   },
 });
