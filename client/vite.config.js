@@ -1,13 +1,13 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '/search': {
-        target: 'http://localhost:5000',
+      "/search": {
+        target: "https://user-m3hd.onrender.com",
         changeOrigin: true,
         secure: false,
       },
