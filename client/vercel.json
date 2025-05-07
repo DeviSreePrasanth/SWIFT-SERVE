@@ -2,31 +2,18 @@
     "version": 2,
     "builds": [
       {
-        "src": "index.html",
+        "src": "package.json",
         "use": "@vercel/static-build",
         "config": {
           "distDir": "dist"
         }
       }
     ],
-    "rewrites": [
+    "routes": [
       {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ],
-    "env": {
-      "VITE_API_URL": "https://user-m3hd.onrender.com"
-    },
-    "headers": [
-      {
-        "source": "/(.*)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=0, must-revalidate"
-          }
-        ]
+        "src": "/(.*)",
+        "dest": "/index.html"
       }
     ]
   }
+  
