@@ -1,29 +1,91 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "package.json",
-        "use": "@vercel/static-build",
-        "config": {
-          "distDir": "dist"
+  "rewrites": [
+    {
+      "source": "/auth/signup",
+      "destination": "https://user-m3hd.onrender.com/auth/signup"
+    },
+    {
+      "source": "/auth/login",
+      "destination": "https://user-m3hd.onrender.com/auth/login"
+    },
+    {
+      "source": "/service",
+      "destination": "https://user-m3hd.onrender.com/service"
+    },
+    {
+      "source": "/service/category/:categoryName",
+      "destination": "https://user-m3hd.onrender.com/service/category/:categoryName"
+    },
+    {
+      "source": "/search",
+      "destination": "https://user-m3hd.onrender.com/search"
+    },
+    {
+      "source": "/vendor",
+      "destination": "https://user-m3hd.onrender.com/vendor"
+    },
+    {
+      "source": "/vendor/category/:category",
+      "destination": "https://user-m3hd.onrender.com/vendor/category/:category"
+    },
+    {
+      "source": "/review",
+      "destination": "https://user-m3hd.onrender.com/review"
+    },
+    {
+      "source": "/cart/add",
+      "destination": "https://user-m3hd.onrender.com/cart/add"
+    },
+    {
+      "source": "/cart/:userId",
+      "destination": "https://user-m3hd.onrender.com/cart/:userId"
+    },
+    {
+      "source": "/cart/remove/:userId",
+      "destination": "https://user-m3hd.onrender.com/cart/remove/:userId"
+    },
+    {
+      "source": "/cart/clear/:userId",
+      "destination": "https://user-m3hd.onrender.com/cart/clear/:userId"
+    },
+    {
+      "source": "/bookings/book",
+      "destination": "https://user-m3hd.onrender.com/bookings/book"
+    },
+    {
+      "source": "/bookings/user/:userId",
+      "destination": "https://user-m3hd.onrender.com/bookings/user/:userId"
+    },
+    {
+      "source": "/detail",
+      "destination": "https://user-m3hd.onrender.com/detail"
+    },
+    {
+      "source": "/vendor-service",
+      "destination": "https://user-m3hd.onrender.com/vendor-service"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-Requested-With, Content-Type, Accept"
         }
-      }
-    ],
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ],
-    "headers": [
-      {
-        "source": "/(.*)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=0, must-revalidate"
-          }
-        ]
-      }
-    ]
-  }
+      ]
+    }
+  ]
+}
