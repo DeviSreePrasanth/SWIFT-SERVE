@@ -18,6 +18,7 @@ export const CartProvider = ({ children }) => {
     if (!user.id) {
       setCartItems([]);
       setLoading(false);
+      toast.info("Please log in to view your cart.", { autoClose: 3000 });
       return;
     }
     setLoading(true);
