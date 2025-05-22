@@ -23,7 +23,10 @@ function Home() {
     const fetchServices = async () => {
       try {
         const response = await axios.get("/service");
-        setServices(response.data);
+        // Ensure response.data is an array; fallback to empty array if not
+        const data = Array.isArray(response.data) ? response.data : [];
+        console.log("API Response:", response.data); // Debug log
+        setServices(data);
         setLoadingServices(false);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -53,7 +56,7 @@ function Home() {
               "url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80)",
           }}
         >
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-gray-950/50 to-gray-950/40 z-0"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-gray-950/50 to-gray-950/40 z-0"></div>
 
           <div className="text-center text-white relative z-10 px-4 max-w-6xl mx-auto">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in leading-tight">
@@ -74,7 +77,7 @@ function Home() {
               </button>
               <button
                 className="px-8 py-4 cursor-pointer rounded-lg font-semibold transition-all transform hover:scale-105 bg-transparent border-2 border-gray-300 hover:border-white text-white"
-                onClick={scrollToWhyChooseUs} 
+                onClick={scrollToWhyChooseUs}
               >
                 Know More
               </button>
@@ -83,7 +86,6 @@ function Home() {
         </section>
 
         <section ref={whyChooseUsRef} className="py-20 bg-gray-900">
-          {" "}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
@@ -225,7 +227,7 @@ function Home() {
                 Retry
               </button>
             </div>
-          ) : displayedServices.length > 0 ? (
+          ) : Array.isArray(displayedServices) && displayedServices.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {displayedServices.map((service) => (
