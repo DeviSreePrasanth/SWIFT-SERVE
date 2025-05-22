@@ -16,7 +16,7 @@ const db=require('./config/connectDB');
 const app=express();
 
 app.use(cors({
-  origin: 'https://swiftserve1.vercel.app/',
+  origin: 'https://swiftserve1.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
