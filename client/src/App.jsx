@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
-import ErrorBoundary from './components/ErrorBoundary'; // Adjust the path if needed
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 import ServicesPage from './pages/ServicePage';
 import ServiceDetails from './pages/ServiceDetails';
