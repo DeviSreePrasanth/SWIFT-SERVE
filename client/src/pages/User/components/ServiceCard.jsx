@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-
+import React from 'react';
 const ServiceCard = ({ service }) => {
   return (
     <div className="group relative bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-gray-600 transition-all duration-300 hover:shadow-xl">
