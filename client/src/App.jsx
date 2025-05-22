@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Outlet,
 } from "react-router-dom";
 
 // Auth Pages
@@ -26,34 +27,43 @@ import VendorReviews from "./pages/vendor/VendorReviews";
 import VendorAnalytics from "./pages/vendor/VendorAnalytics";
 import VendorSupport from "./pages/vendor/VendorSupport";
 
-//user routes
-import Home from './users/Home'
-import SearchServices from './users/user-services/SearchServices';
-import ServiceCategory from './users/user-services/ServiceCategory';
-import ServiceDetails from './users/user-services/ServiceDetails';
-import VendorList from './users/vendors/VendorList';
-import VendorProfile1 from './users/vendors/VendorProfile';
-import VendorAvailability from './users/vendors/VendorAvailability';
-import Cart from './users/cart/Cart';
-import Checkout from './users/cart/Checkout';
-import BookingHistory from './users/user-services/BookingHistory';
-import LeaveReview from './users/user-services/LeaveReview';
-import VendorRatings from './users/user-services/VendorRatings';
-import FilterVendors from './users/user-services/FilterVendors';
-import ServiceListing from "./users/user-services/ServiceListing";
+// User Routes and Context
+import { CartProvider } from "./pages/User/context/CartContext";
+import ErrorBoundary from "./pages/User/components/ErrorBoundary";
+import Home from "./pages/User/pages/Home";
+import ServicesPage from "./pages/User/pages/ServicePage";
+import ServiceDetails from "./pages/User/pages/ServiceDetails";
+import VendorPage from "./pages/User/pages/VendorPage";
+import SearchResults from "./pages/User/pages/SearchResultsPage";
+import BookingsPage from "./pages/User/pages/BookingsPage";
+import CartPage from "./pages/User/pages/CartPage";
+import ServiceFullPage from "./pages/User/pages/Servicefullpge";
+
+// New layout component to wrap user routes with context and error boundary
+function UserLayout() {
+  return (
+    <CartProvider>
+      <ErrorBoundary>
+        <div className="flex-1">
+          <Outlet />
+        </div>
+      </ErrorBoundary>
+    </CartProvider>
+  );
+}
 
 function AppContent() {
   const location = useLocation();
 
-  // Define routes where you want to HIDE the Navbar
+  // Define routes where you want to hide Navbar (optional)
   const hideNavbarRoutes = ["/login", "/approval-waiting", "/vendor-dashboard"];
 
   return (
     <>
-      {/* Example Navbar conditional rendering */}
+      {/* Optional Navbar: show only if not in hideNavbarRoutes */}
       {/* {!hideNavbarRoutes.includes(location.pathname) && <Navbar />} */}
 
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 min-h-screen flex flex-col">
         <Routes>
           {/* Auth and Common Routes */}
           <Route path="/" element={<Login />} />
@@ -64,7 +74,7 @@ function AppContent() {
           {/* Admin Routes */}
           <Route path="/admin/approval" element={<AdminApprovalPage />} />
 
-          {/* Vendor Routes */}
+          {/* Vendor Routes (nested) */}
           <Route path="/vendor-dashboard" element={<VendorDashboard />}>
             <Route index element={<VendorHome />} />
             <Route path="home" element={<VendorHome />} />
@@ -78,23 +88,20 @@ function AppContent() {
             <Route path="support" element={<VendorSupport />} />
           </Route>
 
-          {/* User Routes */}
-          <Route path="/home" element={<Home />}>
-          <Route index element={<ServiceListing />} />
-          <Route path="services" element={<ServiceListing />} />
-          <Route path="services/category" element={<ServiceCategory />} />
-          <Route path="services/details/:serviceId" element={<ServiceDetails />} /> {/* Added :serviceId */}
-          <Route path="vendors" element={<VendorList />} />
-          <Route path="vendors/profile/:vendorId" element={<VendorProfile1 />} /> {/* Added :vendorId */}
-          <Route path="vendors/availability/:vendorId" element={<VendorAvailability />} /> {/* Added :vendorId */}
-          <Route path="cart" element={<Cart />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="bookings/history" element={<BookingHistory />} />
-          <Route path="reviews/leave" element={<LeaveReview />} />
-          <Route path="reviews/ratings/:vendorId" element={<VendorRatings />} /> {/* Added :vendorId */}
-          <Route path="search/services" element={<SearchServices />} />
-          <Route path="vendors/filter" element={<FilterVendors />} />
-        </Route>
+          {/* User Routes wrapped with UserLayout (CartProvider + ErrorBoundary) */}
+          <Route element={<UserLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/service/:id" element={<ServiceDetails />} />
+            <Route path="/vendor" element={<VendorPage />} />
+            <Route path="/bookings/:userId" element={<BookingsPage />} />
+            <Route path="/searchQuery/:name" element={<SearchResults />} />
+            <Route path="/cart/:userId" element={<CartPage />} />
+            <Route
+              path="/service/detail/:vendorName/:serviceName"
+              element={<ServiceFullPage />}
+            />
+          </Route>
         </Routes>
       </div>
     </>
