@@ -26,6 +26,7 @@ function ServiceFullPage() {
     feedback: "",
   });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
   const [showViewCart, setShowViewCart] = useState(false);
 
@@ -75,6 +76,14 @@ function ServiceFullPage() {
   }, [service, vendor, vendorName, serviceName, navigate]);
 
   useEffect(() => {
+    try {
+      // log axios baseURL to help debug CORS/target issues
+      // eslint-disable-next-line no-console
+      console.log("Axios baseURL:", axios.defaults?.baseURL || import.meta.env.VITE_API_URL);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn("Could not read axios baseURL", e);
+    }
     if (vendor) {
       const fetchReviews = async () => {
         try {
@@ -164,44 +173,57 @@ function ServiceFullPage() {
       newReview.rating < 1 ||
       newReview.rating > 5
     ) {
-      setError(
-        "Please provide your name, feedback, and a rating between 1 and 5."
-      );
+      const msg = "Please provide your name, feedback, and a rating between 1 and 5.";
+      setError(msg);
+      showNotification(msg, true);
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "/review",
-        {
-          name: vendor.name,
-          user: newReview.user,
-          rating: Number(newReview.rating),
-          feedback: newReview.feedback,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    setIsSubmitting(true);
+    setError("");
 
-      setReviews([...reviews, response.data]);
-      setAverageRating(
-        (reviews.reduce((sum, review) => sum + review.rating, 0) +
-          response.data.rating) /
-          (reviews.length + 1)
-      );
+    try {
+      const payload = {
+        name: vendor.name,
+        user: newReview.user,
+        rating: Number(newReview.rating),
+        feedback: newReview.feedback,
+      };
+
+      // eslint-disable-next-line no-console
+      console.log("Posting review:", payload);
+
+      const response = await axios.post('/review', payload);
+
+      // refetch reviews from server to show authoritative data
+      try {
+        const res = await axios.get(`/review?name=${vendor.name}`);
+        const reviewsData = res.data;
+        setReviews(reviewsData);
+        if (reviewsData.length > 0) {
+          const avgRating = reviewsData.reduce((sum, r) => sum + r.rating, 0) / reviewsData.length;
+          setAverageRating(avgRating);
+        }
+      } catch (refetchErr) {
+        // fallback: append response
+        // eslint-disable-next-line no-console
+        console.warn('Failed to refetch reviews, appending local response', refetchErr);
+        setReviews(prev => [...prev, response.data]);
+        setAverageRating((reviews.reduce((sum, review) => sum + review.rating, 0) + response.data.rating) / (reviews.length + 1));
+      }
+
       setNewReview({ user: "", rating: 0, feedback: "" });
       setIsModalOpen(false);
       setError("");
       showNotification("Review submitted successfully!", false);
-    } catch (error) {
-      console.error("Error submitting review:", error);
-      setError(
-        error.response?.data?.message ||
-          "Failed to submit review. Please try again."
-      );
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Error submitting review:', err);
+      const msg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to submit review.';
+      setError(msg);
+      showNotification(msg, true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -905,10 +927,12 @@ function ServiceFullPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  type="button"
                   onClick={handleReviewSubmit}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
+                  disabled={isSubmitting}
+                  className={`flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:shadow-lg hover:shadow-cyan-500/20 transition-all ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
-                  Submit Review
+                  {isSubmitting ? 'Submitting...' : 'Submit Review'}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
